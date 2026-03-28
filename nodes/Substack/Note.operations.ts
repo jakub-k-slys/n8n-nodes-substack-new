@@ -1,9 +1,10 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { SubstackClient } from './lib/substack-api';
+import { SubstackClient } from './shared/SubstackGatewayClient';
 import { IStandardResponse } from './types';
 import { SubstackUtils } from './SubstackUtils';
 import { DataFormatters } from './shared/DataFormatters';
 import { OperationUtils } from './shared/OperationUtils';
+import { OperationHandler } from './shared/OperationHandler';
 
 export enum NoteOperation {
 	Create = 'create',
@@ -59,31 +60,13 @@ async function get(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
-
-		const ownProfile = await client.ownProfile();
-		const notesIterable = ownProfile.notes();
-		const results = await OperationUtils.executeAsyncIterable(
-			notesIterable,
-			limit,
-			DataFormatters.formatNote,
-			publicationAddress,
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
+		const profile = await OperationHandler.resolveProfile(client);
+		return OperationHandler.collectFromIterable(profile.notes(), limit, (note) =>
+			DataFormatters.formatNote(note, publicationAddress),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 async function getNotesBySlug(
@@ -92,32 +75,14 @@ async function getNotesBySlug(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const slug = executeFunctions.getNodeParameter('slug', itemIndex) as string;
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
-
-		const profile = await client.profileForSlug(slug);
-		const notesIterable = profile.notes();
-		const results = await OperationUtils.executeAsyncIterable(
-			notesIterable,
-			limit,
-			DataFormatters.formatNote,
-			publicationAddress,
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
+		const profile = await OperationHandler.resolveProfile(client, slug);
+		return OperationHandler.collectFromIterable(profile.notes(), limit, (note) =>
+			DataFormatters.formatNote(note, publicationAddress),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 async function getNoteById(
@@ -126,27 +91,15 @@ async function getNoteById(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const noteId = OperationUtils.parseNumericParam(
 			executeFunctions.getNodeParameter('noteId', itemIndex),
 			'noteId',
 		);
 
 		const note = await client.noteForId(noteId);
-		const result = DataFormatters.formatNote(note, publicationAddress);
-
-		return {
-			success: true,
-			data: result,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+		return DataFormatters.formatNote(note, publicationAddress);
+	});
 }
 
 async function create(
@@ -155,18 +108,14 @@ async function create(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const body = executeFunctions.getNodeParameter('body', itemIndex) as string;
 		const visibility = executeFunctions.getNodeParameter(
 			'visibility',
 			itemIndex,
 			'everyone',
 		) as string;
-		const attachment = executeFunctions.getNodeParameter(
-			'attachment',
-			itemIndex,
-			'none',
-		) as string;
+		const attachment = executeFunctions.getNodeParameter('attachment', itemIndex, 'none') as string;
 		const linkUrl =
 			attachment === 'link'
 				? (executeFunctions.getNodeParameter('linkUrl', itemIndex) as string)
@@ -184,32 +133,18 @@ async function create(
 			linkUrl ? { attachment: linkUrl } : undefined,
 		);
 
-		const formattedResponse = {
+		return {
 			success: true,
 			noteId: response.id.toString(),
 			body: body.trim(),
 			url: SubstackUtils.formatUrl(publicationAddress, `/p/${response.id}`),
 			date: new Date().toISOString(),
 			status: 'published',
-			visibility: visibility,
-			attachment: attachment,
-			linkUrl: linkUrl,
+			visibility,
+			attachment,
+			linkUrl,
 		};
-
-		return {
-			success: true,
-			data: formattedResponse,
-			metadata: {
-				status: 'success',
-			},
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 export const noteOperationHandlers: Record<

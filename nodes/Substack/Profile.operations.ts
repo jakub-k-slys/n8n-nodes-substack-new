@@ -1,9 +1,8 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { SubstackClient } from './lib/substack-api';
+import { SubstackClient } from './shared/SubstackGatewayClient';
 import { IStandardResponse } from './types';
-import { SubstackUtils } from './SubstackUtils';
 import { DataFormatters } from './shared/DataFormatters';
-import { OperationUtils } from './shared/OperationUtils';
+import { OperationHandler } from './shared/OperationHandler';
 
 export enum ProfileOperation {
 	GetOwnProfile = 'getOwnProfile',
@@ -52,24 +51,10 @@ async function getOwnProfile(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const profile = await client.ownProfile();
-		const profileData = DataFormatters.formatProfile(profile);
-
-		return {
-			success: true,
-			data: profileData,
-			metadata: {
-				status: 'success',
-			},
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+		return DataFormatters.formatProfile(profile);
+	});
 }
 
 async function getProfileBySlug(
@@ -78,25 +63,11 @@ async function getProfileBySlug(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const slug = executeFunctions.getNodeParameter('slug', itemIndex) as string;
 		const profile = await client.profileForSlug(slug);
-		const profileData = DataFormatters.formatProfile(profile);
-
-		return {
-			success: true,
-			data: profileData,
-			metadata: {
-				status: 'success',
-			},
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+		return DataFormatters.formatProfile(profile);
+	});
 }
 
 async function getFollowees(
@@ -105,37 +76,19 @@ async function getFollowees(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const returnType = executeFunctions.getNodeParameter(
 			'returnType',
 			itemIndex,
 			'profiles',
 		) as string;
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
 
 		const ownProfile = await client.ownProfile();
-		const followingIterable = ownProfile.following();
-		const results = await OperationUtils.executeAsyncIterable(
-			followingIterable,
-			limit,
-			(followee: any) => DataFormatters.formatFollowing(followee, returnType),
+		return OperationHandler.collectFromIterable(ownProfile.following(), limit, (followee) =>
+			DataFormatters.formatFollowing(followee, returnType),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: {
-				status: 'success',
-			},
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 export const profileOperationHandlers: Record<
