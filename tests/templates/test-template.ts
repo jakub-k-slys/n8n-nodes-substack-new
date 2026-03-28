@@ -11,7 +11,7 @@ import { mockCredentials } from '../mocks/mockData';
 import { testPosts, testComments, testNotes } from '../fixtures/testData';
 
 // REQUIRED: Mock setup at module level
-jest.mock('substack-api', () => ({
+jest.mock('../../nodes/Substack/lib/substack-api', () => ({
 	SubstackClient: jest.fn(),
 }));
 

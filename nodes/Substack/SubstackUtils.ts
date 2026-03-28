@@ -1,5 +1,5 @@
 import { IExecuteFunctions, NodeOperationError } from 'n8n-workflow';
-import { SubstackClient } from 'substack-api';
+import { SubstackClient } from './lib/substack-api';
 import { IErrorResponse, IStandardResponse } from './types';
 
 export class SubstackUtils {

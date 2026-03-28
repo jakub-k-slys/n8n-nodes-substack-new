@@ -58,6 +58,9 @@
     "n8n-workflow": "^1.82.0"
   },
   "dependencies": {
-    "substack-api": "^3.2.0"
+    "axios": "^1.13.2",
+    "axios-rate-limit": "^1.4.0",
+    "fp-ts": "^2.16.10",
+    "io-ts": "^2.2.22"
   }
 }
