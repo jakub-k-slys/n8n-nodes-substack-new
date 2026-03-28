@@ -1,5 +1,5 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { SubstackClient } from 'substack-api';
+import { SubstackClient } from './lib/substack-api';
 import { IStandardResponse } from './types';
 import { DataFormatters } from './shared/DataFormatters';
 import { OperationUtils } from './shared/OperationUtils';

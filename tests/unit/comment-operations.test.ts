@@ -6,7 +6,7 @@ import { mockCredentials } from '../mocks/mockData';
 import { testComments, testLimits } from '../fixtures/testData';
 
 // Mock the substack-api module
-jest.mock('substack-api', () => ({
+jest.mock('../../nodes/Substack/lib/substack-api', () => ({
 	SubstackClient: jest.fn(),
 }));
 

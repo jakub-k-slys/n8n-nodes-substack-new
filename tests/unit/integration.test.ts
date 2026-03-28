@@ -8,7 +8,7 @@ import {
 } from '../mocks/mockSubstackClient';
 
 // Mock the substack-api module
-jest.mock('substack-api', () => ({
+jest.mock('../../nodes/Substack/lib/substack-api', () => ({
 	SubstackClient: jest.fn(),
 }));
 
