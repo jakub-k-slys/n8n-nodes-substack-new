@@ -20,6 +20,16 @@ export class SubstackApi implements ICredentialType {
 			required: true,
 			validateType: 'url',
 		},
+
+		{
+			displayName: 'Gateway URL',
+			name: 'gatewayUrl',
+			type: 'string',
+			default: 'https://substack-gateway.vercel.app',
+			description:
+				'Optional Substack Gateway base URL. Use this when routing requests through a self-hosted gateway.',
+			required: false,
+		},
 		{
 			displayName: 'API Key',
 			name: 'apiKey',
@@ -28,7 +38,8 @@ export class SubstackApi implements ICredentialType {
 			typeOptions: {
 				password: true,
 			},
-			description: 'The substack.sid cookie value used for authentication',
+			description:
+				'Bearer token used by the Substack Gateway (for example a base64-encoded JSON containing Substack session cookies)',
 			required: true,
 		},
 	];

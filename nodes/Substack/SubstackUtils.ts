@@ -1,11 +1,11 @@
 import { IExecuteFunctions, NodeOperationError } from 'n8n-workflow';
-import { SubstackClient } from './lib/substack-api';
+import { SubstackClient } from './shared/SubstackGatewayClient';
 import { IErrorResponse, IStandardResponse } from './types';
 
 export class SubstackUtils {
 	static async initializeClient(executeFunctions: IExecuteFunctions) {
 		const credentials = await executeFunctions.getCredentials('substackApi');
-		const { publicationAddress, apiKey } = credentials;
+		const { publicationAddress, apiKey, gatewayUrl } = credentials;
 
 		if (!apiKey) {
 			throw new NodeOperationError(executeFunctions.getNode(), 'API key is required');
@@ -16,6 +16,7 @@ export class SubstackUtils {
 		const client = new SubstackClient({
 			publicationUrl: `https://${hostname}`,
 			token: apiKey as string,
+			gatewayUrl: gatewayUrl ? (gatewayUrl as string) : undefined,
 		});
 
 		return {

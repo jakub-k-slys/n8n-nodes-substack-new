@@ -1,9 +1,9 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { SubstackClient } from './lib/substack-api';
+import { SubstackClient } from './shared/SubstackGatewayClient';
 import { IStandardResponse } from './types';
 import { DataFormatters } from './shared/DataFormatters';
 import { OperationUtils } from './shared/OperationUtils';
-import { SubstackUtils } from './SubstackUtils';
+import { OperationHandler } from './shared/OperationHandler';
 
 export enum PostOperation {
 	GetAll = 'getAll',
@@ -52,31 +52,13 @@ async function getAll(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
-
-		const ownProfile = await client.ownProfile();
-		const postsIterable = ownProfile.posts();
-		const results = await OperationUtils.executeAsyncIterable(
-			postsIterable,
-			limit,
-			DataFormatters.formatPost,
-			publicationAddress,
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
+		const profile = await OperationHandler.resolveProfile(client);
+		return OperationHandler.collectFromIterable(profile.posts(), limit, (post) =>
+			DataFormatters.formatPost(post, publicationAddress),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 async function getPostsBySlug(
@@ -85,32 +67,14 @@ async function getPostsBySlug(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const slug = executeFunctions.getNodeParameter('slug', itemIndex) as string;
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
-
-		const profile = await client.profileForSlug(slug);
-		const postsIterable = profile.posts();
-		const results = await OperationUtils.executeAsyncIterable(
-			postsIterable,
-			limit,
-			DataFormatters.formatPost,
-			publicationAddress,
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
+		const profile = await OperationHandler.resolveProfile(client, slug);
+		return OperationHandler.collectFromIterable(profile.posts(), limit, (post) =>
+			DataFormatters.formatPost(post, publicationAddress),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 async function getPostById(
@@ -119,27 +83,15 @@ async function getPostById(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const postId = OperationUtils.parseNumericParam(
 			executeFunctions.getNodeParameter('postId', itemIndex),
 			'postId',
 		);
 
 		const post = await client.postForId(postId);
-		const result = DataFormatters.formatPost(post, publicationAddress);
-
-		return {
-			success: true,
-			data: result,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+		return DataFormatters.formatPost(post, publicationAddress);
+	});
 }
 
 export const postOperationHandlers: Record<

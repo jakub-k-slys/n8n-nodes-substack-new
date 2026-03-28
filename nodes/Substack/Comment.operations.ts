@@ -1,9 +1,9 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { SubstackClient } from './lib/substack-api';
+import { SubstackClient } from './shared/SubstackGatewayClient';
 import { IStandardResponse } from './types';
 import { DataFormatters } from './shared/DataFormatters';
 import { OperationUtils } from './shared/OperationUtils';
-import { SubstackUtils } from './SubstackUtils';
+import { OperationHandler } from './shared/OperationHandler';
 
 export enum CommentOperation {
 	GetAll = 'getAll',
@@ -38,35 +38,18 @@ async function getAll(
 	publicationAddress: string,
 	itemIndex: number,
 ): Promise<IStandardResponse> {
-	try {
+	return OperationHandler.execute(executeFunctions, itemIndex, async () => {
 		const postId = OperationUtils.parseNumericParam(
 			executeFunctions.getNodeParameter('postId', itemIndex),
 			'postId',
 		);
-		const limitParam = executeFunctions.getNodeParameter('limit', itemIndex, '');
-		const limit = OperationUtils.parseLimit(limitParam);
+		const limit = OperationHandler.getLimit(executeFunctions, itemIndex);
 
 		const post = await client.postForId(postId);
-		const commentsIterable = post.comments();
-		const results = await OperationUtils.executeAsyncIterable(
-			commentsIterable,
-			limit,
-			(comment: any) => DataFormatters.formatComment(comment, postId),
-			publicationAddress,
+		return OperationHandler.collectFromIterable(post.comments(), limit, (comment) =>
+			DataFormatters.formatComment(comment, postId),
 		);
-
-		return {
-			success: true,
-			data: results,
-			metadata: { status: 'success' },
-		};
-	} catch (error) {
-		return SubstackUtils.formatErrorResponse({
-			message: error.message,
-			node: executeFunctions.getNode(),
-			itemIndex,
-		});
-	}
+	});
 }
 
 export const commentOperationHandlers: Record<
