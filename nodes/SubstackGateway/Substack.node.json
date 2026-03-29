@@ -1,6 +1,6 @@
 {
 	"displayName": "Substack Gateway",
-	"name": "substack",
+	"name": "substackGateway",
 	"icon": "file:substack.svg",
 	"group": ["output"],
 	"defaultVersion": 1,
@@ -15,7 +15,7 @@
 	"usableAsTool": true,
 	"credentials": [
 		{
-			"name": "substackApi",
+			"name": "substackGatewayApi",
 			"required": true
 		}
 	]

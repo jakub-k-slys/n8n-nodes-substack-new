@@ -1,81 +1,63 @@
 # Introduction
 
-## Overview
+`n8n-nodes-substack-v2` provides a gateway-backed Substack integration for n8n and a small TypeScript client for direct usage.
 
-The n8n Substack node enables you to integrate Substack workflows directly into your n8n automation platform. This community node provides a seamless way to interact with the Substack API, allowing you to automate content creation and data retrieval from your Substack publications.
+## Current Scope
 
-The node includes its own typed Substack client, keeping the API integration in this repository and aligned with the n8n node implementation.
+The package supports:
 
-## What is n8n?
+- Reading profiles
+- Listing followed profiles
+- Reading posts
+- Reading notes
+- Creating notes
+- Reading comments for a post
 
-[n8n](https://n8n.io/) is a fair-code licensed workflow automation platform that lets you connect different services and automate repetitive tasks. With the Substack node, you can now include Substack operations as part of your automated workflows.
+It does not currently implement post creation, post likes, or comment creation.
 
-## Key Features
+## Package Surfaces
 
-### Note Operations
-- **Create Notes**: Publish short-form content to your Substack feed programmatically
-- **Rich Content Support**: Support for HTML content in note bodies
-- **Simple Interface**: Easy-to-use title and body parameters
+### n8n Node
 
-### Post Operations
-- **Retrieve Posts**: Get posts from your publication with full metadata
-- **Pagination Support**: Control the number of posts retrieved using limit and offset parameters
-- **Comprehensive Data**: Access to post titles, dates, URLs, paywall status, and more
+The n8n node is exposed as `Substack Gateway` and is implemented in [`nodes/SubstackGateway/Substack.node.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/Substack.node.ts).
 
-### Authentication & Security
-- **API Key Authentication**: Secure authentication using your Substack API key
-- **Publication-Scoped**: Works with specific publication addresses
-- **Credential Management**: Built-in n8n credential system for secure API key storage
+Resources:
 
-### Error Handling
-- **Robust Error Handling**: Clear error messages for troubleshooting
-- **Continue on Fail**: Option to continue workflow execution even if some operations fail
-- **Validation**: Parameter validation to prevent common configuration errors
+- `profile`
+- `post`
+- `note`
+- `comment`
 
-## Use Cases
+### TypeScript Client
 
-The n8n Substack node enables many automation scenarios:
+The package entrypoint re-exports `SubstackClient` from [`index.ts`](/Users/jakubslys/n8n-nodes-substack-v2/index.ts).
 
-### Content Management
-- **Automated Publishing**: Create notes based on triggers from other systems
-- **Content Curation**: Retrieve recent posts to analyze or share elsewhere
-- **Cross-Platform Publishing**: Sync content between Substack and other platforms
+The client implementation lives in [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
 
-### Analytics & Monitoring
-- **Publication Monitoring**: Track new posts and engagement
-- **Content Analysis**: Export post data for analysis in other tools
-- **Reporting**: Generate reports on publication activity
+## Authentication Model
 
-### Integration Workflows
-- **RSS to Substack**: Convert RSS feeds into Substack notes
-- **Social Media Integration**: Create notes from social media mentions
-- **Email to Note**: Convert emails into Substack content
-- **Content Backup**: Regularly backup publication content
+Requests are sent to a gateway service using:
 
-## Architecture
+- Bearer token in the `Authorization` header
+- Publication URL in the `x-publication-url` header
 
-The node follows n8n's standard architecture patterns:
+The n8n credential exposes:
 
-- **Resource-Based Design**: Operations are organized by resource type (Note, Post)
-- **Parameter Validation**: Built-in validation for all user inputs
-- **Credential Integration**: Seamless integration with n8n's credential system
-- **Error Propagation**: Proper error handling and user feedback
+- `publicationAddress`
+- `gatewayUrl`
+- `apiKey`
 
-## Getting Started
+## Data Flow
 
-1. **Install the Node**: Add the community node to your n8n instance
-2. **Configure Credentials**: Set up your Substack API credentials
-3. **Create Workflows**: Build automation workflows using the available operations
-4. **Test & Deploy**: Test your workflows and deploy them for production use
+At runtime the n8n node:
 
-For detailed setup instructions, check out the [Quickstart](quickstart.md) guide or visit the [Installation](installation.md) page.
+1. Loads `SubstackGateway API` credentials
+2. Builds a `SubstackClient`
+3. Routes the selected resource and operation to the matching handler
+4. Formats results into n8n-friendly JSON output
 
-## Library Documentation
+## Where To Start
 
-For developers interested in the underlying API library or advanced use cases, comprehensive documentation is available:
-
-- **[API Reference](api-reference.md)**: Full library documentation
-- **[Examples](examples.md)**: Code examples and workflows
-- **[Development Guide](development.md)**: Contributing and development setup
-
-The substack-api library can also be used directly in Function nodes for advanced operations not covered by the standard node interface.
+- Use [Quickstart](quickstart.md) for first setup
+- Use [n8n Usage](n8n-usage.md) for workflow-facing behavior
+- Use [API Reference](api-reference.md) for the direct client

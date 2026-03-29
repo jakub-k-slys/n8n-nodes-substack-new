@@ -1,120 +1,47 @@
 # Profile Resource
 
-The Profile resource allows you to retrieve information about Substack profiles, including your own profile and other users' profiles.
-
 ## Operations
 
-### Get Own Profile
+### `getOwnProfile`
 
-Retrieve your own profile information including name, handle, and bio.
+Returns the authenticated profile.
 
-**Operation:** `getOwnProfile`
+Output fields:
 
-**Parameters:** None
+- `id`
+- `name`
+- `handle`
+- `bio`
+- `url`
+- `avatarUrl`
 
-**Example Response:**
-```json
-{
-  "id": 12345,
-  "name": "John Doe",
-  "handle": "johndoe",
-  "bio": "Writer and developer"
-}
-```
+### `getProfileBySlug`
 
-**Example Workflow Node:**
-```json
-{
-  "name": "Get My Profile",
-  "type": "n8n-nodes-substack.substack",
-  "parameters": {
-    "resource": "profile",
-    "operation": "getOwnProfile"
-  },
-  "credentials": {
-    "substackApi": "your-credential-id"
-  }
-}
-```
+Parameters:
 
-### Get Profile by Slug
+- `slug` string, required
 
-Retrieve a profile by its publication slug (e.g., "username.substack.com").
+Returns the profile for the given publication slug.
 
-**Operation:** `getProfileBySlug`
+### `getFollowees`
 
-**Parameters:**
-- `slug` (string, required): The publication slug (e.g., "johndoe")
+Parameters:
 
-**Example Workflow Node:**
-```json
-{
-  "name": "Get Profile by Slug",
-  "type": "n8n-nodes-substack.substack",
-  "parameters": {
-    "resource": "profile",
-    "operation": "getProfileBySlug",
-    "slug": "johndoe"
-  },
-  "credentials": {
-    "substackApi": "your-credential-id"
-  }
-}
-```
+- `returnType`
+  - `profiles`
+  - `ids`
+- `limit`
+  - default `50`
 
-### Get Profile by ID
+When `returnType` is `profiles`, each item includes:
 
-Retrieve a profile by its unique user ID.
+- `id`
+- `name`
+- `handle`
+- `bio`
+- `url`
+- `avatarUrl`
 
-**Operation:** `getProfileById`
+When `returnType` is `ids`, each item includes:
 
-**Parameters:**
-- `userId` (number, required): The unique user ID
-
-**Example Workflow Node:**
-```json
-{
-  "name": "Get Profile by ID",
-  "type": "n8n-nodes-substack.substack",
-  "parameters": {
-    "resource": "profile",
-    "operation": "getProfileById",
-    "userId": 12345
-  },
-  "credentials": {
-    "substackApi": "your-credential-id"
-  }
-}
-```
-
-### Get Followees
-
-Retrieve a list of users that you follow.
-
-**Operation:** `getFollowees`
-
-**Parameters:**
-- `limit` (number, optional): Maximum number of followees to return (default: 100)
-
-**Example Workflow Node:**
-```json
-{
-  "name": "Get My Followees",
-  "type": "n8n-nodes-substack.substack",
-  "parameters": {
-    "resource": "profile",
-    "operation": "getFollowees",
-    "limit": 50
-  },
-  "credentials": {
-    "substackApi": "your-credential-id"
-  }
-}
-```
-
-## Use Cases
-
-- **Profile Analytics**: Monitor your own profile information and follower connections
-- **Content Curation**: Find and track other writers you follow
-- **User Research**: Gather profile data for content strategy and audience analysis
-- **Integration Workflows**: Use profile data as input for other automation tasks
+- `id`

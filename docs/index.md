@@ -1,29 +1,27 @@
-# n8n Substack Node Documentation
+# Substack Gateway Docs
 
-Welcome to the n8n Substack community node documentation. This node allows you to integrate Substack with your n8n workflows.
+This documentation covers the current `n8n-nodes-substack-v2` package.
 
-## For n8n Users
+Core guides:
 
-- **[n8n Usage Guide](n8n-usage.md)** - Complete guide for using the Substack node in n8n workflows
-- **[Installation](installation.md)** - How to install and set up the node
-- **[Examples](examples.md)** - Workflow examples and use cases
+- [Introduction](introduction.md)
+- [Installation](installation.md)
+- [Quickstart](quickstart.md)
+- [n8n Usage](n8n-usage.md)
+- [API Reference](api-reference.md)
+- [Examples](examples.md)
 
-## For Developers
+Project guides:
 
-- **[Development Guide](development.md)** - Contributing to the node development
-- **[API Reference](api-reference.md)** - Technical API documentation  
-- **[Changelog](changelog.md)** - Version history and updates
+- [Architecture](design.md)
+- [Development](development.md)
+- [Testing](testing.md)
+- [Contributing](contributing.md)
+- [Changelog](changelog.md)
 
-## Quick Links
+Resource guides:
 
-- [GitHub Repository](https://github.com/jakub-k-slys/n8n-nodes-substack)
-- [NPM Package](https://www.npmjs.com/package/n8n-nodes-substack)
-- [Issue Tracker](https://github.com/jakub-k-slys/n8n-nodes-substack/issues)
-- [n8n Community](https://community.n8n.io/)
-
-## Support
-
-For questions and support:
-- Check the [n8n Usage Guide](n8n-usage.md) for common issues
-- Visit the [n8n Community Forum](https://community.n8n.io/)
-- Report bugs in our [GitHub Issues](https://github.com/jakub-k-slys/n8n-nodes-substack/issues)
+- [Profile](resources/profile.md)
+- [Post](resources/post.md)
+- [Note](resources/note.md)
+- [Comment](resources/comment.md)

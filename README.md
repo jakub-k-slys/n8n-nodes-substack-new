@@ -1,52 +1,65 @@
-# n8n-nodes-substack
+# n8n-nodes-substack-v2
 
-[![npm version](https://badge.fury.io/js/n8n-nodes-substack.svg)](https://badge.fury.io/js/n8n-nodes-substack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/jakub-k-slys/n8n-nodes-substack/actions/workflows/test.yaml/badge.svg)](https://github.com/jakub-k-slys/n8n-nodes-substack/actions/workflows/test.yaml)
+[![Tests](https://github.com/jakub-k-slys/n8n-nodes-substack-v2/actions/workflows/test.yaml/badge.svg)](https://github.com/jakub-k-slys/n8n-nodes-substack-v2/actions/workflows/test.yaml)
 
-This n8n community node provides read-only access to the Substack API, enabling you to automate content discovery and analytics workflows with Substack publications.
+`n8n-nodes-substack-v2` is an n8n community package for working with Substack through a gateway-backed client. It ships two related surfaces:
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
+- The `Substack Gateway` n8n node for workflows
+- A small typed `SubstackClient` exported from the package for direct programmatic use
 
-## Features
+This repository no longer wraps a separate `substack-api` package. The client implementation lives in this codebase under [`nodes/SubstackGateway/shared/SubstackGatewayClient.ts`](/Users/jakubslys/n8n-nodes-substack-v2/nodes/SubstackGateway/shared/SubstackGatewayClient.ts).
 
-- **Profile Operations**: Get profile information, followees, and publication data
-- **Post Operations**: Retrieve posts with pagination support
-- **Note Operations**: Access notes from publications and create new notes programmatically with optional title and body content, supporting both simple text and advanced JSON formatting
-- **Comment Operations**: Get comments for posts
-- **Secure Authentication**: API key authentication with publication address
-- **Built-in Substack Client**: Includes a typed Substack client directly in this package for reliable API interactions
+## What It Supports
 
-## Quick Start
+- Profile operations
+  - Get your own profile
+  - Get a profile by publication slug
+  - List followed profiles or followed user IDs
+- Post operations
+  - List posts from your own publication
+  - List posts from another publication by slug
+  - Fetch a post by ID
+- Note operations
+  - List notes from your own publication
+  - List notes from another publication by slug
+  - Fetch a note by ID
+  - Create a note with optional attached link
+- Comment operations
+  - List comments for a post by ID
 
-### Get Your Profile Information
+## Installation
 
-```json
-{
-  "nodes": [
-    {
-      "name": "Get My Profile",
-      "type": "n8n-nodes-substack.substack",
-      "parameters": {
-        "resource": "profile",
-        "operation": "getOwnProfile"
-      },
-      "credentials": {
-        "substackApi": "your-credential-id"
-      }
-    }
-  ]
-}
+Install the package into your n8n environment:
+
+```bash
+npm install n8n-nodes-substack-v2
 ```
 
-### Retrieve Recent Posts
+Then restart n8n and install `n8n-nodes-substack-v2` as a community package if needed by your deployment model.
+
+## Credentials
+
+The node uses a credential named `SubstackGateway API` with three fields:
+
+- `Publication Address`
+  - Full publication URL such as `https://myblog.substack.com`
+- `Gateway URL`
+  - Optional gateway base URL
+  - Defaults to `https://substack-gateway.vercel.app`
+- `API Key`
+  - Bearer token expected by the gateway
+
+## Quick Example
+
+List recent posts from your own publication:
 
 ```json
 {
   "nodes": [
     {
       "name": "Get Recent Posts",
-      "type": "n8n-nodes-substack.substack",
+      "type": "n8n-nodes-substack-v2.substack",
       "parameters": {
         "resource": "post",
         "operation": "getAll",
@@ -60,40 +73,66 @@ This n8n community node provides read-only access to the Substack API, enabling 
 }
 ```
 
-## Installation
+Create a note:
 
-### n8n Cloud
-
-1. Go to **Settings** > **Community Nodes**
-2. Click **Install a community node**
-3. Enter `n8n-nodes-substack`
-4. Click **Install**
-
-### Self-hosted n8n
-
-Install the node in your n8n installation directory:
-
-```bash
-npm install n8n-nodes-substack
+```json
+{
+  "nodes": [
+    {
+      "name": "Create Note",
+      "type": "n8n-nodes-substack-v2.substack",
+      "parameters": {
+        "resource": "note",
+        "operation": "create",
+        "body": "Published from n8n",
+        "visibility": "everyone",
+        "attachment": "none"
+      },
+      "credentials": {
+        "substackApi": "your-credential-id"
+      }
+    }
+  ]
+}
 ```
 
-Then restart your n8n instance.
+## Direct Client Usage
 
-### Credentials Setup
+The package also exports a typed client:
 
-1. Add the Substack node to your workflow
-2. Create new credentials with:
-   - **Publication Address**: Your Substack domain (e.g., `myblog.substack.com`)
-   - **API Key**: Your Substack API key
+```ts
+import { SubstackClient } from 'n8n-nodes-substack-v2';
+
+const client = new SubstackClient({
+  publicationUrl: 'https://myblog.substack.com',
+  token: process.env.SUBSTACK_GATEWAY_TOKEN!,
+});
+
+const ownProfile = await client.ownProfile();
+
+for await (const post of ownProfile.posts()) {
+  console.log(post.title);
+}
+```
 
 ## Documentation
 
-📖 **[Complete Documentation](docs/)** - Comprehensive guides for all operations
+- [Introduction](docs/introduction.md)
+- [Installation](docs/installation.md)
+- [Quickstart](docs/quickstart.md)
+- [n8n Usage](docs/n8n-usage.md)
+- [API Reference](docs/api-reference.md)
+- [Examples](docs/examples.md)
+- [Architecture](docs/design.md)
+- [Development](docs/development.md)
+- [Testing](docs/testing.md)
 
-- **[Resource Guides](docs/resources/)** - Detailed documentation for Profile, Post, Note, and Comment operations
-- **[Development Guide](docs/contributing.md)** - Contributing to the project
-- **[Testing Guide](docs/testing.md)** - Testing practices and procedures
-- **[Architecture](docs/design.md)** - Design decisions and project structure
+Resource-specific docs:
+
+- [Profiles](docs/resources/profile.md)
+- [Posts](docs/resources/post.md)
+- [Notes](docs/resources/note.md)
+- [Comments](docs/resources/comment.md)
 
 ## License
 

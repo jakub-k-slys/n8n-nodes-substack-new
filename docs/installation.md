@@ -1,91 +1,54 @@
 # Installation
 
+## n8n Community Package
+
+Install the package where n8n can load community nodes:
+
+```bash
+npm install n8n-nodes-substack-v2
+```
+
+If you are using n8n's community package UI, install `n8n-nodes-substack-v2` there and restart n8n afterward.
+
 ## Requirements
 
-- Node.js 14 or higher
-- npm or yarn package manager
+- Node.js `>=20.15`
+- n8n with community packages enabled
 
-## NPM Installation
+## Credential Setup
 
-You can install the package using npm:
+Create a `SubstackGateway API` credential with:
+
+- `Publication Address`
+  - Example: `https://myblog.substack.com`
+- `Gateway URL`
+  - Optional override for the gateway base URL
+  - Default: `https://substack-gateway.vercel.app`
+- `API Key`
+  - Gateway bearer token
+
+## Local Development Setup
+
+Install dependencies:
 
 ```bash
-npm install substack-api
+pnpm install
 ```
 
-## Yarn Installation
-
-If you prefer using yarn:
+Build:
 
 ```bash
-yarn add substack-api
+pnpm run build
 ```
 
-## TypeScript Configuration
+Lint:
 
-The library is written in TypeScript and includes type definitions out of the box. No additional setup is required for TypeScript projects.
-
-For optimal TypeScript integration, ensure your `tsconfig.json` includes:
-
-```json
-{
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "moduleResolution": "node"
-  }
-}
+```bash
+pnpm run lint
 ```
 
-## Verification
+Test:
 
-To verify the installation, you can create a simple test file:
-
-```typescript
-import { Substack } from 'substack-api';
-
-const client = new Substack();
-
-async function test() {
-  try {
-    const posts = await client.getPosts({ limit: 1 });
-    console.log('Successfully connected - found posts:', posts.length);
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
-}
-
-test();
+```bash
+pnpm test
 ```
-
-## Development Installation
-
-If you want to contribute to the library or run it from source:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/jakub-k-slys/substack-api.git
-   cd substack-api
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Build the project:
-   ```bash
-   npm run build
-   ```
-
-4. Run tests:
-   ```bash
-   npm test
-   ```
-
-## Next Steps
-
-Once installed, you can:
-
-- Follow the [Quickstart](quickstart.md) guide to begin using the library
-- Check out the [Examples](examples.md) for common use cases
-- Read the [API Reference](api-reference.md) for detailed API documentation
