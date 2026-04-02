@@ -1,30 +1,27 @@
 import { Either, Match } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { PostCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
-import type { PostOperation } from '../../domain/operation';
+import type { PostInput } from '../../domain/input';
 import { PostIdInputSchema } from '../../schema';
 import { decodeInput } from './shared';
 
 export const decodePostCommand = (
-	context: IExecuteFunctions,
-	itemIndex: number,
-	operation: PostOperation,
+	input: PostInput,
 ): Either.Either<PostCommand, GatewayError> =>
-	Match.value(operation).pipe(
-		Match.when('getPost', () =>
+	Match.value(input).pipe(
+		Match.when({ _tag: 'getPost' }, ({ postId }) =>
 			Either.map(
 				decodeInput(PostIdInputSchema, {
-					postId: context.getNodeParameter('postId', itemIndex),
+					postId,
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
 			),
 		),
-		Match.when('getPostComments', () =>
+		Match.when({ _tag: 'getPostComments' }, ({ postId }) =>
 			Either.map(
 				decodeInput(PostIdInputSchema, {
-					postId: context.getNodeParameter('postId', itemIndex),
+					postId,
 				}),
 				(input) => ({ _tag: 'GetComments', ...input }) as const,
 			),

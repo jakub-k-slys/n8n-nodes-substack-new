@@ -1,7 +1,7 @@
 import { Either, Match } from 'effect';
 
 import type { GatewayError } from '../domain/error';
-import type { GatewayOperation, GatewayResource } from '../domain/operation';
+import type { GatewayOperation } from '../domain/operation';
 
 const unsupported = (resource: string, operation: string): GatewayError =>
 	({
@@ -11,7 +11,7 @@ const unsupported = (resource: string, operation: string): GatewayError =>
 	}) satisfies GatewayError;
 
 export const decodeGatewayOperation = (
-	resource: GatewayResource,
+	resource: string,
 	operation: string,
 ): Either.Either<GatewayOperation, GatewayError> =>
 	Match.value(resource).pipe(
@@ -87,5 +87,5 @@ export const decodeGatewayOperation = (
 				Match.orElse(() => Either.left(unsupported(resource, operation))),
 			),
 		),
-		Match.exhaustive,
+		Match.orElse(() => Either.left(unsupported(resource, operation))),
 	);

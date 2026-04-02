@@ -1,46 +1,42 @@
 import { Either, Match } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { ProfileCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
-import type { ProfileOperation } from '../../domain/operation';
+import type { ProfileInput } from '../../domain/input';
 import {
 	ProfileNotesInputSchema,
 	ProfilePostsInputSchema,
 	ProfileSlugInputSchema,
 } from '../../schema';
-import { getOptionalString } from '../params';
 import { decodeInput } from './shared';
 
 export const decodeProfileCommand = (
-	context: IExecuteFunctions,
-	itemIndex: number,
-	operation: ProfileOperation,
+	input: ProfileInput,
 ): Either.Either<ProfileCommand, GatewayError> =>
-	Match.value(operation).pipe(
-		Match.when('getProfile', () =>
+	Match.value(input).pipe(
+		Match.when({ _tag: 'getProfile' }, ({ profileSlug }) =>
 			Either.map(
 				decodeInput(ProfileSlugInputSchema, {
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
+					profileSlug,
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
 			),
 		),
-		Match.when('getProfileNotes', () =>
+		Match.when({ _tag: 'getProfileNotes' }, ({ profileSlug, cursor }) =>
 			Either.map(
 				decodeInput(ProfileNotesInputSchema, {
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
-					cursor: getOptionalString(context, 'cursor', itemIndex),
+					profileSlug,
+					cursor,
 				}),
 				(input) => ({ _tag: 'GetNotes', ...input }) as const,
 			),
 		),
-		Match.when('getProfilePosts', () =>
+		Match.when({ _tag: 'getProfilePosts' }, ({ profileSlug, limit, offset }) =>
 			Either.map(
 				decodeInput(ProfilePostsInputSchema, {
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
-					limit: context.getNodeParameter('limit', itemIndex),
-					offset: context.getNodeParameter('offset', itemIndex),
+					profileSlug,
+					limit,
+					offset,
 				}),
 				(input) => ({ _tag: 'GetPosts', ...input }) as const,
 			),

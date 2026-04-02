@@ -1,40 +1,36 @@
 import { Either, Match } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { NoteCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
-import type { NoteOperation } from '../../domain/operation';
+import type { NoteInput } from '../../domain/input';
 import { CreateNoteInputSchema, NoteIdInputSchema } from '../../schema';
-import { getOptionalString } from '../params';
 import { decodeInput } from './shared';
 
 export const decodeNoteCommand = (
-	context: IExecuteFunctions,
-	itemIndex: number,
-	operation: NoteOperation,
+	input: NoteInput,
 ): Either.Either<NoteCommand, GatewayError> =>
-	Match.value(operation).pipe(
-		Match.when('createNote', () =>
+	Match.value(input).pipe(
+		Match.when({ _tag: 'createNote' }, ({ content, attachment }) =>
 			Either.map(
 				decodeInput(CreateNoteInputSchema, {
-					content: context.getNodeParameter('content', itemIndex),
-					attachment: getOptionalString(context, 'attachment', itemIndex),
+					content,
+					attachment,
 				}),
 				(input) => ({ _tag: 'Create', ...input }) as const,
 			),
 		),
-		Match.when('getNote', () =>
+		Match.when({ _tag: 'getNote' }, ({ noteId }) =>
 			Either.map(
 				decodeInput(NoteIdInputSchema, {
-					noteId: context.getNodeParameter('noteId', itemIndex),
+					noteId,
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
 			),
 		),
-		Match.when('deleteNote', () =>
+		Match.when({ _tag: 'deleteNote' }, ({ noteId }) =>
 			Either.map(
 				decodeInput(NoteIdInputSchema, {
-					noteId: context.getNodeParameter('noteId', itemIndex),
+					noteId,
 				}),
 				(input) => ({ _tag: 'Delete', ...input }) as const,
 			),

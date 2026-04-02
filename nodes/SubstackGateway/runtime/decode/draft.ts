@@ -1,47 +1,45 @@
 import { Either, Match } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { DraftCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
-import type { DraftOperation } from '../../domain/operation';
+import type { DraftInput } from '../../domain/input';
 import { DraftFieldsInputSchema, DraftIdInputSchema, DraftWithIdInputSchema } from '../../schema';
-import { getDraftPayload } from '../params';
 import { decodeInput } from './shared';
 
 export const decodeDraftCommand = (
-	context: IExecuteFunctions,
-	itemIndex: number,
-	operation: DraftOperation,
+	input: DraftInput,
 ): Either.Either<DraftCommand, GatewayError> =>
-	Match.value(operation).pipe(
-		Match.when('listDrafts', () => Either.right({ _tag: 'List' } as const)),
-		Match.when('createDraft', () =>
+	Match.value(input).pipe(
+		Match.when({ _tag: 'listDrafts' }, () => Either.right({ _tag: 'List' } as const)),
+		Match.when({ _tag: 'createDraft' }, ({ title, subtitle, body }) =>
 			Either.map(
-				decodeInput(DraftFieldsInputSchema, getDraftPayload(context, itemIndex)),
+				decodeInput(DraftFieldsInputSchema, { title, subtitle, body }),
 				(input) => ({ _tag: 'Create', ...input }) as const,
 			),
 		),
-		Match.when('getDraft', () =>
+		Match.when({ _tag: 'getDraft' }, ({ draftId }) =>
 			Either.map(
 				decodeInput(DraftIdInputSchema, {
-					draftId: context.getNodeParameter('draftId', itemIndex),
+					draftId,
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
 			),
 		),
-		Match.when('updateDraft', () =>
+		Match.when({ _tag: 'updateDraft' }, ({ draftId, title, subtitle, body }) =>
 			Either.map(
 				decodeInput(DraftWithIdInputSchema, {
-					draftId: context.getNodeParameter('draftId', itemIndex),
-					...getDraftPayload(context, itemIndex),
+					draftId,
+					title,
+					subtitle,
+					body,
 				}),
 				(input) => ({ _tag: 'Update', ...input }) as const,
 			),
 		),
-		Match.when('deleteDraft', () =>
+		Match.when({ _tag: 'deleteDraft' }, ({ draftId }) =>
 			Either.map(
 				decodeInput(DraftIdInputSchema, {
-					draftId: context.getNodeParameter('draftId', itemIndex),
+					draftId,
 				}),
 				(input) => ({ _tag: 'Delete', ...input }) as const,
 			),
