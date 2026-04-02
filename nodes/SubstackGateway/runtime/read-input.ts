@@ -31,15 +31,40 @@ export const readGatewaySelection = (
 		catch: unexpectedError,
 	});
 
-export const readGatewayInput = (
+export function readGatewayInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	operation: Extract<GatewayOperation, { readonly _tag: 'OwnPublication' }>,
+): Effect.Effect<OwnPublicationInput, GatewayError>;
+export function readGatewayInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	operation: Extract<GatewayOperation, { readonly _tag: 'Note' }>,
+): Effect.Effect<NoteInput, GatewayError>;
+export function readGatewayInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	operation: Extract<GatewayOperation, { readonly _tag: 'Draft' }>,
+): Effect.Effect<DraftInput, GatewayError>;
+export function readGatewayInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	operation: Extract<GatewayOperation, { readonly _tag: 'Post' }>,
+): Effect.Effect<PostInput, GatewayError>;
+export function readGatewayInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	operation: Extract<GatewayOperation, { readonly _tag: 'Profile' }>,
+): Effect.Effect<ProfileInput, GatewayError>;
+export function readGatewayInput(
 	context: IExecuteFunctions,
 	itemIndex: number,
 	operation: GatewayOperation,
 ): Effect.Effect<
 	OwnPublicationInput | NoteInput | DraftInput | PostInput | ProfileInput,
 	GatewayError
-> =>
-	Effect.try({
+> {
+	return Effect.try({
 		try: () =>
 			Match.value(operation).pipe(
 				Match.when({ _tag: 'OwnPublication' }, ({ operation }) => ({
@@ -123,3 +148,4 @@ export const readGatewayInput = (
 			),
 		catch: unexpectedError,
 	});
+}
