@@ -1,13 +1,18 @@
 import type {
-	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeProperties,
 	INodeType,
 	INodeTypeDescription,
-	JsonObject,
 } from 'n8n-workflow';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+
+import {
+	isGatewayOperationError,
+	runGatewayOperation,
+	toGatewayApiCause,
+	toGatewayErrorMessage,
+} from './shared/runtime';
 
 const resourceOptions: INodeProperties = {
 	displayName: 'Resource',
@@ -391,42 +396,6 @@ const profileOffsetField: INodeProperties = {
 	description: 'Number of posts to skip',
 };
 
-function pushItem(returnData: INodeExecutionData[], itemIndex: number, json: IDataObject) {
-	returnData.push({
-		json,
-		pairedItem: { item: itemIndex },
-	});
-}
-
-function pushItemsFromResponse(
-	returnData: INodeExecutionData[],
-	itemIndex: number,
-	response: IDataObject,
-) {
-	const items = Array.isArray(response.items) ? response.items : [];
-
-	for (const item of items) {
-		pushItem(returnData, itemIndex, item as IDataObject);
-	}
-}
-
-function getOptionalString(
-	context: IExecuteFunctions,
-	name: string,
-	itemIndex: number,
-): string | undefined {
-	const value = String(context.getNodeParameter(name, itemIndex, '')).trim();
-	return value === '' ? undefined : value;
-}
-
-function getDraftPayload(context: IExecuteFunctions, itemIndex: number): IDataObject {
-	return {
-		title: getOptionalString(context, 'title', itemIndex) ?? null,
-		subtitle: getOptionalString(context, 'subtitle', itemIndex) ?? null,
-		body: getOptionalString(context, 'body', itemIndex) ?? null,
-	};
-}
-
 export class SubstackGateway implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway',
@@ -477,304 +446,14 @@ export class SubstackGateway implements INodeType {
 
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
-				const resource = this.getNodeParameter('resource', itemIndex) as string;
-				const operation = this.getNodeParameter('operation', itemIndex) as string;
-
-				const baseRequest = {
-					json: true,
-				};
-
-				if (resource === 'ownPublication') {
-					if (operation === 'ownProfile') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/me`,
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'ownNotes') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/me/notes`,
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'ownPosts') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/me/posts`,
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'ownFollowing') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/me/following`,
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-				}
-
-				if (resource === 'note') {
-					if (operation === 'createNote') {
-						const content = this.getNodeParameter('content', itemIndex) as string;
-						const attachment = getOptionalString(this, 'attachment', itemIndex);
-
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'POST',
-								url: `${gatewayUrl}/notes`,
-								body: {
-									content,
-									...(attachment !== undefined ? { attachment } : {}),
-								},
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'getNote') {
-						const noteId = this.getNodeParameter('noteId', itemIndex) as number;
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/notes/${noteId}`,
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'deleteNote') {
-						const noteId = this.getNodeParameter('noteId', itemIndex) as number;
-
-						await this.helpers.httpRequestWithAuthentication.call(this, 'substackGatewayApi', {
-							...baseRequest,
-							method: 'DELETE',
-							url: `${gatewayUrl}/notes/${noteId}`,
-						});
-
-						pushItem(returnData, itemIndex, { success: true, noteId });
-						continue;
-					}
-				}
-
-				if (resource === 'draft') {
-					if (operation === 'listDrafts') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/drafts`,
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'createDraft') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'POST',
-								url: `${gatewayUrl}/drafts`,
-								body: getDraftPayload(this, itemIndex),
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'getDraft') {
-						const draftId = this.getNodeParameter('draftId', itemIndex) as number;
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/drafts/${draftId}`,
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'updateDraft') {
-						const draftId = this.getNodeParameter('draftId', itemIndex) as number;
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'PUT',
-								url: `${gatewayUrl}/drafts/${draftId}`,
-								body: getDraftPayload(this, itemIndex),
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'deleteDraft') {
-						const draftId = this.getNodeParameter('draftId', itemIndex) as number;
-
-						await this.helpers.httpRequestWithAuthentication.call(this, 'substackGatewayApi', {
-							...baseRequest,
-							method: 'DELETE',
-							url: `${gatewayUrl}/drafts/${draftId}`,
-						});
-
-						pushItem(returnData, itemIndex, { success: true, draftId });
-						continue;
-					}
-				}
-
-				if (resource === 'post') {
-					const postId = this.getNodeParameter('postId', itemIndex) as number;
-
-					if (operation === 'getPost') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/posts/${postId}`,
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'getPostComments') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/posts/${postId}/comments`,
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-				}
-
-				if (resource === 'profile') {
-					const profileSlug = this.getNodeParameter('profileSlug', itemIndex) as string;
-
-					if (operation === 'getProfile') {
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/profiles/${profileSlug}`,
-							},
-						)) as IDataObject;
-
-						pushItem(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'getProfileNotes') {
-						const cursor = getOptionalString(this, 'cursor', itemIndex);
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/profiles/${profileSlug}/notes`,
-								qs: cursor === undefined ? {} : { cursor },
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-
-					if (operation === 'getProfilePosts') {
-						const limit = this.getNodeParameter('limit', itemIndex) as number;
-						const offset = this.getNodeParameter('offset', itemIndex) as number;
-						const response = (await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'substackGatewayApi',
-							{
-								...baseRequest,
-								method: 'GET',
-								url: `${gatewayUrl}/profiles/${profileSlug}/posts`,
-								qs: { limit, offset },
-							},
-						)) as IDataObject;
-
-						pushItemsFromResponse(returnData, itemIndex, response);
-						continue;
-					}
-				}
-
-				throw new NodeOperationError(
-					this.getNode(),
-					`Unsupported resource/operation combination: ${resource}/${operation}`,
-					{ itemIndex },
-				);
+				returnData.push(...(await runGatewayOperation(this, itemIndex, gatewayUrl)));
 			} catch (error) {
 				if (this.continueOnFail()) {
-					pushItem(returnData, itemIndex, {
-						error: error instanceof Error ? error.message : 'Unknown error',
+					returnData.push({
+						json: {
+							error: toGatewayErrorMessage(error),
+						},
+						pairedItem: { item: itemIndex },
 					});
 					continue;
 				}
@@ -783,8 +462,18 @@ export class SubstackGateway implements INodeType {
 					throw error;
 				}
 
-				if (typeof error === 'object' && error !== null) {
-					throw new NodeApiError(this.getNode(), error as JsonObject, { itemIndex });
+				if (isGatewayOperationError(error)) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Unsupported resource/operation combination: ${error.resource}/${error.operation}`,
+						{ itemIndex },
+					);
+				}
+
+				const apiCause = toGatewayApiCause(error);
+
+				if (apiCause !== undefined) {
+					throw new NodeApiError(this.getNode(), apiCause, { itemIndex });
 				}
 
 				throw new NodeOperationError(this.getNode(), 'Unknown error', { itemIndex });

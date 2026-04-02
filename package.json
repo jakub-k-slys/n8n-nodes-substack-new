@@ -31,7 +31,7 @@
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
-		"strict": true,
+		"strict": false,
 		"credentials": [
 			"dist/credentials/SubstackGatewayApi.credentials.js"
 		],
@@ -50,5 +50,8 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
+	},
+	"dependencies": {
+		"effect": "^3.21.0"
 	}
 }
