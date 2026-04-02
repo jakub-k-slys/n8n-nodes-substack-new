@@ -4,6 +4,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
+import { Either } from 'effect';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { substackGatewayProperties } from './description';
@@ -12,6 +13,8 @@ import {
 	toGatewayApiCause,
 	toGatewayErrorMessage,
 } from './domain/error';
+import { GatewayUrlSchema } from './schema';
+import { decodeInput } from './runtime/decode/shared';
 import { runGatewayOperation } from './runtime/execute';
 
 export class SubstackGateway implements INodeType {
@@ -41,7 +44,16 @@ export class SubstackGateway implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const credentials = await this.getCredentials('substackGatewayApi');
-		const gatewayUrl = String(credentials.gatewayUrl ?? '').replace(/\/+$/, '');
+		const decodedGatewayUrl = decodeInput(
+			GatewayUrlSchema,
+			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+		);
+
+		if (Either.isLeft(decodedGatewayUrl)) {
+			throw new NodeOperationError(this.getNode(), 'Invalid Gateway URL credential');
+		}
+
+		const gatewayUrl = decodedGatewayUrl.right;
 
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {

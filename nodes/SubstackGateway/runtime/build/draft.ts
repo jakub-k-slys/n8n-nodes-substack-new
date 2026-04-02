@@ -1,8 +1,9 @@
 import type { DraftCommand } from '../../domain/command';
 import type { GatewayHttpRequest } from '../../domain/http';
+import type { GatewayUrl } from '../../schema';
 
 export const buildDraftRequest = (
-	gatewayUrl: string,
+	gatewayUrl: GatewayUrl,
 	command: DraftCommand,
 ): GatewayHttpRequest => {
 	switch (command._tag) {

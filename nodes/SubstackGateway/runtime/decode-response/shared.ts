@@ -3,31 +3,21 @@ import * as Schema from 'effect/Schema';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayError } from '../../domain/error';
-import type { GatewayResult } from '../../domain/result';
 
 export const decodeResponseSchema = <A, I, R>(
 	schema: Schema.Schema<A, I, R>,
 	input: unknown,
-): A => {
+): Either.Either<A, GatewayError> => {
 	const decoded = Schema.decodeUnknownEither(schema as Schema.Schema<A, I>)(input);
 
-	if (Either.isRight(decoded)) {
-		return decoded.right;
-	}
-
-	throw {
+	return Either.mapLeft(decoded, (cause) => ({
 		_tag: 'ResponseDecodeError',
 		message: 'Invalid gateway response',
-		cause: decoded.left,
-	} satisfies GatewayError;
+		cause,
+	}));
 };
 
-export const singleResult = (item: unknown): GatewayResult => ({
-	_tag: 'Single',
-	item: item as IDataObject,
-});
+export const singleItem = (item: unknown): IDataObject => item as IDataObject;
 
-export const manyResult = (items: ReadonlyArray<unknown>): GatewayResult => ({
-	_tag: 'Many',
-	items: items as IDataObject[],
-});
+export const manyItems = (items: ReadonlyArray<unknown>): ReadonlyArray<IDataObject> =>
+	items as IDataObject[];

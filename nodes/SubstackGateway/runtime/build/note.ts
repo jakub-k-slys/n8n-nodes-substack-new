@@ -1,7 +1,11 @@
 import type { NoteCommand } from '../../domain/command';
 import type { GatewayHttpRequest } from '../../domain/http';
+import type { GatewayUrl } from '../../schema';
 
-export const buildNoteRequest = (gatewayUrl: string, command: NoteCommand): GatewayHttpRequest => {
+export const buildNoteRequest = (
+	gatewayUrl: GatewayUrl,
+	command: NoteCommand,
+): GatewayHttpRequest => {
 	switch (command._tag) {
 		case 'Create':
 			return {

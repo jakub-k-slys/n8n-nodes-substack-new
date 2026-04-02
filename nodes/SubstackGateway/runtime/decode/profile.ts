@@ -1,6 +1,8 @@
+import { Either } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { ProfileCommand } from '../../domain/command';
+import type { GatewayError } from '../../domain/error';
 import {
 	ProfileNotesInputSchema,
 	ProfilePostsInputSchema,
@@ -13,33 +15,33 @@ export const decodeProfileCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
 	operation: string,
-): ProfileCommand | undefined => {
+): Either.Either<ProfileCommand | undefined, GatewayError> => {
 	switch (operation) {
 		case 'getProfile':
-			return {
-				_tag: 'Get',
-				...decodeInput(ProfileSlugInputSchema, {
+			return Either.map(
+				decodeInput(ProfileSlugInputSchema, {
 					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
 				}),
-			};
+				(input) => ({ _tag: 'Get', ...input }) as const,
+			);
 		case 'getProfileNotes':
-			return {
-				_tag: 'GetNotes',
-				...decodeInput(ProfileNotesInputSchema, {
+			return Either.map(
+				decodeInput(ProfileNotesInputSchema, {
 					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
 					cursor: getOptionalString(context, 'cursor', itemIndex),
 				}),
-			};
+				(input) => ({ _tag: 'GetNotes', ...input }) as const,
+			);
 		case 'getProfilePosts':
-			return {
-				_tag: 'GetPosts',
-				...decodeInput(ProfilePostsInputSchema, {
+			return Either.map(
+				decodeInput(ProfilePostsInputSchema, {
 					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
 					limit: context.getNodeParameter('limit', itemIndex),
 					offset: context.getNodeParameter('offset', itemIndex),
 				}),
-			};
+				(input) => ({ _tag: 'GetPosts', ...input }) as const,
+			);
 		default:
-			return undefined;
+			return Either.right(undefined);
 	}
 };

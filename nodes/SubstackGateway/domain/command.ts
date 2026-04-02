@@ -1,3 +1,13 @@
+import type {
+	Cursor,
+	DraftId,
+	Limit,
+	NoteId,
+	Offset,
+	PostId,
+	ProfileSlug,
+} from '../schema';
+
 export type OwnPublicationCommand =
 	| { readonly _tag: 'OwnProfile' }
 	| { readonly _tag: 'OwnNotes' }
@@ -6,8 +16,8 @@ export type OwnPublicationCommand =
 
 export type NoteCommand =
 	| { readonly _tag: 'Create'; readonly content: string; readonly attachment?: string }
-	| { readonly _tag: 'Get'; readonly noteId: number }
-	| { readonly _tag: 'Delete'; readonly noteId: number };
+	| { readonly _tag: 'Get'; readonly noteId: NoteId }
+	| { readonly _tag: 'Delete'; readonly noteId: NoteId };
 
 export type DraftCommand =
 	| { readonly _tag: 'List' }
@@ -17,28 +27,28 @@ export type DraftCommand =
 			readonly subtitle: string | null;
 			readonly body: string | null;
 	  }
-	| { readonly _tag: 'Get'; readonly draftId: number }
+	| { readonly _tag: 'Get'; readonly draftId: DraftId }
 	| {
 			readonly _tag: 'Update';
-			readonly draftId: number;
+			readonly draftId: DraftId;
 			readonly title: string | null;
 			readonly subtitle: string | null;
 			readonly body: string | null;
 	  }
-	| { readonly _tag: 'Delete'; readonly draftId: number };
+	| { readonly _tag: 'Delete'; readonly draftId: DraftId };
 
 export type PostCommand =
-	| { readonly _tag: 'Get'; readonly postId: number }
-	| { readonly _tag: 'GetComments'; readonly postId: number };
+	| { readonly _tag: 'Get'; readonly postId: PostId }
+	| { readonly _tag: 'GetComments'; readonly postId: PostId };
 
 export type ProfileCommand =
-	| { readonly _tag: 'Get'; readonly profileSlug: string }
-	| { readonly _tag: 'GetNotes'; readonly profileSlug: string; readonly cursor?: string }
+	| { readonly _tag: 'Get'; readonly profileSlug: ProfileSlug }
+	| { readonly _tag: 'GetNotes'; readonly profileSlug: ProfileSlug; readonly cursor?: Cursor }
 	| {
 			readonly _tag: 'GetPosts';
-			readonly profileSlug: string;
-			readonly limit: number;
-			readonly offset: number;
+			readonly profileSlug: ProfileSlug;
+			readonly limit: Limit;
+			readonly offset: Offset;
 	  };
 
 export type GatewayCommand =

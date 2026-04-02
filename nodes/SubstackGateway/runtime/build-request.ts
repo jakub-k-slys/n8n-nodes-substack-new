@@ -1,5 +1,6 @@
 import type { GatewayCommand } from '../domain/command';
 import type { GatewayHttpRequest } from '../domain/http';
+import type { GatewayUrl } from '../schema';
 import { buildDraftRequest } from './build/draft';
 import { buildNoteRequest } from './build/note';
 import { buildOwnPublicationRequest } from './build/own-publication';
@@ -7,7 +8,7 @@ import { buildPostRequest } from './build/post';
 import { buildProfileRequest } from './build/profile';
 
 export const buildGatewayRequest = (
-	gatewayUrl: string,
+	gatewayUrl: GatewayUrl,
 	command: GatewayCommand,
 ): GatewayHttpRequest => {
 	switch (command._tag) {

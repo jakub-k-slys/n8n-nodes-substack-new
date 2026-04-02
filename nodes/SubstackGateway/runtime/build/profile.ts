@@ -1,8 +1,9 @@
 import type { ProfileCommand } from '../../domain/command';
 import type { GatewayHttpRequest } from '../../domain/http';
+import type { GatewayUrl } from '../../schema';
 
 export const buildProfileRequest = (
-	gatewayUrl: string,
+	gatewayUrl: GatewayUrl,
 	command: ProfileCommand,
 ): GatewayHttpRequest => {
 	switch (command._tag) {

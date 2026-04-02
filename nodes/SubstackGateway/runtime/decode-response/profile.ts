@@ -1,22 +1,39 @@
+import { Either } from 'effect';
 import type { GatewayResult } from '../../domain/result';
+import type { GatewayError } from '../../domain/error';
 import type { ProfileCommand } from '../../domain/command';
 import {
 	ProfileGetResponseSchema,
 	ProfileNotesResponseSchema,
 	ProfilePostsResponseSchema,
 } from '../../schema';
-import { decodeResponseSchema, manyResult, singleResult } from './shared';
+import { decodeResponseSchema, manyItems, singleItem } from './shared';
 
 export const decodeProfileResponse = (
 	command: ProfileCommand,
 	response: unknown,
-): GatewayResult => {
+): Either.Either<GatewayResult, GatewayError> => {
 	switch (command._tag) {
 		case 'Get':
-			return singleResult(decodeResponseSchema(ProfileGetResponseSchema, response));
+			return Either.map(decodeResponseSchema(ProfileGetResponseSchema, response), (item) => ({
+				_tag: 'Profile',
+				result: { _tag: 'Fetched', item: singleItem(item) },
+			}));
 		case 'GetNotes':
-			return manyResult(decodeResponseSchema(ProfileNotesResponseSchema, response).items);
+			return Either.map(
+				decodeResponseSchema(ProfileNotesResponseSchema, response),
+				({ items }) => ({
+					_tag: 'Profile',
+					result: { _tag: 'Notes', items: manyItems(items) },
+				}),
+			);
 		case 'GetPosts':
-			return manyResult(decodeResponseSchema(ProfilePostsResponseSchema, response).items);
+			return Either.map(
+				decodeResponseSchema(ProfilePostsResponseSchema, response),
+				({ items }) => ({
+					_tag: 'Profile',
+					result: { _tag: 'Posts', items: manyItems(items) },
+				}),
+			);
 	}
 };

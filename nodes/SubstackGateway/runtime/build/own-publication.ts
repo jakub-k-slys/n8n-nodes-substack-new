@@ -1,8 +1,9 @@
 import type { OwnPublicationCommand } from '../../domain/command';
 import type { GatewayHttpRequest } from '../../domain/http';
+import type { GatewayUrl } from '../../schema';
 
 export const buildOwnPublicationRequest = (
-	gatewayUrl: string,
+	gatewayUrl: GatewayUrl,
 	command: OwnPublicationCommand,
 ): GatewayHttpRequest => {
 	switch (command._tag) {

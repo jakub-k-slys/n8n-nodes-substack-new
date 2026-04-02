@@ -1,4 +1,6 @@
+import { Either } from 'effect';
 import type { DraftCommand } from '../../domain/command';
+import type { GatewayError } from '../../domain/error';
 import type { GatewayResult } from '../../domain/result';
 import {
 	DraftCreateResponseSchema,
@@ -7,19 +9,37 @@ import {
 	DraftListResponseSchema,
 	DraftUpdateResponseSchema,
 } from '../../schema';
-import { decodeResponseSchema, manyResult, singleResult } from './shared';
+import { decodeResponseSchema, manyItems, singleItem } from './shared';
 
-export const decodeDraftResponse = (command: DraftCommand, response: unknown): GatewayResult => {
+export const decodeDraftResponse = (
+	command: DraftCommand,
+	response: unknown,
+): Either.Either<GatewayResult, GatewayError> => {
 	switch (command._tag) {
 		case 'List':
-			return manyResult(decodeResponseSchema(DraftListResponseSchema, response).items);
+			return Either.map(decodeResponseSchema(DraftListResponseSchema, response), ({ items }) => ({
+				_tag: 'Draft',
+				result: { _tag: 'List', items: manyItems(items) },
+			}));
 		case 'Create':
-			return singleResult(decodeResponseSchema(DraftCreateResponseSchema, response));
+			return Either.map(decodeResponseSchema(DraftCreateResponseSchema, response), (item) => ({
+				_tag: 'Draft',
+				result: { _tag: 'Created', item: singleItem(item) },
+			}));
 		case 'Get':
-			return singleResult(decodeResponseSchema(DraftGetResponseSchema, response));
+			return Either.map(decodeResponseSchema(DraftGetResponseSchema, response), (item) => ({
+				_tag: 'Draft',
+				result: { _tag: 'Fetched', item: singleItem(item) },
+			}));
 		case 'Update':
-			return singleResult(decodeResponseSchema(DraftUpdateResponseSchema, response));
+			return Either.map(decodeResponseSchema(DraftUpdateResponseSchema, response), (item) => ({
+				_tag: 'Draft',
+				result: { _tag: 'Updated', item: singleItem(item) },
+			}));
 		case 'Delete':
-			return singleResult(decodeResponseSchema(DraftDeleteResponseSchema, response));
+			return Either.map(decodeResponseSchema(DraftDeleteResponseSchema, response), (item) => ({
+				_tag: 'Draft',
+				result: { _tag: 'Deleted', item: singleItem(item) },
+			}));
 	}
 };

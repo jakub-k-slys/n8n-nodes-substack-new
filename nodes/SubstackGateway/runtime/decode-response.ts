@@ -1,4 +1,6 @@
+import { Either } from 'effect';
 import type { GatewayCommand } from '../domain/command';
+import type { GatewayError } from '../domain/error';
 import type { GatewayResult } from '../domain/result';
 import { decodeDraftResponse } from './decode-response/draft';
 import { decodeNoteResponse } from './decode-response/note';
@@ -9,7 +11,7 @@ import { decodeProfileResponse } from './decode-response/profile';
 export const decodeGatewayResponse = (
 	command: GatewayCommand,
 	response: unknown,
-): GatewayResult => {
+): Either.Either<GatewayResult, GatewayError> => {
 	switch (command._tag) {
 		case 'OwnPublication':
 			return decodeOwnPublicationResponse(command.command, response);

@@ -1,7 +1,11 @@
 import type { PostCommand } from '../../domain/command';
 import type { GatewayHttpRequest } from '../../domain/http';
+import type { GatewayUrl } from '../../schema';
 
-export const buildPostRequest = (gatewayUrl: string, command: PostCommand): GatewayHttpRequest => {
+export const buildPostRequest = (
+	gatewayUrl: GatewayUrl,
+	command: PostCommand,
+): GatewayHttpRequest => {
 	switch (command._tag) {
 		case 'Get':
 			return {

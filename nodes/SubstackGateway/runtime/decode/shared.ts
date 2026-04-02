@@ -3,16 +3,15 @@ import * as Schema from 'effect/Schema';
 
 import type { GatewayError } from '../../domain/error';
 
-export const decodeInput = <A, I, R>(schema: Schema.Schema<A, I, R>, input: unknown): A => {
+export const decodeInput = <A, I, R>(
+	schema: Schema.Schema<A, I, R>,
+	input: unknown,
+): Either.Either<A, GatewayError> => {
 	const decoded = Schema.decodeUnknownEither(schema as Schema.Schema<A, I>)(input);
 
-	if (Either.isRight(decoded)) {
-		return decoded.right;
-	}
-
-	throw {
+	return Either.mapLeft(decoded, (cause) => ({
 		_tag: 'ParameterDecodeError',
 		message: 'Invalid node parameters',
-		cause: decoded.left,
-	} satisfies GatewayError;
+		cause,
+	}));
 };

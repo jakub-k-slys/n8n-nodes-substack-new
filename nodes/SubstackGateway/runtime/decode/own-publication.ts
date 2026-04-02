@@ -1,18 +1,19 @@
+import { Either } from 'effect';
 import type { OwnPublicationCommand } from '../../domain/command';
 
 export const decodeOwnPublicationCommand = (
 	operation: string,
-): OwnPublicationCommand | undefined => {
+): Either.Either<OwnPublicationCommand | undefined, never> => {
 	switch (operation) {
 		case 'ownProfile':
-			return { _tag: 'OwnProfile' };
+			return Either.right({ _tag: 'OwnProfile' });
 		case 'ownNotes':
-			return { _tag: 'OwnNotes' };
+			return Either.right({ _tag: 'OwnNotes' });
 		case 'ownPosts':
-			return { _tag: 'OwnPosts' };
+			return Either.right({ _tag: 'OwnPosts' });
 		case 'ownFollowing':
-			return { _tag: 'OwnFollowing' };
+			return Either.right({ _tag: 'OwnFollowing' });
 		default:
-			return undefined;
+			return Either.right(undefined);
 	}
 };
