@@ -8,7 +8,7 @@ import {
 	OwnPostsResponseSchema,
 	OwnProfileResponseSchema,
 } from '../../schema';
-import { decodeResponseSchema, manyItems, singleItem } from './shared';
+import { decodeResponseSchema } from './shared';
 
 export const decodeOwnPublicationResponse = (
 	command: OwnPublicationCommand,
@@ -18,24 +18,24 @@ export const decodeOwnPublicationResponse = (
 		case 'OwnProfile':
 			return Either.map(decodeResponseSchema(OwnProfileResponseSchema, response), (item) => ({
 				_tag: 'OwnPublication',
-				result: { _tag: 'Profile', item: singleItem(item) },
+				result: { _tag: 'Profile', item },
 			}));
 		case 'OwnNotes':
 			return Either.map(decodeResponseSchema(OwnNotesResponseSchema, response), ({ items }) => ({
 				_tag: 'OwnPublication',
-				result: { _tag: 'Notes', items: manyItems(items) },
+				result: { _tag: 'Notes', items },
 			}));
 		case 'OwnPosts':
 			return Either.map(decodeResponseSchema(OwnPostsResponseSchema, response), ({ items }) => ({
 				_tag: 'OwnPublication',
-				result: { _tag: 'Posts', items: manyItems(items) },
+				result: { _tag: 'Posts', items },
 			}));
 		case 'OwnFollowing':
 			return Either.map(
 				decodeResponseSchema(OwnFollowingResponseSchema, response),
 				({ items }) => ({
 					_tag: 'OwnPublication',
-					result: { _tag: 'Following', items: manyItems(items) },
+					result: { _tag: 'Following', items },
 				}),
 			);
 	}

@@ -9,7 +9,7 @@ import {
 	DraftListResponseSchema,
 	DraftUpdateResponseSchema,
 } from '../../schema';
-import { decodeResponseSchema, manyItems, singleItem } from './shared';
+import { decodeResponseSchema } from './shared';
 
 export const decodeDraftResponse = (
 	command: DraftCommand,
@@ -19,27 +19,27 @@ export const decodeDraftResponse = (
 		case 'List':
 			return Either.map(decodeResponseSchema(DraftListResponseSchema, response), ({ items }) => ({
 				_tag: 'Draft',
-				result: { _tag: 'List', items: manyItems(items) },
+				result: { _tag: 'List', items },
 			}));
 		case 'Create':
 			return Either.map(decodeResponseSchema(DraftCreateResponseSchema, response), (item) => ({
 				_tag: 'Draft',
-				result: { _tag: 'Created', item: singleItem(item) },
+				result: { _tag: 'Created', item },
 			}));
 		case 'Get':
 			return Either.map(decodeResponseSchema(DraftGetResponseSchema, response), (item) => ({
 				_tag: 'Draft',
-				result: { _tag: 'Fetched', item: singleItem(item) },
+				result: { _tag: 'Fetched', item },
 			}));
 		case 'Update':
 			return Either.map(decodeResponseSchema(DraftUpdateResponseSchema, response), (item) => ({
 				_tag: 'Draft',
-				result: { _tag: 'Updated', item: singleItem(item) },
+				result: { _tag: 'Updated', item },
 			}));
 		case 'Delete':
 			return Either.map(decodeResponseSchema(DraftDeleteResponseSchema, response), (item) => ({
 				_tag: 'Draft',
-				result: { _tag: 'Deleted', item: singleItem(item) },
+				result: { _tag: 'Deleted', item },
 			}));
 	}
 };

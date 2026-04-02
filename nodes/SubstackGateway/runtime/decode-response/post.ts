@@ -3,7 +3,7 @@ import type { PostCommand } from '../../domain/command';
 import type { GatewayError } from '../../domain/error';
 import type { GatewayResult } from '../../domain/result';
 import { PostCommentsResponseSchema, PostGetResponseSchema } from '../../schema';
-import { decodeResponseSchema, manyItems, singleItem } from './shared';
+import { decodeResponseSchema } from './shared';
 
 export const decodePostResponse = (
 	command: PostCommand,
@@ -13,14 +13,14 @@ export const decodePostResponse = (
 		case 'Get':
 			return Either.map(decodeResponseSchema(PostGetResponseSchema, response), (item) => ({
 				_tag: 'Post',
-				result: { _tag: 'Fetched', item: singleItem(item) },
+				result: { _tag: 'Fetched', item },
 			}));
 		case 'GetComments':
 			return Either.map(
 				decodeResponseSchema(PostCommentsResponseSchema, response),
 				({ items }) => ({
 					_tag: 'Post',
-					result: { _tag: 'Comments', items: manyItems(items) },
+					result: { _tag: 'Comments', items },
 				}),
 			);
 	}

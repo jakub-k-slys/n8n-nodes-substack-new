@@ -1,6 +1,5 @@
 import { Either } from 'effect';
 import * as Schema from 'effect/Schema';
-import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayError } from '../../domain/error';
 
@@ -16,8 +15,3 @@ export const decodeResponseSchema = <A, I, R>(
 		cause,
 	}));
 };
-
-export const singleItem = (item: unknown): IDataObject => item as IDataObject;
-
-export const manyItems = (items: ReadonlyArray<unknown>): ReadonlyArray<IDataObject> =>
-	items as IDataObject[];

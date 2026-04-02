@@ -7,7 +7,7 @@ import {
 	ProfileNotesResponseSchema,
 	ProfilePostsResponseSchema,
 } from '../../schema';
-import { decodeResponseSchema, manyItems, singleItem } from './shared';
+import { decodeResponseSchema } from './shared';
 
 export const decodeProfileResponse = (
 	command: ProfileCommand,
@@ -17,14 +17,14 @@ export const decodeProfileResponse = (
 		case 'Get':
 			return Either.map(decodeResponseSchema(ProfileGetResponseSchema, response), (item) => ({
 				_tag: 'Profile',
-				result: { _tag: 'Fetched', item: singleItem(item) },
+				result: { _tag: 'Fetched', item },
 			}));
 		case 'GetNotes':
 			return Either.map(
 				decodeResponseSchema(ProfileNotesResponseSchema, response),
 				({ items }) => ({
 					_tag: 'Profile',
-					result: { _tag: 'Notes', items: manyItems(items) },
+					result: { _tag: 'Notes', items },
 				}),
 			);
 		case 'GetPosts':
@@ -32,7 +32,7 @@ export const decodeProfileResponse = (
 				decodeResponseSchema(ProfilePostsResponseSchema, response),
 				({ items }) => ({
 					_tag: 'Profile',
-					result: { _tag: 'Posts', items: manyItems(items) },
+					result: { _tag: 'Posts', items },
 				}),
 			);
 	}
