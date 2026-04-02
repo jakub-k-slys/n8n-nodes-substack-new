@@ -13,32 +13,50 @@ const resourceOptions: INodeProperties = {
 	name: 'resource',
 	type: 'options',
 	noDataExpression: true,
-	default: 'me',
+	default: 'ownPublication',
 	options: [
 		{
-			name: 'Me',
-			value: 'me',
+			name: 'Own Publication',
+			value: 'ownPublication',
 		},
 	],
 };
 
-const meOperationOptions: INodeProperties = {
+const ownPublicationOperationOptions: INodeProperties = {
 	displayName: 'Operation',
 	name: 'operation',
 	type: 'options',
 	noDataExpression: true,
-	default: 'me',
+	default: 'ownProfile',
 	displayOptions: {
 		show: {
-			resource: ['me'],
+			resource: ['ownPublication'],
 		},
 	},
 	options: [
 		{
-			name: 'Me',
-			value: 'me',
-			action: 'Get my profile',
+			name: 'Own Profile',
+			value: 'ownProfile',
+			action: 'Get own profile',
 			description: 'Get the authenticated user profile from Substack Gateway',
+		},
+		{
+			name: 'Own Notes',
+			value: 'ownNotes',
+			action: 'Get own notes',
+			description: 'Get notes from the authenticated user',
+		},
+		{
+			name: 'Own Posts',
+			value: 'ownPosts',
+			action: 'Get own posts',
+			description: 'Get posts from the authenticated user',
+		},
+		{
+			name: 'Own Following',
+			value: 'ownFollowing',
+			action: 'Get own following',
+			description: 'Get the accounts followed by the authenticated user',
 		},
 	],
 };
@@ -63,7 +81,7 @@ export class SubstackGateway implements INodeType {
 				required: true,
 			},
 		],
-		properties: [resourceOptions, meOperationOptions],
+		properties: [resourceOptions, ownPublicationOperationOptions],
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -78,27 +96,86 @@ export class SubstackGateway implements INodeType {
 				const resource = this.getNodeParameter('resource', itemIndex) as string;
 				const operation = this.getNodeParameter('operation', itemIndex) as string;
 
-				if (resource !== 'me' || operation !== 'me') {
-					throw new NodeOperationError(
-						this.getNode(),
-						`Unsupported resource/operation combination: ${resource}/${operation}`,
-						{ itemIndex },
-					);
+				if (resource !== 'ownPublication') {
+					throw new NodeOperationError(this.getNode(), `Unsupported resource: ${resource}`, {
+						itemIndex,
+					});
 				}
 
-				const response = (await this.helpers.httpRequest({
-					method: 'GET',
-					url: `${gatewayUrl}/me`,
+				const baseRequest = {
+					method: 'GET' as const,
 					json: true,
 					headers: {
 						'x-gateway-token': gatewayToken,
 					},
-				})) as IDataObject;
+				};
 
-				returnData.push({
-					json: response,
-					pairedItem: { item: itemIndex },
-				});
+				if (operation === 'ownProfile') {
+					const response = (await this.helpers.httpRequest({
+						...baseRequest,
+						url: `${gatewayUrl}/me`,
+					})) as IDataObject;
+
+					returnData.push({
+						json: response,
+						pairedItem: { item: itemIndex },
+					});
+					continue;
+				}
+
+				if (operation === 'ownNotes') {
+					const response = (await this.helpers.httpRequest({
+						...baseRequest,
+						url: `${gatewayUrl}/me/notes`,
+					})) as IDataObject;
+					const notes = Array.isArray(response.items) ? response.items : [];
+
+					for (const note of notes) {
+						returnData.push({
+							json: note as IDataObject,
+							pairedItem: { item: itemIndex },
+						});
+					}
+					continue;
+				}
+
+				if (operation === 'ownPosts') {
+					const response = (await this.helpers.httpRequest({
+						...baseRequest,
+						url: `${gatewayUrl}/me/posts`,
+					})) as IDataObject;
+					const posts = Array.isArray(response.items) ? response.items : [];
+
+					for (const post of posts) {
+						returnData.push({
+							json: post as IDataObject,
+							pairedItem: { item: itemIndex },
+						});
+					}
+					continue;
+				}
+
+				if (operation === 'ownFollowing') {
+					const response = (await this.helpers.httpRequest({
+						...baseRequest,
+						url: `${gatewayUrl}/me/following`,
+					})) as IDataObject;
+					const following = Array.isArray(response.items) ? response.items : [];
+
+					for (const followedAccount of following) {
+						returnData.push({
+							json: followedAccount as IDataObject,
+							pairedItem: { item: itemIndex },
+						});
+					}
+					continue;
+				}
+
+				throw new NodeOperationError(
+					this.getNode(),
+					`Unsupported resource/operation combination: ${resource}/${operation}`,
+					{ itemIndex },
+				);
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({
