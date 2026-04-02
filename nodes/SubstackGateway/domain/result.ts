@@ -1,42 +1,44 @@
 import type {
-	CommentResponse,
-	CreateDraftResponse,
-	CreateNoteResponse,
-	DraftResponse,
-	DraftSummaryResponse,
-	FollowingUserResponse,
-	FullPostResponse,
-	NoteResponse,
-	PostResponse,
-	ProfileResponse,
-} from '../schema';
+	CreatedDraft,
+	CreatedNote,
+	DeletedDraft,
+	DeletedNote,
+	GatewayComment,
+	GatewayDraft,
+	GatewayDraftSummary,
+	GatewayFollowingUser,
+	GatewayNote,
+	GatewayPost,
+	GatewayPostSummary,
+	GatewayProfile,
+} from './model';
 
 export type OwnPublicationResult =
-	| { readonly _tag: 'Profile'; readonly item: ProfileResponse }
-	| { readonly _tag: 'Notes'; readonly items: ReadonlyArray<NoteResponse> }
-	| { readonly _tag: 'Posts'; readonly items: ReadonlyArray<PostResponse> }
-	| { readonly _tag: 'Following'; readonly items: ReadonlyArray<FollowingUserResponse> };
+	| { readonly _tag: 'Profile'; readonly item: GatewayProfile }
+	| { readonly _tag: 'Notes'; readonly items: ReadonlyArray<GatewayNote> }
+	| { readonly _tag: 'Posts'; readonly items: ReadonlyArray<GatewayPostSummary> }
+	| { readonly _tag: 'Following'; readonly items: ReadonlyArray<GatewayFollowingUser> };
 
 export type NoteResult =
-	| { readonly _tag: 'Created'; readonly item: CreateNoteResponse }
-	| { readonly _tag: 'Fetched'; readonly item: NoteResponse }
-	| { readonly _tag: 'Deleted'; readonly item: { readonly success: boolean; readonly noteId: number } };
+	| { readonly _tag: 'Created'; readonly item: CreatedNote }
+	| { readonly _tag: 'Fetched'; readonly item: GatewayNote }
+	| { readonly _tag: 'Deleted'; readonly item: DeletedNote };
 
 export type DraftResult =
-	| { readonly _tag: 'List'; readonly items: ReadonlyArray<DraftSummaryResponse> }
-	| { readonly _tag: 'Created'; readonly item: CreateDraftResponse }
-	| { readonly _tag: 'Fetched'; readonly item: DraftResponse }
-	| { readonly _tag: 'Updated'; readonly item: DraftResponse }
-	| { readonly _tag: 'Deleted'; readonly item: { readonly success: boolean; readonly draftId: number } };
+	| { readonly _tag: 'List'; readonly items: ReadonlyArray<GatewayDraftSummary> }
+	| { readonly _tag: 'Created'; readonly item: CreatedDraft }
+	| { readonly _tag: 'Fetched'; readonly item: GatewayDraft }
+	| { readonly _tag: 'Updated'; readonly item: GatewayDraft }
+	| { readonly _tag: 'Deleted'; readonly item: DeletedDraft };
 
 export type PostResult =
-	| { readonly _tag: 'Fetched'; readonly item: FullPostResponse }
-	| { readonly _tag: 'Comments'; readonly items: ReadonlyArray<CommentResponse> };
+	| { readonly _tag: 'Fetched'; readonly item: GatewayPost }
+	| { readonly _tag: 'Comments'; readonly items: ReadonlyArray<GatewayComment> };
 
 export type ProfileResult =
-	| { readonly _tag: 'Fetched'; readonly item: ProfileResponse }
-	| { readonly _tag: 'Notes'; readonly items: ReadonlyArray<NoteResponse> }
-	| { readonly _tag: 'Posts'; readonly items: ReadonlyArray<PostResponse> };
+	| { readonly _tag: 'Fetched'; readonly item: GatewayProfile }
+	| { readonly _tag: 'Notes'; readonly items: ReadonlyArray<GatewayNote> }
+	| { readonly _tag: 'Posts'; readonly items: ReadonlyArray<GatewayPostSummary> };
 
 export type GatewayResult =
 	| { readonly _tag: 'OwnPublication'; readonly result: OwnPublicationResult }

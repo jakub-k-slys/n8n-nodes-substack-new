@@ -32,7 +32,7 @@ test('decodeGatewayResponse decodes own profile responses', () => {
 				handle: 'substack',
 				name: 'Substack',
 				url: 'https://substack.com',
-				avatar_url: 'https://cdn.example/avatar.png',
+				avatarUrl: 'https://cdn.example/avatar.png',
 			},
 		},
 	});

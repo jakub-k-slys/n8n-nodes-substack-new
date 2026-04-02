@@ -7,6 +7,7 @@ import {
 	ProfileNotesResponseSchema,
 	ProfilePostsResponseSchema,
 } from '../../schema';
+import { toGatewayNote, toGatewayPostSummary, toGatewayProfile } from './map';
 import { decodeResponseSchema } from './shared';
 
 export const decodeProfileResponse = (
@@ -17,14 +18,14 @@ export const decodeProfileResponse = (
 		case 'Get':
 			return Either.map(decodeResponseSchema(ProfileGetResponseSchema, response), (item) => ({
 				_tag: 'Profile',
-				result: { _tag: 'Fetched', item },
+				result: { _tag: 'Fetched', item: toGatewayProfile(item) },
 			}));
 		case 'GetNotes':
 			return Either.map(
 				decodeResponseSchema(ProfileNotesResponseSchema, response),
 				({ items }) => ({
 					_tag: 'Profile',
-					result: { _tag: 'Notes', items },
+					result: { _tag: 'Notes', items: items.map(toGatewayNote) },
 				}),
 			);
 		case 'GetPosts':
@@ -32,7 +33,7 @@ export const decodeProfileResponse = (
 				decodeResponseSchema(ProfilePostsResponseSchema, response),
 				({ items }) => ({
 					_tag: 'Profile',
-					result: { _tag: 'Posts', items },
+					result: { _tag: 'Posts', items: items.map(toGatewayPostSummary) },
 				}),
 			);
 	}

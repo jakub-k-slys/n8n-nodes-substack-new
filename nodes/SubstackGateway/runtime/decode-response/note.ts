@@ -7,6 +7,7 @@ import {
 	NoteDeleteResponseSchema,
 	NoteGetResponseSchema,
 } from '../../schema';
+import { toCreatedNote, toDeletedNote, toGatewayNote } from './map';
 import { decodeResponseSchema } from './shared';
 
 export const decodeNoteResponse = (
@@ -17,17 +18,17 @@ export const decodeNoteResponse = (
 		case 'Create':
 			return Either.map(decodeResponseSchema(NoteCreateResponseSchema, response), (item) => ({
 				_tag: 'Note',
-				result: { _tag: 'Created', item },
+				result: { _tag: 'Created', item: toCreatedNote(item) },
 			}));
 		case 'Get':
 			return Either.map(decodeResponseSchema(NoteGetResponseSchema, response), (item) => ({
 				_tag: 'Note',
-				result: { _tag: 'Fetched', item },
+				result: { _tag: 'Fetched', item: toGatewayNote(item) },
 			}));
 		case 'Delete':
 			return Either.map(decodeResponseSchema(NoteDeleteResponseSchema, response), (item) => ({
 				_tag: 'Note',
-				result: { _tag: 'Deleted', item },
+				result: { _tag: 'Deleted', item: toDeletedNote(item) },
 			}));
 	}
 };
