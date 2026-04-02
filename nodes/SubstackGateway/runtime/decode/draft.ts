@@ -1,4 +1,4 @@
-import { Either } from 'effect';
+import { Either, Match } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { DraftCommand } from '../../domain/command';
@@ -11,38 +11,39 @@ export const decodeDraftCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
 	operation: string,
-): Either.Either<DraftCommand | undefined, GatewayError> => {
-	switch (operation) {
-		case 'listDrafts':
-			return Either.right({ _tag: 'List' });
-		case 'createDraft':
-			return Either.map(
+): Either.Either<DraftCommand | undefined, GatewayError> =>
+	Match.value(operation).pipe(
+		Match.when('listDrafts', () => Either.right({ _tag: 'List' } as const)),
+		Match.when('createDraft', () =>
+			Either.map(
 				decodeInput(DraftFieldsInputSchema, getDraftPayload(context, itemIndex)),
 				(input) => ({ _tag: 'Create', ...input }) as const,
-			);
-		case 'getDraft':
-			return Either.map(
+			),
+		),
+		Match.when('getDraft', () =>
+			Either.map(
 				decodeInput(DraftIdInputSchema, {
 					draftId: context.getNodeParameter('draftId', itemIndex),
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
-			);
-		case 'updateDraft':
-			return Either.map(
+			),
+		),
+		Match.when('updateDraft', () =>
+			Either.map(
 				decodeInput(DraftWithIdInputSchema, {
 					draftId: context.getNodeParameter('draftId', itemIndex),
 					...getDraftPayload(context, itemIndex),
 				}),
 				(input) => ({ _tag: 'Update', ...input }) as const,
-			);
-		case 'deleteDraft':
-			return Either.map(
+			),
+		),
+		Match.when('deleteDraft', () =>
+			Either.map(
 				decodeInput(DraftIdInputSchema, {
 					draftId: context.getNodeParameter('draftId', itemIndex),
 				}),
 				(input) => ({ _tag: 'Delete', ...input }) as const,
-			);
-		default:
-			return Either.right(undefined);
-	}
-};
+			),
+		),
+		Match.orElse(() => Either.right(undefined)),
+	);

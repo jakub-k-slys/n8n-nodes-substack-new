@@ -1,4 +1,4 @@
-import { Either } from 'effect';
+import { Either, Match } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 
 import type { NoteCommand } from '../../domain/command';
@@ -11,31 +11,32 @@ export const decodeNoteCommand = (
 	context: IExecuteFunctions,
 	itemIndex: number,
 	operation: string,
-): Either.Either<NoteCommand | undefined, GatewayError> => {
-	switch (operation) {
-		case 'createNote':
-			return Either.map(
+): Either.Either<NoteCommand | undefined, GatewayError> =>
+	Match.value(operation).pipe(
+		Match.when('createNote', () =>
+			Either.map(
 				decodeInput(CreateNoteInputSchema, {
 					content: context.getNodeParameter('content', itemIndex),
 					attachment: getOptionalString(context, 'attachment', itemIndex),
 				}),
 				(input) => ({ _tag: 'Create', ...input }) as const,
-			);
-		case 'getNote':
-			return Either.map(
+			),
+		),
+		Match.when('getNote', () =>
+			Either.map(
 				decodeInput(NoteIdInputSchema, {
 					noteId: context.getNodeParameter('noteId', itemIndex),
 				}),
 				(input) => ({ _tag: 'Get', ...input }) as const,
-			);
-		case 'deleteNote':
-			return Either.map(
+			),
+		),
+		Match.when('deleteNote', () =>
+			Either.map(
 				decodeInput(NoteIdInputSchema, {
 					noteId: context.getNodeParameter('noteId', itemIndex),
 				}),
 				(input) => ({ _tag: 'Delete', ...input }) as const,
-			);
-		default:
-			return Either.right(undefined);
-	}
-};
+			),
+		),
+		Match.orElse(() => Either.right(undefined)),
+	);
