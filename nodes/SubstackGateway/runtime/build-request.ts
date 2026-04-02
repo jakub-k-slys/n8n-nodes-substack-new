@@ -1,3 +1,5 @@
+import { Match } from 'effect';
+
 import type { GatewayCommand } from '../domain/command';
 import type { GatewayHttpRequest } from '../domain/http';
 import type { GatewayUrl } from '../schema';
@@ -10,17 +12,14 @@ import { buildProfileRequest } from './build/profile';
 export const buildGatewayRequest = (
 	gatewayUrl: GatewayUrl,
 	command: GatewayCommand,
-): GatewayHttpRequest => {
-	switch (command._tag) {
-		case 'OwnPublication':
-			return buildOwnPublicationRequest(gatewayUrl, command.command);
-		case 'Note':
-			return buildNoteRequest(gatewayUrl, command.command);
-		case 'Draft':
-			return buildDraftRequest(gatewayUrl, command.command);
-		case 'Post':
-			return buildPostRequest(gatewayUrl, command.command);
-		case 'Profile':
-			return buildProfileRequest(gatewayUrl, command.command);
-	}
-};
+): GatewayHttpRequest =>
+	Match.value(command).pipe(
+		Match.when({ _tag: 'OwnPublication' }, ({ command }) =>
+			buildOwnPublicationRequest(gatewayUrl, command),
+		),
+		Match.when({ _tag: 'Note' }, ({ command }) => buildNoteRequest(gatewayUrl, command)),
+		Match.when({ _tag: 'Draft' }, ({ command }) => buildDraftRequest(gatewayUrl, command)),
+		Match.when({ _tag: 'Post' }, ({ command }) => buildPostRequest(gatewayUrl, command)),
+		Match.when({ _tag: 'Profile' }, ({ command }) => buildProfileRequest(gatewayUrl, command)),
+		Match.exhaustive,
+	);
