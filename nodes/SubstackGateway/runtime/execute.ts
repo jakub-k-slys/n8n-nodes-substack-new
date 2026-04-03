@@ -1,4 +1,4 @@
-import { Effect } from 'effect';
+import { Effect, Match } from 'effect';
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 
 import type { GatewayUrl } from '../schema';
@@ -19,36 +19,30 @@ export const runGatewayOperation = (
 		Effect.provide(
 			Effect.gen(function* () {
 				const selection = yield* readGatewaySelection(context, itemIndex);
-
-				if (selection.resource === 'ownPublication') {
-					return yield* executeOwnPublicationOperation(
-						context,
-						itemIndex,
-						gatewayUrl,
-						selection.operation,
-					);
-				}
-
-				if (selection.resource === 'note') {
-					return yield* executeNoteOperation(context, itemIndex, gatewayUrl, selection.operation);
-				}
-
-				if (selection.resource === 'draft') {
-					return yield* executeDraftOperation(context, itemIndex, gatewayUrl, selection.operation);
-				}
-
-				if (selection.resource === 'post') {
-					return yield* executePostOperation(context, itemIndex, gatewayUrl, selection.operation);
-				}
-
-				if (selection.resource === 'profile') {
-					return yield* executeProfileOperation(context, itemIndex, gatewayUrl, selection.operation);
-				}
-				return yield* Effect.fail({
-					_tag: 'UnsupportedOperation',
-					resource: selection.resource,
-					operation: selection.operation,
-				} as const);
+				return yield* Match.value(selection).pipe(
+					Match.when({ resource: 'ownPublication' }, ({ operation }) =>
+						executeOwnPublicationOperation(context, itemIndex, gatewayUrl, operation),
+					),
+					Match.when({ resource: 'note' }, ({ operation }) =>
+						executeNoteOperation(context, itemIndex, gatewayUrl, operation),
+					),
+					Match.when({ resource: 'draft' }, ({ operation }) =>
+						executeDraftOperation(context, itemIndex, gatewayUrl, operation),
+					),
+					Match.when({ resource: 'post' }, ({ operation }) =>
+						executePostOperation(context, itemIndex, gatewayUrl, operation),
+					),
+					Match.when({ resource: 'profile' }, ({ operation }) =>
+						executeProfileOperation(context, itemIndex, gatewayUrl, operation),
+					),
+					Match.orElse(({ resource, operation }) =>
+						Effect.fail({
+							_tag: 'UnsupportedOperation',
+							resource,
+							operation,
+						} as const),
+					),
+				);
 			}).pipe(
 				Effect.tapError((error) =>
 					Effect.logError('Gateway operation failed').pipe(
