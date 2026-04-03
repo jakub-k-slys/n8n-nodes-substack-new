@@ -6,10 +6,7 @@ import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Either, Effect } from 'effect';
 
-import { buildGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/build-request.js';
-import { decodeGatewayCommand } from '../../../dist/nodes/SubstackGateway/runtime/decode-command.js';
 import { decodeGatewayOperation } from '../../../dist/nodes/SubstackGateway/runtime/decode-operation.js';
-import { decodeGatewayResponse } from '../../../dist/nodes/SubstackGateway/runtime/decode-response.js';
 import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/gateway-client.js';
 import { executeGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/execute-request.js';
 import { readGatewayInput } from '../../../dist/nodes/SubstackGateway/runtime/read-input.js';
@@ -67,10 +64,6 @@ const summarizeN8nRequest = (request: Record<string, unknown>) => ({
 	...(request.body === undefined ? {} : { body: request.body }),
 });
 
-Given('the gateway command:', function (docString: string) {
-	state.command = parseJson(docString);
-});
-
 Given('the gateway request:', function (docString: string) {
 	state.request = parseJson(docString);
 });
@@ -88,14 +81,6 @@ Given('the typed gateway operation:', function (docString: string) {
 	state.typedOperation = parseJson(docString);
 });
 
-Given('the gateway response command:', function (docString: string) {
-	state.command = parseJson(docString);
-});
-
-Given('the gateway raw response:', function (docString: string) {
-	state.rawResponse = parseJson(docString);
-});
-
 Given('an HttpClient service response:', function (docString: string) {
 	state.serviceResponse = parseJson(docString);
 });
@@ -104,34 +89,8 @@ Given('the gateway result:', function (docString: string) {
 	state.result = parseJson(docString);
 });
 
-When('I build the gateway request for {string}', function (gatewayUrl: string) {
-	state.request = buildGatewayRequest(gatewayUrl as never, state.command);
-});
-
 When('I decode the gateway operation', function () {
 	const decoded = decodeGatewayOperation(state.resource!, state.operation!);
-	if (Either.isRight(decoded)) {
-		state.result = decoded.right;
-		state.error = undefined;
-		return;
-	}
-
-	state.result = undefined;
-	state.error = decoded.left;
-});
-
-When('I decode the gateway command', async function () {
-	try {
-		state.result = await Effect.runPromise(decodeGatewayCommand(state.context as never, 0));
-		state.error = undefined;
-	} catch (error) {
-		state.result = undefined;
-		state.error = error;
-	}
-});
-
-When('I decode the gateway response', function () {
-	const decoded = decodeGatewayResponse(state.command, state.rawResponse);
 	if (Either.isRight(decoded)) {
 		state.result = decoded.right;
 		state.error = undefined;
@@ -196,32 +155,12 @@ When('I serialize the gateway result', function () {
 	state.result = gatewayResultToJsonItems(state.result);
 });
 
-Then('the built gateway request should equal:', function (docString: string) {
-	assert.deepEqual(state.request, parseJson(docString));
-});
-
 Then('the decoded gateway operation should equal:', function (docString: string) {
 	assert.deepEqual(state.result, parseJson(docString));
 });
 
 Then('the gateway operation error should equal:', function (docString: string) {
 	assert.deepEqual(state.error, parseJson(docString));
-});
-
-Then('the decoded gateway command should equal:', function (docString: string) {
-	assert.deepEqual(state.result, parseJson(docString));
-});
-
-Then('the gateway command error should match {string}', function (text: string) {
-	assert.match(String(state.error), new RegExp(text));
-});
-
-Then('the decoded gateway response should equal:', function (docString: string) {
-	assert.deepEqual(state.result, parseJson(docString));
-});
-
-Then('the gateway response error should match {string}', function (text: string) {
-	assert.match(String(state.error?._tag ?? state.error), new RegExp(text));
 });
 
 Then('the read gateway input should equal:', function (docString: string) {
