@@ -8,7 +8,7 @@ import type {
 export class SubstackGatewayApi implements ICredentialType {
 	name = 'substackGatewayApi';
 
-	displayName = 'Substack Gateway';
+	displayName = 'Substack Gateway API';
 
 	icon = {
 		light: 'file:../nodes/SubstackGateway/substackGateway.svg',

@@ -10,6 +10,7 @@ export const createOperationProperty = <Resource extends GatewayResource>(
 ): INodeProperties => {
 	const definition = gatewayResourceCatalogByResource[resource];
 
+	// eslint-disable-next-line n8n-nodes-base/node-param-default-missing
 	return {
 		displayName: 'Operation',
 		name: 'operation',

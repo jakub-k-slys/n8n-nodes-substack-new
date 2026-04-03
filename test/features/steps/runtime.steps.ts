@@ -6,6 +6,17 @@ import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Either, Effect, Match } from 'effect';
 
+import type { GatewayError } from '../../../nodes/SubstackGateway/domain/error.ts';
+import type { GatewayHttpRequest } from '../../../nodes/SubstackGateway/domain/http.ts';
+import type {
+	DraftInput,
+	NoteInput,
+	OwnPublicationInput,
+	PostInput,
+	ProfileInput,
+} from '../../../nodes/SubstackGateway/domain/input.ts';
+import type { GatewayOperation } from '../../../nodes/SubstackGateway/domain/operation.ts';
+import type { GatewayResult } from '../../../nodes/SubstackGateway/domain/result.ts';
 import { decodeGatewayOperation } from '../../../nodes/SubstackGateway/runtime/decode-operation.ts';
 import { executeGatewayRequest } from '../../../nodes/SubstackGateway/runtime/execute-request.ts';
 import { makeGatewayClientLayer } from '../../../nodes/SubstackGateway/runtime/live/gateway-client.ts';
@@ -19,19 +30,41 @@ type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;
 };
 
+type GatewayInput = OwnPublicationInput | NoteInput | DraftInput | PostInput | ProfileInput;
+
+type SummarizedRequest = {
+	method: string;
+	url: string;
+	urlParams: Record<string, string>;
+	headers: Record<string, string>;
+	body: unknown;
+};
+
+type SummarizedN8nRequest = {
+	json: unknown;
+	returnFullResponse: unknown;
+	method: unknown;
+	url: unknown;
+	qs?: unknown;
+	body?: unknown;
+};
+
+type LiveCall = {
+	credentialName: string;
+	request: SummarizedN8nRequest;
+};
+
 type State = {
-	command?: any;
 	context?: TestContext;
 	resource?: string;
 	operation?: string;
-	typedOperation?: any;
-	request?: any;
-	rawResponse?: any;
-	result?: any;
-	error?: unknown;
-	serviceResponse?: any;
-	capturedRequest?: any;
-	liveCall?: any;
+	typedOperation?: GatewayOperation;
+	request?: GatewayHttpRequest;
+	result?: GatewayOperation | GatewayInput | unknown | GatewayResult;
+	error?: GatewayError | unknown;
+	serviceResponse?: unknown;
+	capturedRequest?: SummarizedRequest;
+	liveCall?: LiveCall;
 };
 
 const state: State = {};
