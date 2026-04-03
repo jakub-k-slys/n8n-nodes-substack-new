@@ -2,12 +2,7 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import {
-	toJsonCreatedDraft,
-	toJsonDeletedDraft,
-	toJsonDraft,
-	toJsonDraftSummary,
-} from '../../serialize/model';
+import { toJsonCreatedDraft, toJsonDeletedDraft, toJsonDraft, toJsonDraftSummary } from './dto';
 
 export const draftResultToJson = (
 	result: GatewayResult & { readonly _tag: 'Draft' },

@@ -2,12 +2,8 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import {
-	toJsonFollowingUser,
-	toJsonNote,
-	toJsonPostSummary,
-	toJsonProfile,
-} from '../../serialize/model';
+import { toJsonNote } from '../note/dto';
+import { toJsonFollowingUser, toJsonPostSummary, toJsonProfile } from '../profile/dto';
 
 export const ownPublicationResultToJson = (
 	result: GatewayResult & { readonly _tag: 'OwnPublication' },

@@ -2,7 +2,8 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import { toJsonNote, toJsonPostSummary, toJsonProfile } from '../../serialize/model';
+import { toJsonNote } from '../note/dto';
+import { toJsonPostSummary, toJsonProfile } from './dto';
 
 export const profileResultToJson = (
 	result: GatewayResult & { readonly _tag: 'Profile' },

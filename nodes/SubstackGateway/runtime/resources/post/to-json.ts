@@ -2,7 +2,7 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import { toJsonComment, toJsonPost } from '../../serialize/model';
+import { toJsonComment, toJsonPost } from './dto';
 
 export const postResultToJson = (
 	result: GatewayResult & { readonly _tag: 'Post' },

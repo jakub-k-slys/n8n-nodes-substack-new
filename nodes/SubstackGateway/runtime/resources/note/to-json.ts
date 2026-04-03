@@ -2,7 +2,7 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import { toJsonCreatedNote, toJsonDeletedNote, toJsonNote } from '../../serialize/model';
+import { toJsonCreatedNote, toJsonDeletedNote, toJsonNote } from './dto';
 
 export const noteResultToJson = (
 	result: GatewayResult & { readonly _tag: 'Note' },
