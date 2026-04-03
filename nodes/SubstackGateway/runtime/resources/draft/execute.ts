@@ -31,39 +31,46 @@ export const executeDraftOperation = (
 	gatewayUrl: GatewayUrl,
 	operation: string,
 ): Effect.Effect<GatewayResult, GatewayError, HttpClient.HttpClient | NodeInput> =>
-	Effect.gen(function* () {
-		const draftOperation = yield* decodeDraftOperation(operation);
-		const nodeInput = yield* NodeInput;
-		const input = yield* nodeInput.getDraftInput({
-			_tag: 'Draft',
-			operation: draftOperation,
-		});
-		const command = yield* fromEither(decodeDraftCommand(input));
-		yield* Effect.logDebug('Decoded draft command').pipe(
+	decodeDraftOperation(operation).pipe(
+		Effect.bindTo('draftOperation'),
+		Effect.bind('nodeInput', () => NodeInput),
+		Effect.bind('input', ({ nodeInput, draftOperation }) =>
+			nodeInput.getDraftInput({
+				_tag: 'Draft',
+				operation: draftOperation,
+			}),
+		),
+		Effect.bind('command', ({ input }) => fromEither(decodeDraftCommand(input))),
+		Effect.tap(({ command }) =>
+			Effect.logDebug('Decoded draft command').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 			}),
-		);
-
-		const request = buildDraftRequest(gatewayUrl, command);
-		yield* Effect.logDebug('Built draft request').pipe(
+			),
+		),
+		Effect.bind('request', ({ command }) => Effect.succeed(buildDraftRequest(gatewayUrl, command))),
+		Effect.tap(({ command, request }) =>
+			Effect.logDebug('Built draft request').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 				method: request.method,
 				url: request.url,
 			}),
-		);
-
-		const rawResponse = yield* executeGatewayRequest(request);
-		const result = yield* fromEither(decodeDraftResponse(command, rawResponse));
-		yield* Effect.logDebug('Decoded draft response').pipe(
+			),
+		),
+		Effect.bind('rawResponse', ({ request }) => executeGatewayRequest(request)),
+		Effect.bind('result', ({ command, rawResponse }) =>
+			fromEither(decodeDraftResponse(command, rawResponse)),
+		),
+		Effect.tap(({ result }) =>
+			Effect.logDebug('Decoded draft response').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				resultType: result.result._tag,
 			}),
-		);
-
-		return result;
-	});
+			),
+		),
+		Effect.map(({ result }) => result),
+	);

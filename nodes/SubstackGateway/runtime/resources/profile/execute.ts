@@ -31,39 +31,48 @@ export const executeProfileOperation = (
 	gatewayUrl: GatewayUrl,
 	operation: string,
 ): Effect.Effect<GatewayResult, GatewayError, HttpClient.HttpClient | NodeInput> =>
-	Effect.gen(function* () {
-		const profileOperation = yield* decodeProfileOperation(operation);
-		const nodeInput = yield* NodeInput;
-		const input = yield* nodeInput.getProfileInput({
-			_tag: 'Profile',
-			operation: profileOperation,
-		});
-		const command = yield* fromEither(decodeProfileCommand(input));
-		yield* Effect.logDebug('Decoded profile command').pipe(
+	decodeProfileOperation(operation).pipe(
+		Effect.bindTo('profileOperation'),
+		Effect.bind('nodeInput', () => NodeInput),
+		Effect.bind('input', ({ nodeInput, profileOperation }) =>
+			nodeInput.getProfileInput({
+				_tag: 'Profile',
+				operation: profileOperation,
+			}),
+		),
+		Effect.bind('command', ({ input }) => fromEither(decodeProfileCommand(input))),
+		Effect.tap(({ command }) =>
+			Effect.logDebug('Decoded profile command').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 			}),
-		);
-
-		const request = buildProfileRequest(gatewayUrl, command);
-		yield* Effect.logDebug('Built profile request').pipe(
+			),
+		),
+		Effect.bind('request', ({ command }) =>
+			Effect.succeed(buildProfileRequest(gatewayUrl, command)),
+		),
+		Effect.tap(({ command, request }) =>
+			Effect.logDebug('Built profile request').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 				method: request.method,
 				url: request.url,
 			}),
-		);
-
-		const rawResponse = yield* executeGatewayRequest(request);
-		const result = yield* fromEither(decodeProfileResponse(command, rawResponse));
-		yield* Effect.logDebug('Decoded profile response').pipe(
+			),
+		),
+		Effect.bind('rawResponse', ({ request }) => executeGatewayRequest(request)),
+		Effect.bind('result', ({ command, rawResponse }) =>
+			fromEither(decodeProfileResponse(command, rawResponse)),
+		),
+		Effect.tap(({ result }) =>
+			Effect.logDebug('Decoded profile response').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				resultType: result.result._tag,
 			}),
-		);
-
-		return result;
-	});
+			),
+		),
+		Effect.map(({ result }) => result),
+	);

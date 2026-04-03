@@ -33,39 +33,48 @@ export const executeOwnPublicationOperation = (
 	gatewayUrl: GatewayUrl,
 	operation: string,
 ): Effect.Effect<GatewayResult, GatewayError, HttpClient.HttpClient | NodeInput> =>
-	Effect.gen(function* () {
-		const ownPublicationOperation = yield* decodeOwnPublicationOperation(operation);
-		const nodeInput = yield* NodeInput;
-		const input = yield* nodeInput.getOwnPublicationInput({
-			_tag: 'OwnPublication',
-			operation: ownPublicationOperation,
-		});
-		const command = decodeOwnPublicationCommand(input);
-		yield* Effect.logDebug('Decoded own publication command').pipe(
+	decodeOwnPublicationOperation(operation).pipe(
+		Effect.bindTo('ownPublicationOperation'),
+		Effect.bind('nodeInput', () => NodeInput),
+		Effect.bind('input', ({ nodeInput, ownPublicationOperation }) =>
+			nodeInput.getOwnPublicationInput({
+				_tag: 'OwnPublication',
+				operation: ownPublicationOperation,
+			}),
+		),
+		Effect.bind('command', ({ input }) => Effect.succeed(decodeOwnPublicationCommand(input))),
+		Effect.tap(({ command }) =>
+			Effect.logDebug('Decoded own publication command').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 			}),
-		);
-
-		const request = buildOwnPublicationRequest(gatewayUrl, command);
-		yield* Effect.logDebug('Built own publication request').pipe(
+			),
+		),
+		Effect.bind('request', ({ command }) =>
+			Effect.succeed(buildOwnPublicationRequest(gatewayUrl, command)),
+		),
+		Effect.tap(({ command, request }) =>
+			Effect.logDebug('Built own publication request').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 				method: request.method,
 				url: request.url,
 			}),
-		);
-
-		const rawResponse = yield* executeGatewayRequest(request);
-		const result = yield* fromEither(decodeOwnPublicationResponse(command, rawResponse));
-		yield* Effect.logDebug('Decoded own publication response').pipe(
+			),
+		),
+		Effect.bind('rawResponse', ({ request }) => executeGatewayRequest(request)),
+		Effect.bind('result', ({ command, rawResponse }) =>
+			fromEither(decodeOwnPublicationResponse(command, rawResponse)),
+		),
+		Effect.tap(({ result }) =>
+			Effect.logDebug('Decoded own publication response').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				resultType: result.result._tag,
 			}),
-		);
-
-		return result;
-	});
+			),
+		),
+		Effect.map(({ result }) => result),
+	);

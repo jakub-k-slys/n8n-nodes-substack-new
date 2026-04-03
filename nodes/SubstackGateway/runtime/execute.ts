@@ -21,10 +21,9 @@ export const runGatewayOperation = (
 ): Promise<INodeExecutionData[]> =>
 	Effect.runPromise(
 		Effect.provide(
-			Effect.gen(function* () {
-				const nodeInput = yield* NodeInput;
-				const selection = yield* nodeInput.getSelection;
-				return yield* Match.value(selection).pipe(
+			Effect.flatMap(NodeInput, (nodeInput) => nodeInput.getSelection).pipe(
+				Effect.flatMap((selection) =>
+					Match.value(selection).pipe(
 					Match.when({ resource: 'ownPublication' }, ({ operation }) =>
 						executeOwnPublicationOperation(itemIndex, gatewayUrl, operation),
 					),
@@ -47,8 +46,8 @@ export const runGatewayOperation = (
 							operation,
 						} as const),
 					),
-				);
-			}).pipe(
+					),
+				),
 				Effect.map((result) => toNodeExecutionData(itemIndex, result)),
 				Effect.tapError((error) =>
 					Effect.logError('Gateway operation failed').pipe(

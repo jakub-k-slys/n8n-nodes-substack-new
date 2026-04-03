@@ -31,39 +31,46 @@ export const executeNoteOperation = (
 	gatewayUrl: GatewayUrl,
 	operation: string,
 ): Effect.Effect<GatewayResult, GatewayError, HttpClient.HttpClient | NodeInput> =>
-	Effect.gen(function* () {
-		const noteOperation = yield* decodeNoteOperation(operation);
-		const nodeInput = yield* NodeInput;
-		const input = yield* nodeInput.getNoteInput({
-			_tag: 'Note',
-			operation: noteOperation,
-		});
-		const command = yield* fromEither(decodeNoteCommand(input));
-		yield* Effect.logDebug('Decoded note command').pipe(
+	decodeNoteOperation(operation).pipe(
+		Effect.bindTo('noteOperation'),
+		Effect.bind('nodeInput', () => NodeInput),
+		Effect.bind('input', ({ nodeInput, noteOperation }) =>
+			nodeInput.getNoteInput({
+				_tag: 'Note',
+				operation: noteOperation,
+			}),
+		),
+		Effect.bind('command', ({ input }) => fromEither(decodeNoteCommand(input))),
+		Effect.tap(({ command }) =>
+			Effect.logDebug('Decoded note command').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 			}),
-		);
-
-		const request = buildNoteRequest(gatewayUrl, command);
-		yield* Effect.logDebug('Built note request').pipe(
+			),
+		),
+		Effect.bind('request', ({ command }) => Effect.succeed(buildNoteRequest(gatewayUrl, command))),
+		Effect.tap(({ command, request }) =>
+			Effect.logDebug('Built note request').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				operation: command._tag,
 				method: request.method,
 				url: request.url,
 			}),
-		);
-
-		const rawResponse = yield* executeGatewayRequest(request);
-		const result = yield* fromEither(decodeNoteResponse(command, rawResponse));
-		yield* Effect.logDebug('Decoded note response').pipe(
+			),
+		),
+		Effect.bind('rawResponse', ({ request }) => executeGatewayRequest(request)),
+		Effect.bind('result', ({ command, rawResponse }) =>
+			fromEither(decodeNoteResponse(command, rawResponse)),
+		),
+		Effect.tap(({ result }) =>
+			Effect.logDebug('Decoded note response').pipe(
 			Effect.annotateLogs({
 				itemIndex,
 				resultType: result.result._tag,
 			}),
-		);
-
-		return result;
-	});
+			),
+		),
+		Effect.map(({ result }) => result),
+	);
