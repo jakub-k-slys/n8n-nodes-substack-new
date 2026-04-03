@@ -1,6 +1,6 @@
 # Substack Gateway Docs
 
-This documentation covers the current `n8n-nodes-substack-new-template` package.
+This documentation covers the current `n8n-nodes-substack-new` package.
 
 Core guides:
 

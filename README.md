@@ -1,4 +1,4 @@
-# n8n-nodes-substack-new-template
+# n8n-nodes-substack-new
 
 This package provides the `Substack Gateway` n8n community node.
 

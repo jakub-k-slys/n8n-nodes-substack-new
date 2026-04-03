@@ -3,7 +3,7 @@
 ## 1. Install The Package
 
 ```bash
-npm install n8n-nodes-substack-new-template
+npm install n8n-nodes-substack-new
 ```
 
 Restart n8n after installation.

@@ -7,7 +7,7 @@
   "nodes": [
     {
       "name": "Get Own Profile",
-      "type": "n8n-nodes-substack-new-template.substackGateway",
+      "type": "n8n-nodes-substack-new.substackGateway",
       "parameters": {
         "resource": "ownPublication",
         "operation": "ownProfile"
@@ -27,7 +27,7 @@
   "nodes": [
     {
       "name": "List Drafts",
-      "type": "n8n-nodes-substack-new-template.substackGateway",
+      "type": "n8n-nodes-substack-new.substackGateway",
       "parameters": {
         "resource": "draft",
         "operation": "listDrafts"
@@ -47,7 +47,7 @@
   "nodes": [
     {
       "name": "Create Note",
-      "type": "n8n-nodes-substack-new-template.substackGateway",
+      "type": "n8n-nodes-substack-new.substackGateway",
       "parameters": {
         "resource": "note",
         "operation": "createNote",
@@ -69,7 +69,7 @@
   "nodes": [
     {
       "name": "Get Comments",
-      "type": "n8n-nodes-substack-new-template.substackGateway",
+      "type": "n8n-nodes-substack-new.substackGateway",
       "parameters": {
         "resource": "post",
         "operation": "getPostComments",

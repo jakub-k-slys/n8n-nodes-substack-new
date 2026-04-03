@@ -1,6 +1,6 @@
 # Introduction
 
-`n8n-nodes-substack-new-template` currently provides one n8n node: `Substack Gateway`.
+`n8n-nodes-substack-new` currently provides one n8n node: `Substack Gateway`.
 
 ## Current Scope
 
