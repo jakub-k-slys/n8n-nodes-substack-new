@@ -24,7 +24,8 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
-		"test": "pnpm run build && node --test test/*.test.mjs",
+		"test": "pnpm run build && node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.mjs",
+		"test:unit": "pnpm run build && node --import tsx --test test/*.test.ts",
 		"prepublishOnly": "n8n-node prerelease"
 	},
 	"files": [
@@ -41,12 +42,14 @@
 		]
 	},
 	"devDependencies": {
+		"@cucumber/cucumber": "^12.7.0",
 		"@n8n/node-cli": "*",
 		"eslint": "9.32.0",
 		"n8n": "^2.14.2",
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",
 		"sqlite3": "^6.0.1",
+		"tsx": "^4.21.0",
 		"typescript": "5.9.2"
 	},
 	"peerDependencies": {

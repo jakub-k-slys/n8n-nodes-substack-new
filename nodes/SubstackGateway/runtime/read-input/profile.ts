@@ -13,24 +13,30 @@ export const readProfileInput = (
 	operation: Extract<GatewayOperation, { readonly _tag: 'Profile' }>,
 ): Effect.Effect<ProfileInput, GatewayError> =>
 	Effect.try({
-		try: () =>
+		try: () => {
+			const profileSlug = context.getNodeParameter('profileSlug', itemIndex);
+			const cursor = getOptionalString(context, 'cursor', itemIndex);
+
+			return (
 			Match.value(operation.operation).pipe(
 				Match.when('getProfile', () => ({
 					_tag: 'getProfile' as const,
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
+					profileSlug,
 				})),
 				Match.when('getProfileNotes', () => ({
 					_tag: 'getProfileNotes' as const,
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
-					cursor: getOptionalString(context, 'cursor', itemIndex),
+					profileSlug,
+					...(cursor === undefined ? {} : { cursor }),
 				})),
 				Match.when('getProfilePosts', () => ({
 					_tag: 'getProfilePosts' as const,
-					profileSlug: context.getNodeParameter('profileSlug', itemIndex),
+					profileSlug,
 					limit: context.getNodeParameter('limit', itemIndex),
 					offset: context.getNodeParameter('offset', itemIndex),
 				})),
 				Match.exhaustive,
-			),
+			)
+			);
+		},
 		catch: unexpectedError,
 	});
