@@ -1,0 +1,31 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+import {
+	gatewayResourceCatalogByResource,
+	type GatewayResource,
+} from '../domain/operation';
+
+export const createOperationProperty = <Resource extends GatewayResource>(
+	resource: Resource,
+): INodeProperties => {
+	const definition = gatewayResourceCatalogByResource[resource];
+
+	return {
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		default: definition.defaultOperation,
+		displayOptions: {
+			show: {
+				resource: [resource],
+			},
+		},
+		options: definition.operations.map((operation) => ({
+			name: operation.name,
+			value: operation.value,
+			action: operation.action,
+			...('description' in operation ? { description: operation.description } : {}),
+		})),
+	};
+};
