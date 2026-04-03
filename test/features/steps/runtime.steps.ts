@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 
+import * as HttpClient from '@effect/platform/HttpClient';
+import type * as ClientRequest from '@effect/platform/HttpClientRequest';
+import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Either, Effect } from 'effect';
 
@@ -7,10 +10,7 @@ import { buildGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime
 import { decodeGatewayCommand } from '../../../dist/nodes/SubstackGateway/runtime/decode-command.js';
 import { decodeGatewayOperation } from '../../../dist/nodes/SubstackGateway/runtime/decode-operation.js';
 import { decodeGatewayResponse } from '../../../dist/nodes/SubstackGateway/runtime/decode-response.js';
-import {
-	GatewayClient,
-	makeGatewayClientLayer,
-} from '../../../dist/nodes/SubstackGateway/runtime/gateway-client.js';
+import { makeGatewayClientLayer } from '../../../dist/nodes/SubstackGateway/runtime/gateway-client.js';
 import { executeGatewayRequest } from '../../../dist/nodes/SubstackGateway/runtime/execute-request.js';
 import { readGatewayInput } from '../../../dist/nodes/SubstackGateway/runtime/read-input.js';
 import { gatewayResultToJsonItems } from '../../../dist/nodes/SubstackGateway/runtime/to-json.js';
@@ -37,9 +37,34 @@ type State = {
 const state: State = {};
 
 const parseJson = (value: string) => JSON.parse(value);
+const textDecoder = new TextDecoder();
 
 const createContext = (parameters: Record<string, unknown>): TestContext => ({
 	getNodeParameter: (name, _itemIndex, fallback) => (name in parameters ? parameters[name] : fallback),
+});
+
+const summarizeRequest = (request: ClientRequest.HttpClientRequest) => ({
+	method: request.method,
+	url: request.url,
+	urlParams: Object.fromEntries(request.urlParams),
+	headers: { ...request.headers },
+	body:
+		request.body._tag === 'Empty'
+			? null
+			: request.body._tag === 'Uint8Array'
+				? JSON.parse(textDecoder.decode(request.body.body))
+				: request.body._tag === 'Raw'
+					? request.body.body
+					: request.body._tag,
+});
+
+const summarizeN8nRequest = (request: Record<string, unknown>) => ({
+	json: request.json,
+	returnFullResponse: request.returnFullResponse,
+	method: request.method,
+	url: request.url,
+	...(request.qs === undefined ? {} : { qs: request.qs }),
+	...(request.body === undefined ? {} : { body: request.body }),
 });
 
 Given('the gateway command:', function (docString: string) {
@@ -71,7 +96,7 @@ Given('the gateway raw response:', function (docString: string) {
 	state.rawResponse = parseJson(docString);
 });
 
-Given('a GatewayClient service response:', function (docString: string) {
+Given('an HttpClient service response:', function (docString: string) {
 	state.serviceResponse = parseJson(docString);
 });
 
@@ -125,10 +150,19 @@ When('I read gateway input', async function () {
 
 When('I execute the gateway request through the service', async function () {
 	state.result = await Effect.runPromise(
-		Effect.provideService(executeGatewayRequest(state.request), GatewayClient, {
+		Effect.provideService(executeGatewayRequest(state.request), HttpClient.HttpClient, {
+			...HttpClient.make(() => Effect.die('execute should be overridden by the test service')),
 			execute: (request) => {
-				state.capturedRequest = request;
-				return Effect.succeed(state.serviceResponse);
+				state.capturedRequest = summarizeRequest(request);
+				return Effect.succeed(
+					ClientResponse.fromWeb(
+						request,
+						new Response(JSON.stringify(state.serviceResponse), {
+							status: 200,
+							headers: { 'content-type': 'application/json' },
+						}),
+					),
+				);
 			},
 		}),
 	);
@@ -140,7 +174,11 @@ When('I execute the gateway request through the live layer', async function () {
 		helpers: {
 			httpRequestWithAuthentication(this: unknown, credentialName: string, request: unknown) {
 				calls.push({ credentialName, request, self: this });
-				return Promise.resolve({ ok: true });
+				return Promise.resolve({
+					body: { ok: true },
+					headers: { 'content-type': 'application/json' },
+					statusCode: 200,
+				});
 			},
 		},
 	};
@@ -150,7 +188,7 @@ When('I execute the gateway request through the live layer', async function () {
 	);
 	state.liveCall = {
 		credentialName: calls[0].credentialName,
-		request: calls[0].request,
+		request: summarizeN8nRequest(calls[0].request as Record<string, unknown>),
 	};
 });
 

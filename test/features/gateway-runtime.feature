@@ -191,7 +191,7 @@ Feature: Gateway runtime
       }
       """
 
-  Scenario: delegate a request through GatewayClient
+  Scenario: delegate a request through HttpClient
     Given the gateway request:
       """
       {
@@ -200,7 +200,7 @@ Feature: Gateway runtime
         "responseMode": "single"
       }
       """
-    And a GatewayClient service response:
+    And an HttpClient service response:
       """
       {
         "ok": true
@@ -218,7 +218,9 @@ Feature: Gateway runtime
       {
         "method": "GET",
         "url": "http://localhost:5001/api/v1/me",
-        "responseMode": "single"
+        "urlParams": {},
+        "headers": {},
+        "body": null
       }
       """
 
@@ -244,6 +246,7 @@ Feature: Gateway runtime
         "credentialName": "substackGatewayApi",
         "request": {
           "json": true,
+          "returnFullResponse": true,
           "method": "GET",
           "url": "http://localhost:5001/api/v1/me"
         }

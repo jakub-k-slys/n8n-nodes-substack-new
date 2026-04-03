@@ -71,7 +71,6 @@ describe('readGatewayInput', () => {
 		assert.deepEqual(input, {
 			_tag: 'getProfileNotes',
 			profileSlug: 'substack',
-			cursor: undefined,
 		});
 	});
 });
