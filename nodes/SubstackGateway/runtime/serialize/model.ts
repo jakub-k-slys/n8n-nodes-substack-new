@@ -64,6 +64,53 @@ const JsonPostSummarySchema = Schema.Struct({
 	truncatedBody: Schema.optional(Schema.NullOr(Schema.String)),
 });
 
+const JsonPostSchema = Schema.Struct({
+	id: Schema.Number,
+	title: Schema.String,
+	slug: Schema.String,
+	url: Schema.String,
+	publishedAt: Schema.String,
+	subtitle: Schema.optional(Schema.NullOr(Schema.String)),
+	htmlBody: Schema.optional(Schema.NullOr(Schema.String)),
+	markdown: Schema.optional(Schema.NullOr(Schema.String)),
+	truncatedBody: Schema.optional(Schema.NullOr(Schema.String)),
+	reactions: Schema.optional(
+		Schema.NullOr(Schema.Record({ key: Schema.String, value: Schema.Number })),
+	),
+	restacks: Schema.optional(Schema.NullOr(Schema.Number)),
+	tags: Schema.optional(Schema.NullOr(Schema.Array(Schema.String))),
+	coverImage: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
+const JsonDraftSchema = Schema.Struct({
+	title: Schema.optional(Schema.NullOr(Schema.String)),
+	subtitle: Schema.optional(Schema.NullOr(Schema.String)),
+	body: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
+const JsonDraftSummarySchema = Schema.Struct({
+	id: Schema.Number,
+	uuid: Schema.String,
+	title: Schema.optional(Schema.NullOr(Schema.String)),
+	updated: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
+const JsonCommentSchema = Schema.Struct({
+	id: Schema.Number,
+	body: Schema.String,
+	isAdmin: Schema.Boolean,
+});
+
+const JsonCreatedDraftSchema = Schema.Struct({
+	id: Schema.Number,
+	uuid: Schema.String,
+});
+
+const JsonDeletedDraftSchema = Schema.Struct({
+	success: Schema.Boolean,
+	draftId: Schema.Number,
+});
+
 const encodeJson = <A>(schema: Schema.Schema<A>) => Schema.encodeSync(schema);
 
 export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
@@ -103,38 +150,42 @@ export const toJsonPostSummary = (post: GatewayPostSummary): IDataObject => ({
 });
 
 export const toJsonPost = (post: GatewayPost): IDataObject => ({
-	id: post.id,
-	title: post.title,
-	slug: post.slug,
-	url: post.url,
-	publishedAt: post.publishedAt,
-	...optional('subtitle', post.subtitle),
-	...optional('htmlBody', post.htmlBody),
-	...optional('markdown', post.markdown),
-	...optional('truncatedBody', post.truncatedBody),
-	...optional('reactions', post.reactions),
-	...optional('restacks', post.restacks),
-	...optional('tags', post.tags),
-	...optional('coverImage', post.coverImage),
+	...encodeJson(JsonPostSchema)({
+		id: post.id,
+		title: post.title,
+		slug: post.slug,
+		url: post.url,
+		publishedAt: post.publishedAt,
+		...optional('subtitle', post.subtitle),
+		...optional('htmlBody', post.htmlBody),
+		...optional('markdown', post.markdown),
+		...optional('truncatedBody', post.truncatedBody),
+		...optional('reactions', post.reactions),
+		...optional('restacks', post.restacks),
+		...optional('tags', post.tags),
+		...optional('coverImage', post.coverImage),
+	}),
 });
 
 export const toJsonDraft = (draft: GatewayDraft): IDataObject => ({
-	...optional('title', draft.title),
-	...optional('subtitle', draft.subtitle),
-	...optional('body', draft.body),
+	...encodeJson(JsonDraftSchema)({
+		...optional('title', draft.title),
+		...optional('subtitle', draft.subtitle),
+		...optional('body', draft.body),
+	}),
 });
 
 export const toJsonDraftSummary = (draft: GatewayDraftSummary): IDataObject => ({
-	id: draft.id,
-	uuid: draft.uuid,
-	...optional('title', draft.title),
-	...optional('updated', draft.updated),
+	...encodeJson(JsonDraftSummarySchema)({
+		id: draft.id,
+		uuid: draft.uuid,
+		...optional('title', draft.title),
+		...optional('updated', draft.updated),
+	}),
 });
 
 export const toJsonComment = (comment: GatewayComment): IDataObject => ({
-	id: comment.id,
-	body: comment.body,
-	isAdmin: comment.isAdmin,
+	...encodeJson(JsonCommentSchema)(comment),
 });
 
 export const toJsonCreatedNote = (note: CreatedNote): IDataObject => ({
@@ -142,8 +193,7 @@ export const toJsonCreatedNote = (note: CreatedNote): IDataObject => ({
 });
 
 export const toJsonCreatedDraft = (draft: CreatedDraft): IDataObject => ({
-	id: draft.id,
-	uuid: draft.uuid,
+	...encodeJson(JsonCreatedDraftSchema)(draft),
 });
 
 export const toJsonDeletedNote = (note: DeletedNote): IDataObject => ({
@@ -151,6 +201,5 @@ export const toJsonDeletedNote = (note: DeletedNote): IDataObject => ({
 });
 
 export const toJsonDeletedDraft = (draft: DeletedDraft): IDataObject => ({
-	success: draft.success,
-	draftId: draft.draftId,
+	...encodeJson(JsonDeletedDraftSchema)(draft),
 });
