@@ -117,22 +117,22 @@ for await (const post of ownProfile.posts()) {
 
 ## Documentation
 
-- [Introduction](docs/introduction.md)
-- [Installation](docs/installation.md)
-- [Quickstart](docs/quickstart.md)
-- [n8n Usage](docs/n8n-usage.md)
-- [API Reference](docs/api-reference.md)
-- [Examples](docs/examples.md)
-- [Architecture](docs/design.md)
-- [Development](docs/development.md)
-- [Testing](docs/testing.md)
+- [Introduction](../docs/introduction.md)
+- [Installation](../docs/installation.md)
+- [Quickstart](../docs/quickstart.md)
+- [n8n Usage](../docs/n8n-usage.md)
+- [API Reference](../docs/api-reference.md)
+- [Examples](../docs/examples.md)
+- [Architecture](../docs/design.md)
+- [Development](../docs/development.md)
+- [Testing](../docs/testing.md)
 
 Resource-specific docs:
 
-- [Profiles](docs/resources/profile.md)
-- [Posts](docs/resources/post.md)
-- [Notes](docs/resources/note.md)
-- [Comments](docs/resources/comment.md)
+- [Profiles](../docs/resources/profile.md)
+- [Posts](../docs/resources/post.md)
+- [Notes](../docs/resources/note.md)
+- [Comments](../docs/resources/comment.md)
 
 ## License
 
