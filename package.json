@@ -17,8 +17,8 @@
 	},
 	"packageManager": "pnpm@10.33.0",
 	"scripts": {
-		"build": "n8n-node build",
-		"build:watch": "tsc --watch",
+		"build": "tsup --config tsup.config.ts && node scripts/copy-build-assets.mjs",
+		"build:watch": "tsup --config tsup.config.ts --watch --onSuccess \"node scripts/copy-build-assets.mjs\"",
 		"dev": "node scripts/dev.mjs",
 		"dev:prepare": "node scripts/prepare-dev-package.mjs",
 		"lint": "n8n-node lint",
@@ -50,6 +50,7 @@
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",
 		"sqlite3": "^6.0.1",
+		"tsup": "^8.5.1",
 		"tsx": "^4.21.0",
 		"typescript": "5.9.2"
 	},

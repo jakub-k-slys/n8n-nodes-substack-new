@@ -17,7 +17,7 @@ function run(command, args, env = {}) {
 async function main() {
 	console.log('Building project before starting dev environment...');
 	await new Promise((resolve, reject) => {
-		const build = run('pnpm', ['exec', 'n8n-node', 'build']);
+		const build = run('pnpm', ['run', 'build']);
 		build.on('exit', (code) => {
 			if (code === 0) resolve();
 			else reject(new Error(`Initial build failed with code ${code}`));
@@ -30,7 +30,7 @@ async function main() {
 	console.log(`Linked ${prepared.linkedPackageDir}`);
 	console.log(`Using N8N_USER_FOLDER=${prepared.userFolder}`);
 
-	const tsc = run('pnpm', ['exec', 'tsc', '--watch', '--pretty']);
+	const tsc = run('pnpm', ['run', 'build:watch']);
 	const n8n = run(
 		'pnpm',
 		['exec', 'n8n'],
