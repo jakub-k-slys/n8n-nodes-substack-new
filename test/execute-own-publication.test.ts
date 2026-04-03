@@ -5,7 +5,7 @@ import * as HttpClient from '@effect/platform/HttpClient';
 import * as ClientResponse from '@effect/platform/HttpClientResponse';
 import { Effect } from 'effect';
 
-import { executeOwnPublicationOperation } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/execute.js';
+import { executeOwnPublicationOperation } from '../dist/nodes/SubstackGateway/runtime/resources/own-publication/index.js';
 
 type TestContext = {
 	getNodeParameter: (name: string, itemIndex?: number, fallback?: unknown) => unknown;

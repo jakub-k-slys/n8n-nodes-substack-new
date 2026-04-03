@@ -4,11 +4,13 @@ import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import type { GatewayUrl } from '../schema';
 import { makeGatewayClientLayer } from './gateway-client';
 import { readGatewaySelection } from './read-input';
-import { executeDraftOperation } from './resources/draft/execute';
-import { executeNoteOperation } from './resources/note/execute';
-import { executeOwnPublicationOperation } from './resources/own-publication/execute';
-import { executePostOperation } from './resources/post/execute';
-import { executeProfileOperation } from './resources/profile/execute';
+import {
+	executeDraftOperation,
+	executeNoteOperation,
+	executeOwnPublicationOperation,
+	executePostOperation,
+	executeProfileOperation,
+} from './resources';
 
 export const runGatewayOperation = (
 	context: IExecuteFunctions,
