@@ -10,13 +10,8 @@ import type {
 } from '../domain/input';
 import type { GatewayOperation } from '../domain/operation';
 
-export type GatewaySelection = {
-	readonly resource: string;
-	readonly operation: string;
-};
-
 export type NodeInput = {
-	readonly getSelection: Effect.Effect<GatewaySelection, GatewayError>;
+	readonly getSelection: Effect.Effect<GatewayOperation, GatewayError>;
 	readonly getOwnPublicationInput: (
 		operation: Extract<GatewayOperation, { readonly _tag: 'OwnPublication' }>,
 	) => Effect.Effect<OwnPublicationInput, GatewayError>;

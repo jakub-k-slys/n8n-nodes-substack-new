@@ -54,7 +54,7 @@ describe('readGatewayInput', () => {
 		);
 
 		assert.deepEqual(selection, {
-			resource: 'draft',
+			_tag: 'Draft',
 			operation: 'createDraft',
 		});
 	});

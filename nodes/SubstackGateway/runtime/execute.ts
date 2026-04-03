@@ -24,28 +24,22 @@ export const runGatewayOperation = (
 			Effect.flatMap(NodeInput, (nodeInput) => nodeInput.getSelection).pipe(
 				Effect.flatMap((selection) =>
 					Match.value(selection).pipe(
-					Match.when({ resource: 'ownPublication' }, ({ operation }) =>
-						executeOwnPublicationOperation(itemIndex, gatewayUrl, operation),
-					),
-					Match.when({ resource: 'note' }, ({ operation }) =>
-						executeNoteOperation(itemIndex, gatewayUrl, operation),
-					),
-					Match.when({ resource: 'draft' }, ({ operation }) =>
-						executeDraftOperation(itemIndex, gatewayUrl, operation),
-					),
-					Match.when({ resource: 'post' }, ({ operation }) =>
-						executePostOperation(itemIndex, gatewayUrl, operation),
-					),
-					Match.when({ resource: 'profile' }, ({ operation }) =>
-						executeProfileOperation(itemIndex, gatewayUrl, operation),
-					),
-					Match.orElse(({ resource, operation }) =>
-						Effect.fail({
-							_tag: 'UnsupportedOperation',
-							resource,
-							operation,
-						} as const),
-					),
+						Match.when({ _tag: 'OwnPublication' }, ({ operation }) =>
+							executeOwnPublicationOperation(itemIndex, gatewayUrl, operation),
+						),
+						Match.when({ _tag: 'Note' }, ({ operation }) =>
+							executeNoteOperation(itemIndex, gatewayUrl, operation),
+						),
+						Match.when({ _tag: 'Draft' }, ({ operation }) =>
+							executeDraftOperation(itemIndex, gatewayUrl, operation),
+						),
+						Match.when({ _tag: 'Post' }, ({ operation }) =>
+							executePostOperation(itemIndex, gatewayUrl, operation),
+						),
+						Match.when({ _tag: 'Profile' }, ({ operation }) =>
+							executeProfileOperation(itemIndex, gatewayUrl, operation),
+						),
+						Match.exhaustive,
 					),
 				),
 				Effect.map((result) => toNodeExecutionData(itemIndex, result)),
