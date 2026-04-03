@@ -6,7 +6,9 @@ import { buildGatewayRequest } from './build-request';
 import { decodeGatewayCommand } from './decode-command';
 import { decodeGatewayResponse } from './decode-response';
 import { executeGatewayRequest } from './execute-request';
+import { executeNoteOperation } from './execute-note';
 import { makeGatewayClientLayer } from './gateway-client';
+import { readGatewaySelection } from './read-input';
 import { toNodeExecutionData } from './to-node-data';
 
 export const runGatewayOperation = (
@@ -17,6 +19,12 @@ export const runGatewayOperation = (
 	Effect.runPromise(
 		Effect.provide(
 			Effect.gen(function* () {
+				const selection = yield* readGatewaySelection(context, itemIndex);
+
+				if (selection.resource === 'note') {
+					return yield* executeNoteOperation(context, itemIndex, gatewayUrl, selection.operation);
+				}
+
 				const command = yield* decodeGatewayCommand(context, itemIndex);
 				yield* Effect.logDebug('Decoded gateway command').pipe(
 					Effect.annotateLogs({
