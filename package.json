@@ -27,6 +27,7 @@
 		"test": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.mjs",
 		"test:unit": "node --import tsx --test test/*.test.ts",
 		"test:package": "pnpm run build && node --import tsx --test test/package/package-smoke.test.ts",
+		"prepack": "pnpm run build",
 		"prepublishOnly": "n8n-node prerelease"
 	},
 	"files": [
