@@ -1,5 +1,4 @@
 import * as HttpClient from '@effect/platform/HttpClient';
-import * as ClientError from '@effect/platform/HttpClientError';
 import { Effect, Layer } from 'effect';
 import type { IExecuteFunctions } from 'n8n-workflow';
 

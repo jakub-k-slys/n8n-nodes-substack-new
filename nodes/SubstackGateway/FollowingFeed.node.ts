@@ -33,6 +33,7 @@ export class FollowingFeed implements INodeType {
 		defaults: {
 			name: 'Substack Gateway Following Feed',
 		},
+		usableAsTool: true,
 		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],

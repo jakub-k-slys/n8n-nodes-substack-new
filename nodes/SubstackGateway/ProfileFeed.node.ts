@@ -32,6 +32,7 @@ export class ProfileFeed implements INodeType {
 		defaults: {
 			name: 'Substack Gateway Profile Feed',
 		},
+		usableAsTool: true,
 		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
