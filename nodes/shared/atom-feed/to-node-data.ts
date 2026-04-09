@@ -30,23 +30,42 @@ const parseStructuredEntryId = (
 	};
 };
 
+const toCanonicalLink = (
+	entry: AtomFeedEntry,
+	structuredEntryId: {
+		readonly id: number | string | null;
+		readonly type: string | null;
+	},
+): string | undefined => {
+	if (structuredEntryId.type === 'note' && structuredEntryId.id !== null) {
+		const authorUri = entry.author?.uri?.replace(/\/+$/, '');
+
+		if (authorUri !== undefined && authorUri.length > 0) {
+			return `${authorUri}/note/c-${structuredEntryId.id}`;
+		}
+	}
+
+	return entry.link;
+};
+
 export const toNodeExecutionData = (
 	entries: readonly AtomFeedEntry[],
 ): INodeExecutionData[] =>
 	entries.map((entry) => {
 		const structuredEntryId = parseStructuredEntryId(entry.id);
+		const canonicalLink = toCanonicalLink(entry, structuredEntryId);
+		const json = {
+			...(structuredEntryId.id === null ? {} : { id: structuredEntryId.id }),
+			...(structuredEntryId.type === null ? {} : { type: structuredEntryId.type }),
+			...(entry.title === undefined ? {} : { title: entry.title }),
+			...(canonicalLink === undefined ? {} : { link: canonicalLink }),
+			...(entry.updated === undefined ? {} : { updated: entry.updated }),
+			...(entry.published === undefined ? {} : { published: entry.published }),
+			...(entry.author === undefined ? {} : { author: entry.author }),
+			...(entry.summary === undefined ? {} : { summary: entry.summary }),
+		};
 
 		return {
-			json: {
-			id: structuredEntryId.id,
-			type: structuredEntryId.type,
-			title: entry.title ?? null,
-			link: entry.link ?? null,
-			updated: entry.updated ?? null,
-			published: entry.published ?? null,
-			author: entry.author ?? null,
-			summary: entry.summary ?? null,
-			content: entry.content ?? null,
-		},
+			json,
 		};
 	});

@@ -98,7 +98,6 @@ const toEntry = (value: unknown): AtomFeedEntry | undefined => {
 		updated: readText(entry.updated),
 		published: readText(entry.published),
 		summary: readText(entry.summary),
-		content: readText(entry.content),
 		author: readAuthor(entry.author),
 	};
 };

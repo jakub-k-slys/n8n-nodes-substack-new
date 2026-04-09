@@ -11,7 +11,6 @@ export type AtomFeedEntry = {
 	readonly updated?: string;
 	readonly published?: string;
 	readonly summary?: string;
-	readonly content?: string;
 	readonly author?: AtomFeedAuthor;
 };
 

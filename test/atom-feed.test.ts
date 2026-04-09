@@ -53,7 +53,6 @@ describe('Atom feed parsing', () => {
 			updated: '2026-04-08T11:00:00Z',
 			published: '2026-04-08T10:55:00Z',
 			summary: 'Summary 2',
-			content: '<p>Second</p>',
 			author: {
 				name: 'Author 2',
 				email: undefined,
@@ -108,9 +107,9 @@ describe('Atom feed node output', () => {
 				updated: '2026-04-08T11:00:00Z',
 				published: '2026-04-08T10:55:00Z',
 				summary: 'Summary',
-				content: 'Content',
 				author: {
 					name: 'Author',
+					uri: 'https://substack.com/@jakubslys',
 				},
 			},
 		]);
@@ -121,14 +120,33 @@ describe('Atom feed node output', () => {
 					id: 239060659,
 					type: 'note',
 					title: 'Title',
-					link: 'https://example.com',
+					link: 'https://substack.com/@jakubslys/note/c-239060659',
 					updated: '2026-04-08T11:00:00Z',
 					published: '2026-04-08T10:55:00Z',
 					author: {
 						name: 'Author',
+						uri: 'https://substack.com/@jakubslys',
 					},
 					summary: 'Summary',
-					content: 'Content',
+				},
+			},
+		]);
+	});
+
+	it('should omit fields that are not present', () => {
+		const executionData = toNodeExecutionData([
+			{
+				id: 'note:239060659',
+				title: 'Title',
+			},
+		]);
+
+		assert.deepEqual(executionData, [
+			{
+				json: {
+					id: 239060659,
+					type: 'note',
+					title: 'Title',
 				},
 			},
 		]);
