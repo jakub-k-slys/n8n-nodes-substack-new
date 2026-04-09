@@ -1,7 +1,9 @@
 import { Effect } from 'effect';
 import type { IHttpRequestOptions, IPollFunctions } from 'n8n-workflow';
 
-type PollRequestContext = Pick<IPollFunctions, 'helpers'>;
+import { executeAuthenticatedGatewayRequest, type GatewayRequestContext } from '../gateway-transport';
+
+type PollRequestContext = GatewayRequestContext & Pick<IPollFunctions, 'helpers'>;
 
 const ACCEPT_HEADER = 'application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8';
 
@@ -11,10 +13,8 @@ export const fetchAtomFeed = (
 ): Effect.Effect<string, Error> =>
 	Effect.tryPromise({
 		try: async () => {
-			const response = (await context.helpers.httpRequestWithAuthentication.call(
-				context,
-				'substackGatewayApi',
-				{
+			const response = (await Effect.runPromise(
+				executeAuthenticatedGatewayRequest(context, {
 					url,
 					method: 'GET',
 					json: false,
@@ -22,7 +22,7 @@ export const fetchAtomFeed = (
 					headers: {
 						accept: ACCEPT_HEADER,
 					},
-				} satisfies IHttpRequestOptions,
+				} satisfies IHttpRequestOptions),
 			)) as {
 				body?: unknown;
 			};
