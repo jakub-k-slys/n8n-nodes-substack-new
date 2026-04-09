@@ -6,6 +6,7 @@ import {
 	parseAtomFeed,
 	readAtomFeedCheckpoint,
 	selectNewAtomFeedEntries,
+	toNodeExecutionData,
 	writeAtomFeedCheckpoint,
 } from '../nodes/shared/atom-feed/index.ts';
 
@@ -58,7 +59,6 @@ describe('Atom feed parsing', () => {
 				email: undefined,
 				uri: undefined,
 			},
-			raw: parsedFeed.entries[0].raw,
 		});
 	});
 });
@@ -95,5 +95,42 @@ describe('Atom feed checkpointing', () => {
 
 		assert.equal(result.entries.length, 1);
 		assert.equal(result.entries[0]?.id, 'entry-2');
+	});
+});
+
+describe('Atom feed node output', () => {
+	it('should split compound ids into type and id and omit raw payloads', () => {
+		const executionData = toNodeExecutionData([
+			{
+				id: 'note:239060659',
+				title: 'Title',
+				link: 'https://example.com',
+				updated: '2026-04-08T11:00:00Z',
+				published: '2026-04-08T10:55:00Z',
+				summary: 'Summary',
+				content: 'Content',
+				author: {
+					name: 'Author',
+				},
+			},
+		]);
+
+		assert.deepEqual(executionData, [
+			{
+				json: {
+					id: 239060659,
+					type: 'note',
+					title: 'Title',
+					link: 'https://example.com',
+					updated: '2026-04-08T11:00:00Z',
+					published: '2026-04-08T10:55:00Z',
+					author: {
+						name: 'Author',
+					},
+					summary: 'Summary',
+					content: 'Content',
+				},
+			},
+		]);
 	});
 });

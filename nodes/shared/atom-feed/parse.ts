@@ -100,7 +100,6 @@ const toEntry = (value: unknown): AtomFeedEntry | undefined => {
 		summary: readText(entry.summary),
 		content: readText(entry.content),
 		author: readAuthor(entry.author),
-		raw: entry,
 	};
 };
 

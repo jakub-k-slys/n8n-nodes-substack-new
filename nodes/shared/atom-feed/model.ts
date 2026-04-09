@@ -13,7 +13,6 @@ export type AtomFeedEntry = {
 	readonly summary?: string;
 	readonly content?: string;
 	readonly author?: AtomFeedAuthor;
-	readonly raw: Record<string, unknown>;
 };
 
 export type AtomFeed = {
