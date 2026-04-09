@@ -7,8 +7,8 @@ import type {
 import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
-import { GatewayUrlSchema } from '../SubstackGateway/schema';
-import { decodeInput } from '../SubstackGateway/runtime/decode/shared';
+import { GatewayUrlSchema } from './schema';
+import { decodeInput } from './runtime/decode/shared';
 import {
 	fetchAtomFeed,
 	parseAtomFeed,
@@ -25,7 +25,7 @@ export class SubstackGatewayProfileFeed implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway Profile Feed',
 		name: 'substackGatewayProfileFeed',
-		icon: { light: 'file:../SubstackGateway/substackGateway.svg', dark: 'file:../SubstackGateway/substackGateway.dark.svg' },
+		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
 		group: ['trigger'],
 		version: 1,
 		description: 'Poll a profile Atom feed from Substack Gateway',

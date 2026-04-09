@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.credentials.js';
-import { SubstackGatewayFollowingFeed } from '../../dist/nodes/SubstackGatewayFollowingFeed/SubstackGatewayFollowingFeed.node.js';
-import { SubstackGatewayProfileFeed } from '../../dist/nodes/SubstackGatewayProfileFeed/SubstackGatewayProfileFeed.node.js';
-import { SubstackGateway } from '../../dist/nodes/SubstackGateway/SubstackGateway.node.js';
+import { SubstackGatewayFollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
+import { SubstackGatewayProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
+import { SubstackGateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
 
 describe('package build smoke', () => {
 	it('should expose the built node metadata', () => {
