@@ -149,6 +149,7 @@ describe('gateway HttpClient layer', () => {
 				method: (calls[0].request as Record<string, unknown>).method,
 				url: (calls[0].request as Record<string, unknown>).url,
 				headers: (calls[0].request as Record<string, unknown>).headers,
+				timeout: (calls[0].request as Record<string, unknown>).timeout,
 			},
 			{
 				json: false,
@@ -158,6 +159,7 @@ describe('gateway HttpClient layer', () => {
 				headers: {
 					accept: 'application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
 				},
+				timeout: 1800000,
 			},
 		);
 	});

@@ -35,6 +35,11 @@ describe('package build smoke', () => {
 		assert.equal(node.description.name, 'substackGatewayFollowingFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Following Feed');
 		assert.equal(node.description.polling, true);
+		assert.equal(node.description.properties[0]?.name, 'emitOnlyNewItems');
+		assert.equal(node.description.properties[1]?.name, 'maximumEntityCount');
+		assert.equal(node.description.properties[1]?.default, 10000);
+		assert.equal(node.description.properties[2]?.name, 'requestTimeoutSeconds');
+		assert.equal(node.description.properties[2]?.default, 900);
 	});
 
 	it('should expose the built profile feed trigger metadata', () => {

@@ -3,14 +3,20 @@ import { Effect } from 'effect';
 
 import type { AtomFeed, AtomFeedAuthor, AtomFeedEntry } from './model';
 
-const xmlParser = new XMLParser({
-	ignoreAttributes: false,
-	attributeNamePrefix: '',
-	removeNSPrefix: true,
-	parseTagValue: false,
-	trimValues: true,
-	textNodeName: '#text',
-});
+type ParseAtomFeedOptions = {
+	readonly maxEntityCount?: number;
+};
+
+const createXmlParser = (options: ParseAtomFeedOptions = {}): XMLParser =>
+	new XMLParser({
+		ignoreAttributes: false,
+		attributeNamePrefix: '',
+		removeNSPrefix: true,
+		parseTagValue: false,
+		trimValues: true,
+		textNodeName: '#text',
+		processEntities: { maxEntityCount: options.maxEntityCount ?? 10000 },
+	});
 
 const asArray = <Value>(value: Value | readonly Value[] | undefined): readonly Value[] =>
 	value === undefined ? [] : Array.isArray(value) ? value : [value];
@@ -119,9 +125,12 @@ const toAtomFeed = (document: unknown): AtomFeed => {
 	};
 };
 
-export const parseAtomFeed = (xml: string): Effect.Effect<AtomFeed, Error> =>
+export const parseAtomFeed = (
+	xml: string,
+	options: ParseAtomFeedOptions = {},
+): Effect.Effect<AtomFeed, Error> =>
 	Effect.try({
-		try: () => toAtomFeed(xmlParser.parse(xml)),
+		try: () => toAtomFeed(createXmlParser(options).parse(xml)),
 		catch: (cause) =>
 			cause instanceof Error ? cause : new Error('Failed to parse Atom feed', { cause }),
 	});

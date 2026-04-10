@@ -7,9 +7,14 @@ type PollRequestContext = GatewayRequestContext & Pick<IPollFunctions, 'helpers'
 
 const ACCEPT_HEADER = 'application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8';
 
+type FetchAtomFeedOptions = {
+	readonly timeoutMs?: number;
+};
+
 export const fetchAtomFeed = (
 	context: PollRequestContext,
 	url: string,
+	options: FetchAtomFeedOptions = {},
 ): Effect.Effect<string, Error> =>
 	Effect.tryPromise({
 		try: async () => {
@@ -22,6 +27,7 @@ export const fetchAtomFeed = (
 					headers: {
 						accept: ACCEPT_HEADER,
 					},
+					timeout: options.timeoutMs ?? 1800000,
 				} satisfies IHttpRequestOptions),
 			)) as {
 				body?: unknown;
