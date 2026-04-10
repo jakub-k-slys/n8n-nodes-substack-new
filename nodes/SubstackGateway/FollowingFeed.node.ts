@@ -25,6 +25,11 @@ const MILLISECONDS_PER_SECOND = 1000;
 
 const getGatewayFeedUrl = (gatewayUrl: string): string => `${gatewayUrl}${FOLLOWING_FEED_PATH}`;
 
+type FollowingFeedOptions = {
+	readonly maximumEntityCount?: number;
+	readonly requestTimeoutSeconds?: number;
+};
+
 export class FollowingFeed implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway Following Feed',
@@ -56,24 +61,33 @@ export class FollowingFeed implements INodeType {
 					'Whether to skip the existing feed items on the first poll and emit only items discovered later',
 			},
 			{
-				displayName: 'Maximum Entity Count',
-				name: 'maximumEntityCount',
-				type: 'number',
-				typeOptions: {
-					minValue: 1,
-				},
-				default: DEFAULT_MAXIMUM_ENTITY_COUNT,
-				description: 'Maximum number of XML entities to process while parsing the feed',
-			},
-			{
-				displayName: 'Request Timeout',
-				name: 'requestTimeoutSeconds',
-				type: 'number',
-				typeOptions: {
-					minValue: 1,
-				},
-				default: DEFAULT_REQUEST_TIMEOUT_SECONDS,
-				description: 'Request timeout in seconds',
+				displayName: 'Options',
+				name: 'options',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				options: [
+					{
+						displayName: 'Maximum Entity Count',
+						name: 'maximumEntityCount',
+						type: 'number',
+						typeOptions: {
+							minValue: 1,
+						},
+						default: DEFAULT_MAXIMUM_ENTITY_COUNT,
+						description: 'Maximum number of XML entities to process while parsing the feed',
+					},
+					{
+						displayName: 'Request Timeout',
+						name: 'requestTimeoutSeconds',
+						type: 'number',
+						typeOptions: {
+							minValue: 1,
+						},
+						default: DEFAULT_REQUEST_TIMEOUT_SECONDS,
+						description: 'Request timeout in seconds',
+					},
+				],
 			},
 		],
 	};
@@ -93,12 +107,11 @@ export class FollowingFeed implements INodeType {
 
 		const pollState = this.getWorkflowStaticData('node');
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;
-		const maximumEntityCount = this.getNodeParameter(
-			'maximumEntityCount',
-		) as number;
-		const requestTimeoutSeconds = this.getNodeParameter(
-			'requestTimeoutSeconds',
-		) as number;
+		const options = this.getNodeParameter('options') as FollowingFeedOptions;
+		const maximumEntityCount =
+			options.maximumEntityCount ?? DEFAULT_MAXIMUM_ENTITY_COUNT;
+		const requestTimeoutSeconds =
+			options.requestTimeoutSeconds ?? DEFAULT_REQUEST_TIMEOUT_SECONDS;
 		const data = await Effect.runPromise(
 			Effect.flatMap(
 				fetchAtomFeed(this, getGatewayFeedUrl(decodedGatewayUrl.right), {
