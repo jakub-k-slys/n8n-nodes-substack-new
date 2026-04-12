@@ -23,8 +23,9 @@ export class SubstackGatewayApi implements ICredentialType {
 			name: 'gatewayUrl',
 			type: 'string',
 			required: true,
-			default: 'https://substack-gateway.vercel.app/api/v1',
-			placeholder: 'https://substack-gateway.vercel.app/api/v1',
+			default: 'https://substack-gateway.vercel.app',
+			placeholder: 'https://substack-gateway.vercel.app',
+			description: 'The Substack Gateway root URL. The node adds /api/v1 automatically',
 		},
 		{
 			displayName: 'Gateway Token',
@@ -49,7 +50,7 @@ export class SubstackGatewayApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials.gatewayUrl}}',
+			baseURL: '={{String($credentials.gatewayUrl ?? "").replace(/\\/+$/, "").replace(/\\/api\\/v1$/i, "") + "/api/v1"}}',
 			url: '/health/ready',
 			method: 'GET',
 			headers: {

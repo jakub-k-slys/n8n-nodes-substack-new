@@ -7,6 +7,7 @@ import type {
 import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
+import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
 import {
@@ -69,7 +70,7 @@ export class ProfileFeed implements INodeType {
 		const userName = String(this.getNodeParameter('userName')).trim();
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
-			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
 		);
 
 		if (Either.isLeft(decodedGatewayUrl)) {

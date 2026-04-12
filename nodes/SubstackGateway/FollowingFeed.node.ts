@@ -7,6 +7,7 @@ import type {
 import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
+import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
 import {
@@ -98,7 +99,7 @@ export class FollowingFeed implements INodeType {
 		const credentials = await this.getCredentials('substackGatewayApi');
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
-			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
 		);
 
 		if (Either.isLeft(decodedGatewayUrl)) {

@@ -7,6 +7,7 @@ import type {
 import { Either } from 'effect';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
+import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { substackGatewayProperties } from './description';
 import {
 	isUnsupportedOperationError,
@@ -46,7 +47,7 @@ export class Gateway implements INodeType {
 		const credentials = await this.getCredentials('substackGatewayApi');
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
-			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
 		);
 
 		if (Either.isLeft(decodedGatewayUrl)) {
