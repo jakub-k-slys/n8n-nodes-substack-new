@@ -7,8 +7,10 @@ import type {
 import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
+import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
+import { requireGatewayFeature } from './runtime/live/gateway-capabilities';
 import {
 	fetchAtomFeed,
 	parseAtomFeed,
@@ -19,6 +21,7 @@ import {
 } from '../shared/atom-feed';
 
 const FOLLOWING_FEED_PATH = '/me/following/feed';
+const FOLLOWING_FEED_FEATURE = 'api:me:following:feed';
 const DEFAULT_MAXIMUM_ENTITY_COUNT = 10000;
 const DEFAULT_REQUEST_TIMEOUT_SECONDS = 15 * 60;
 const MILLISECONDS_PER_SECOND = 1000;
@@ -98,12 +101,20 @@ export class FollowingFeed implements INodeType {
 		const credentials = await this.getCredentials('substackGatewayApi');
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
-			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
 		);
 
 		if (Either.isLeft(decodedGatewayUrl)) {
 			throw new NodeOperationError(this.getNode(), 'Invalid Gateway URL credential');
 		}
+
+		await requireGatewayFeature(
+			this,
+			this.getNode(),
+			decodedGatewayUrl.right,
+			FOLLOWING_FEED_FEATURE,
+			'Following Feed',
+		);
 
 		const pollState = this.getWorkflowStaticData('node');
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;

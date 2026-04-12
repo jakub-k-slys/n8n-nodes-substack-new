@@ -1,101 +1,171 @@
-# n8n community node
+# Substack Gateway n8n Node
 
-## Overview
-This is a project containing code for an n8n community node. n8n is a workflow
-automation platform where users build workflows with nodes, which are the
-building block of a workflow. Nodes can perform a range of actions, such as
-starting a workflow (called a "trigger node"), fetching and sending data, or
-processing and manipulating it. Besides that there are credentials - entities
-that store sensitive information on how to connect to external services and
-APIs. A node can require some credentials to be used. Community nodes are a way
-for anyone to create such nodes and add them to be used in n8n. All community
-nodes are named in a format: `n8n-nodes-<n>` or `@org/n8n-nodes-<n>`.
-Community nodes can also be submitted for approval to be used on n8n Cloud
-version. In that case there are rules that the node needs to follow in order to
-be approved
+## Scope
+This repository contains the `n8n-nodes-substack-new` package. It currently ships:
 
-## Important notes
-- Follow the **rules and guidelines in this document and the linked docs
-  below** over any code examples.
-- All code blocks in these docs are **illustrative and incomplete**.
-  They **MUST NOT** be copied verbatim or assumed to be the final desired code.
-- Replace example names like `Example`, `Wordpress`, `wordpressApi`, etc.
-  with names that match the **actual service / node** you are building.
-- When in doubt, **generalize from the patterns**, don't replicate the exact
-  structure, fields, or values from the examples.
-- Produce the **full implementation** needed for the current project
-  (nodes, credentials, tests, etc.), not just fragments similar to examples.
-- If an example omits parts (e.g. types, operations, properties), **infer and
-  implement the missing parts** based on the real requirements / API docs.
-- Never output `Wordpress`-specific code unless the project is actually about
-  WordPress.
+- `Substack Gateway` main action node
+- `Substack Gateway Following Feed` polling trigger
+- `Substack Gateway Profile Feed` polling trigger
+- `Substack Gateway API` credentials
 
-## Project structure
-There are two main folders in this project:
-- `nodes` contains all of the nodes in a package (there can be more than 1).
-  The code for each node usually lives in its own folder
-- `credentials` contains all of the credentials in a package. Usually it's just
-  a single file for every credential
-So it looks something like this:
-.
-├── nodes/
-│   └── Example/
-│       ├── Example.node.ts
-│       └── ...
-├── credentials/
-│   └── Example.credentials.ts
-├── package.json
-└── ...
-It's important to note that `package.json` has a special field `n8n` that have
-information about nodes and credentials in a package:
-```json
-{
-  "name": "n8n-nodes-example",
-  "version": "1.0.0",
-  "n8n": {
-    "n8nNodesApiVersion": 1,
-    "strict": true,
-    "credentials": [
-        "dist/credentials/Example.credentials.js"
-    ],
-    "nodes": [
-      "dist/nodes/Example/Example.node.js"
-    ]
-  }
-}
-```
-`nodes` and `credentials` keys contain paths to transpiled JS files in a `dist`
-folder for the nodes and credentials respectively. If you add/remove/rename
-nodes and/or credentials, you need to make sure to update `n8n.nodes` and
-`n8n.credentials` keys in `package.json` accordingly. Initial files in the
-project _may_ contain example nodes and/or credentials that need to be
-**removed or renamed** once you start making an actual node.
+This is not a generic starter anymore. Prefer the patterns already present in
+the repository over generic n8n examples.
 
-## Key guidelines
-- Use the `n8n-node` CLI tool **whenever possible** for building, dev mode,
-  linting, etc.
-- **Always** address any lint/typecheck errors/warnings, unless there is a
-  **very specific reason** to ignore/disable it
-- Make sure to use **proper types whenever possible**
-- If you are updating the npm package version, make sure to **update
-  CHANGELOG.md** in the root of the repository
-- Read `.agents/workflow.md` for more info
+## Current Architecture
 
-## Context-specific docs
-Load these before working on the relevant area:
+### Main node
+The main node is a programmatic node in `nodes/SubstackGateway/`.
 
-| Working on...                        | Read first                                                          |
-|--------------------------------------|---------------------------------------------------------------------|
-| Any node file in `nodes/`            | `.agents/nodes.md` and `.agents/properties.md`                      |
-| A declarative-style node             | above + `.agents/nodes-declarative.md`                              |
-| A programmatic-style node            | above + `.agents/nodes-programmatic.md`                             |
-| Files in `credentials/`              | `.agents/credentials.md`                                            |
-| Adding a new version to a node       | `.agents/versioning.md`                                             |
-| Starting a new task or planning      | `.agents/workflow.md`                                               |
+Key structure:
 
-## Additional resources
-If you need any extra information, here are links to n8n's official docs
-regarding building community nodes:
+- `description/`
+  UI properties, resources, operations, and operation fields
+- `domain/`
+  typed operation catalog, request/result models, and shared error types
+- `runtime/`
+  execution pipeline, input decoding, request building, response decoding, and
+  serialization
+- `schema/`
+  Effect schemas for inputs and API responses
+
+The project uses `effect` and `@effect/platform` heavily. New runtime logic
+should stay consistent with the existing Effect-based pipeline instead of
+falling back to ad hoc imperative parsing.
+
+### Triggers
+The polling triggers live in:
+
+- `nodes/SubstackGateway/FollowingFeed.node.ts`
+- `nodes/SubstackGateway/ProfileFeed.node.ts`
+
+Shared feed parsing and checkpoint logic lives in `nodes/shared/atom-feed/`.
+
+### Gateway transport
+Shared authenticated transport helpers live in `nodes/shared/gateway-transport/`.
+
+Important detail:
+
+- credentials now store the gateway root URL, such as
+  `https://my.example`
+- code derives:
+  - root URL for capability discovery
+  - `/api/v1` base URL for API requests
+
+Do not hardcode `/api/v1` into credential defaults or user-facing guidance.
+
+## Working Rules
+
+### Read this first
+Before changing code in these areas, load the relevant docs:
+
+| Area | Read first |
+|---|---|
+| Planning or starting work | `.agents/workflow.md` |
+| Any node file under `nodes/` | `.agents/nodes.md`, `.agents/properties.md` |
+| Programmatic node runtime | above + `.agents/nodes-programmatic.md` |
+| Credentials | `.agents/credentials.md` |
+| Node versioning | `.agents/versioning.md` |
+
+### Implementation expectations
+- Keep changes typed. Avoid `any` unless there is no reasonable alternative.
+- Reuse the existing resource catalog and runtime layers instead of creating
+  parallel abstractions.
+- Prefer adding shared helpers when multiple nodes need the same behavior.
+- Preserve backward compatibility for saved credentials and workflows when
+  practical.
+- Keep user-facing operation names and descriptions clear in the editor.
+- Do not leak secrets into logs, tests, or fixtures.
+
+### Commit messages
+Use semver-friendly conventional commit titles:
+
+- `feat: ...`
+- `fix: ...`
+- `docs: ...`
+- `refactor: ...`
+- `test: ...`
+- `chore: ...`
+
+For breaking changes, use conventional commit breaking-change notation:
+
+- `feat!: ...`
+- `fix!: ...`
+
+or include a `BREAKING CHANGE:` section in the commit body when needed.
+
+Do not create plain-language commit titles without the prefix, and do not omit
+the breaking-change marker when the change is semver-major.
+
+## Repository Layout
+
+### Source
+- `credentials/SubstackGatewayApi.credentials.ts`
+- `nodes/SubstackGateway/`
+- `nodes/shared/atom-feed/`
+- `nodes/shared/gateway-transport/`
+
+### Tests
+- `test/*.test.ts` for unit tests
+- `test/package/package-smoke.test.ts` for built-package smoke coverage
+- `test/features/` for Cucumber runtime scenarios
+
+### Scripts
+- `scripts/dev.mjs`
+- `scripts/prepare-dev-package.mjs`
+- `scripts/copy-build-assets.mjs`
+
+## Commands
+Use the repo scripts instead of ad hoc commands when possible:
+
+- `pnpm run test:unit`
+- `pnpm run build`
+- `pnpm run lint`
+- `pnpm run test`
+- `pnpm run test:package`
+- `pnpm run dev`
+
+`pnpm run build` is the authoritative build command here. Although the generic
+n8n docs mention `n8n-node build`, this repository currently builds with
+`tsup` and a post-build asset copy step.
+
+## Practical Guidance For Common Changes
+
+### Adding or changing an operation
+Update:
+
+- `nodes/SubstackGateway/domain/operation.ts`
+- `nodes/SubstackGateway/description/`
+- `nodes/SubstackGateway/runtime/resources/<resource>/`
+- `nodes/SubstackGateway/schema/` if request or response shapes change
+- tests covering decode, execution, and JSON output when relevant
+
+### Changing credentials
+Update:
+
+- `credentials/SubstackGatewayApi.credentials.ts`
+- shared URL handling in `nodes/shared/gateway-transport/` if needed
+- tests that depend on URL normalization or metadata
+
+### Changing triggers
+Update:
+
+- the relevant `*.node.ts` trigger file
+- `nodes/shared/atom-feed/` if parsing or checkpoint behavior changes
+- trigger-facing tests
+
+## Verification
+For code changes, run at least:
+
+1. `pnpm run test:unit`
+2. `pnpm run build`
+3. `pnpm run lint`
+
+Run broader tests when the change touches packaging or end-to-end execution:
+
+- `pnpm run test`
+- `pnpm run test:package`
+
+## External References
 - https://docs.n8n.io/integrations/community-nodes/build-community-nodes/
 - https://docs.n8n.io/integrations/creating-nodes/overview/
 - https://docs.n8n.io/integrations/creating-nodes/build/reference/

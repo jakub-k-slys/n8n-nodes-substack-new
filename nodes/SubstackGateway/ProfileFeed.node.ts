@@ -7,8 +7,10 @@ import type {
 import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
+import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { GatewayUrlSchema } from './schema';
 import { decodeInput } from './runtime/decode/shared';
+import { requireGatewayFeature } from './runtime/live/gateway-capabilities';
 import {
 	fetchAtomFeed,
 	parseAtomFeed,
@@ -20,6 +22,7 @@ import {
 
 const getGatewayFeedUrl = (gatewayUrl: string, userName: string): string =>
 	`${gatewayUrl}/profiles/${encodeURIComponent(userName)}/feed`;
+const PROFILE_FEED_FEATURE = 'api:profiles:feed';
 
 export class ProfileFeed implements INodeType {
 	description: INodeTypeDescription = {
@@ -69,7 +72,7 @@ export class ProfileFeed implements INodeType {
 		const userName = String(this.getNodeParameter('userName')).trim();
 		const decodedGatewayUrl = decodeInput(
 			GatewayUrlSchema,
-			String(credentials.gatewayUrl ?? '').replace(/\/+$/, ''),
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
 		);
 
 		if (Either.isLeft(decodedGatewayUrl)) {
@@ -79,6 +82,14 @@ export class ProfileFeed implements INodeType {
 		if (userName.length === 0) {
 			throw new NodeOperationError(this.getNode(), 'User Name is required');
 		}
+
+		await requireGatewayFeature(
+			this,
+			this.getNode(),
+			decodedGatewayUrl.right,
+			PROFILE_FEED_FEATURE,
+			'Profile Feed',
+		);
 
 		const pollState = this.getWorkflowStaticData('node');
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;
