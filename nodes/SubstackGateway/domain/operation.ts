@@ -238,6 +238,8 @@ export type GatewayOperation =
 	| { readonly _tag: 'Post'; readonly operation: PostOperation }
 	| { readonly _tag: 'Profile'; readonly operation: ProfileOperation };
 
+type GatewayOperationDefinition = GatewayResourceDefinition['operations'][number];
+
 export const gatewayResourceCatalogByResource = Object.fromEntries(
 	gatewayResourceCatalog.map((definition) => [definition.resource, definition]),
 ) as {
@@ -246,6 +248,9 @@ export const gatewayResourceCatalogByResource = Object.fromEntries(
 		{ readonly resource: Resource }
 	>;
 };
+
+export const hasGatewayResource = (resource: string): resource is GatewayResource =>
+	resource in gatewayResourceCatalogByResource;
 
 const toGatewayOperation = <Tag extends GatewayResourceDefinition['tag']>(
 	tag: Tag,
@@ -266,6 +271,11 @@ const getGatewayOperationDefinition = (operation: GatewayOperation) =>
 		gatewayResourceCatalog.find((candidate) => candidate.tag === operation._tag)!.resource
 	].operations.find((candidate) => candidate.value === operation.operation)!;
 
+const isOperationAvailable = (
+	operation: GatewayOperationDefinition,
+	availableFeatures: ReadonlySet<string> | undefined,
+) => operation.requiredFeature === undefined || availableFeatures?.has(operation.requiredFeature) === true;
+
 export const getRequiredFeatureForOperation = (
 	operation: GatewayOperation,
 ): GatewayApiFeature | undefined => getGatewayOperationDefinition(operation).requiredFeature;
@@ -282,3 +292,19 @@ export const getOperationDescription = (resource: GatewayResource, operationValu
 
 export const getOperationDisplayName = (operation: GatewayOperation): string =>
 	getGatewayOperationDefinition(operation).name;
+
+export const getAvailableOperations = (
+	resource: GatewayResource,
+	features?: ReadonlyArray<string>,
+) => {
+	const availableFeatures = features === undefined ? undefined : new Set(features);
+
+	return gatewayResourceCatalogByResource[resource].operations.filter((operation) =>
+		isOperationAvailable(operation, availableFeatures),
+	);
+};
+
+export const getAvailableResources = (features?: ReadonlyArray<string>) =>
+	gatewayResourceCatalog.filter(
+		(resource) => getAvailableOperations(resource.resource, features).length > 0,
+	);

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+	getAvailableOperations,
+	getAvailableResources,
 	buildGatewayOperation,
 	getOperationDescription,
 	getRequiredFeatureForOperation,
@@ -26,6 +28,35 @@ describe('gateway capabilities metadata', () => {
 		assert.equal(
 			getOperationDescription('post', 'likePost'),
 			'Requires gateway feature support and is not available in OSS',
+		);
+	});
+
+	it('should hide resources without any available operations', () => {
+		assert.deepEqual(
+			getAvailableResources([
+				'api:me:get',
+				'api:me:notes:list',
+				'api:me:posts:list',
+				'api:me:following:list',
+				'api:notes:create',
+				'api:notes:delete',
+				'api:notes:get',
+				'api:posts:get',
+				'api:posts:comments:list',
+				'api:profiles:get',
+				'api:profiles:notes:list',
+				'api:profiles:posts:list',
+			]).map((resource) => resource.resource),
+			['note', 'ownPublication', 'post', 'profile'],
+		);
+	});
+
+	it('should hide gated operations that are not available', () => {
+		assert.deepEqual(
+			getAvailableOperations('post', ['api:posts:get', 'api:posts:comments:list']).map(
+				(operation) => operation.value,
+			),
+			['getPost', 'getPostComments'],
 		);
 	});
 });

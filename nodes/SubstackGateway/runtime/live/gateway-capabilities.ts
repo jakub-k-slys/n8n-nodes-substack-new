@@ -1,5 +1,5 @@
 import { Either, Effect, Schema } from 'effect';
-import type { IExecuteFunctions } from 'n8n-workflow';
+import type { IAllExecuteFunctions } from 'n8n-workflow';
 
 import {
 	executeAuthenticatedGatewayRequest,
@@ -8,7 +8,7 @@ import {
 import { GatewayCapabilitiesSchema, type GatewayCapabilities } from '../../schema';
 
 export const fetchGatewayCapabilities = async (
-	context: IExecuteFunctions,
+	context: IAllExecuteFunctions,
 	gatewayUrl: string,
 ): Promise<GatewayCapabilities> => {
 	const response = await Effect.runPromise(

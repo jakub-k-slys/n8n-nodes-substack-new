@@ -1,6 +1,8 @@
 import type {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
@@ -10,8 +12,12 @@ import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workf
 import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
 import { substackGatewayProperties } from './description';
 import {
+	getAvailableOperations,
+	getAvailableResources,
+	getOperationDescription,
 	getOperationDisplayName,
 	getRequiredFeatureForOperation,
+	hasGatewayResource,
 } from './domain/operation';
 import {
 	isUnsupportedOperationError,
@@ -23,6 +29,42 @@ import { decodeInput } from './runtime/decode/shared';
 import { decodeGatewayOperation } from './runtime/decode-operation';
 import { runGatewayOperation } from './runtime/execute';
 import { fetchGatewayCapabilities } from './runtime/live/gateway-capabilities';
+
+const toNodePropertyOptions = (
+	options: ReadonlyArray<{
+		readonly name: string;
+		readonly value: string;
+		readonly action?: string;
+		readonly description?: string;
+	}>,
+): INodePropertyOptions[] =>
+	options.map((option) => ({
+		name: option.name,
+		value: option.value,
+		...(option.action === undefined ? {} : { action: option.action }),
+		...(option.description === undefined ? {} : { description: option.description }),
+	}));
+
+const loadAvailableGatewayFeatures = async (
+	context: ILoadOptionsFunctions,
+): Promise<ReadonlyArray<string> | undefined> => {
+	try {
+		const credentials = await context.getCredentials<{ gatewayUrl?: string }>('substackGatewayApi');
+		const decodedGatewayUrl = decodeInput(
+			GatewayUrlSchema,
+			toGatewayApiBaseUrl(String(credentials.gatewayUrl ?? '')),
+		);
+
+		if (Either.isLeft(decodedGatewayUrl)) {
+			return undefined;
+		}
+
+		const capabilities = await fetchGatewayCapabilities(context, decodedGatewayUrl.right);
+		return capabilities.features;
+	} catch {
+		return undefined;
+	}
+};
 
 export class Gateway implements INodeType {
 	description: INodeTypeDescription = {
@@ -45,6 +87,40 @@ export class Gateway implements INodeType {
 			},
 		],
 		properties: substackGatewayProperties,
+	};
+
+	methods = {
+		loadOptions: {
+			async getGatewayResources(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const features = await loadAvailableGatewayFeatures(this);
+
+				return toNodePropertyOptions(
+					getAvailableResources(features).map((resource) => ({
+						name: resource.name,
+						value: resource.resource,
+					})),
+				);
+			},
+
+			async getGatewayOperations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const resource = this.getCurrentNodeParameter('resource');
+
+				if (typeof resource !== 'string' || !hasGatewayResource(resource)) {
+					return [];
+				}
+
+				const features = await loadAvailableGatewayFeatures(this);
+
+				return toNodePropertyOptions(
+					getAvailableOperations(resource, features).map((operation) => ({
+						name: operation.name,
+						value: operation.value,
+						action: operation.action,
+						description: getOperationDescription(resource, operation.value),
+					})),
+				);
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
