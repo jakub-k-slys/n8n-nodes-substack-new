@@ -23,13 +23,17 @@ import {
 
 type RandomizerScheduleInput = {
 	readonly name?: string;
-	readonly periodicity?: RandomizerPeriodicity;
-	readonly windowStart?: string;
-	readonly windowEnd?: string;
-	readonly occurrences?: number;
-	readonly weekdays?: unknown;
-	readonly monthDays?: string;
-	readonly minimumSpacingMinutes?: number;
+	readonly windowStartHour?: string;
+	readonly windowStartMinute?: string;
+	readonly windowEndHour?: string;
+	readonly windowEndMinute?: string;
+	readonly parameters?: {
+		readonly periodicity?: RandomizerPeriodicity;
+		readonly occurrences?: number;
+		readonly weekdays?: unknown;
+		readonly monthDays?: string;
+		readonly minimumSpacingMinutes?: number;
+	};
 };
 
 type RandomizerScheduleCollection = {
@@ -37,6 +41,22 @@ type RandomizerScheduleCollection = {
 };
 
 const MINUTE_CRON_EXPRESSION = '0 * * * * *';
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
+	const value = String(hour).padStart(2, '0');
+
+	return {
+		name: value,
+		value,
+	};
+});
+const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, minute) => {
+	const value = String(minute).padStart(2, '0');
+
+	return {
+		name: value,
+		value,
+	};
+});
 
 export class Randomizer implements INodeType {
 	description: INodeTypeDescription = {
@@ -74,13 +94,17 @@ export class Randomizer implements INodeType {
 					schedule: [
 						{
 							name: 'Morning Burst',
-							periodicity: 'daily',
-							windowStart: '10:00',
-							windowEnd: '13:17',
-							occurrences: 3,
-							weekdays: [...defaultWeekdays],
-							monthDays: defaultMonthDays.join(','),
-							minimumSpacingMinutes: 0,
+							windowStartHour: '10',
+							windowStartMinute: '00',
+							windowEndHour: '13',
+							windowEndMinute: '17',
+							parameters: {
+								periodicity: 'daily',
+								occurrences: 3,
+								weekdays: [...defaultWeekdays],
+								monthDays: defaultMonthDays.join(','),
+								minimumSpacingMinutes: 0,
+							},
 						},
 					],
 				},
@@ -90,50 +114,127 @@ export class Randomizer implements INodeType {
 						displayName: 'Schedule',
 						values: [
 							{
-								displayName: 'Minimum Spacing (Minutes)',
-								name: 'minimumSpacingMinutes',
-								type: 'number',
-								typeOptions: {
-									minValue: 0,
-								},
-								default: 0,
-								description:
-									'Minimum number of minutes between random trigger fires in the same UTC window',
-							},
-							{
-								displayName: 'Month Days (UTC)',
-								name: 'monthDays',
-								type: 'string',
-								default: defaultMonthDays.join(','),
-								displayOptions: {
-									show: {
-										periodicity: ['monthly'],
-									},
-								},
-								description:
-									'Comma-separated month days from 1 to 31, for example 1,15,28',
-							},
-							{
-								displayName: 'Periodicity',
-								name: 'periodicity',
+								displayName: '1. Window Start Hour (UTC)',
+								name: 'windowStartHour',
 								type: 'options',
-								noDataExpression: true,
-								default: 'daily',
+								required: true,
+								default: '10',
+								options: HOUR_OPTIONS,
+								description: 'UTC hour when the random window starts',
+							},
+							{
+								displayName: '1. Window Start Minute (UTC)',
+								name: 'windowStartMinute',
+								type: 'options',
+								required: true,
+								default: '00',
+								options: MINUTE_OPTIONS,
+								description: 'UTC minute when the random window starts',
+							},
+							{
+								displayName: '2. Window End Hour (UTC)',
+								name: 'windowEndHour',
+								type: 'options',
+								required: true,
+								default: '13',
+								options: HOUR_OPTIONS,
+								description: 'UTC hour when the random window ends',
+							},
+							{
+								displayName: '2. Window End Minute (UTC)',
+								name: 'windowEndMinute',
+								type: 'options',
+								required: true,
+								default: '17',
+								options: MINUTE_OPTIONS,
+								description: 'UTC minute when the random window ends',
+							},
+							{
+								displayName: 'Parameters',
+								name: 'parameters',
+								type: 'collection',
+								placeholder: 'Add Parameter',
+								default: {},
 								options: [
 									{
-										name: 'Daily',
-										value: 'daily',
+										displayName: 'Minimum Spacing (Minutes)',
+										name: 'minimumSpacingMinutes',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+										},
+										default: 0,
+										description:
+											'Minimum number of minutes between random trigger fires in the same UTC window',
 									},
 									{
-										name: 'Weekly',
-										value: 'weekly',
+										displayName: 'Month Days (UTC)',
+										name: 'monthDays',
+										type: 'string',
+										default: defaultMonthDays.join(','),
+										displayOptions: {
+											show: {
+												periodicity: ['monthly'],
+											},
+										},
+										description:
+											'Comma-separated month days from 1 to 31, for example 1,15,28',
 									},
 									{
-										name: 'Monthly',
-										value: 'monthly',
+										displayName: 'Periodicity',
+										name: 'periodicity',
+										type: 'options',
+										noDataExpression: true,
+										default: 'daily',
+										options: [
+											{
+												name: 'Daily',
+												value: 'daily',
+											},
+											{
+												name: 'Weekly',
+												value: 'weekly',
+											},
+											{
+												name: 'Monthly',
+												value: 'monthly',
+											},
+										],
+										description: 'How often to create a fresh random UTC schedule window',
+									},
+									{
+										displayName: 'Times Per Window',
+										name: 'occurrences',
+										type: 'number',
+										typeOptions: {
+											minValue: 1,
+										},
+										default: 3,
+										description:
+											'How many random trigger fires to create inside each matching window',
+									},
+									{
+										displayName: 'Weekdays (UTC)',
+										name: 'weekdays',
+										type: 'multiOptions',
+										default: [...defaultWeekdays],
+										displayOptions: {
+											show: {
+												periodicity: ['weekly'],
+											},
+										},
+										options: [
+											{ name: 'Friday', value: 'friday' },
+											{ name: 'Monday', value: 'monday' },
+											{ name: 'Saturday', value: 'saturday' },
+											{ name: 'Sunday', value: 'sunday' },
+											{ name: 'Thursday', value: 'thursday' },
+											{ name: 'Tuesday', value: 'tuesday' },
+											{ name: 'Wednesday', value: 'wednesday' },
+										],
+										description: 'Weekdays to use when Periodicity is Weekly',
 									},
 								],
-								description: 'How often to create a fresh random UTC schedule window',
 							},
 							{
 								displayName: 'Schedule Name',
@@ -142,54 +243,6 @@ export class Randomizer implements INodeType {
 								required: true,
 								default: 'Morning Burst',
 								description: 'Friendly label included in emitted items',
-							},
-							{
-								displayName: 'Times Per Window',
-								name: 'occurrences',
-								type: 'number',
-								required: true,
-								typeOptions: {
-									minValue: 1,
-								},
-								default: 3,
-								description: 'How many random trigger fires to create inside each matching window',
-							},
-							{
-								displayName: 'Weekdays (UTC)',
-								name: 'weekdays',
-								type: 'multiOptions',
-								default: [...defaultWeekdays],
-								displayOptions: {
-									show: {
-										periodicity: ['weekly'],
-									},
-								},
-								options: [
-									{ name: 'Friday', value: 'friday' },
-									{ name: 'Monday', value: 'monday' },
-									{ name: 'Saturday', value: 'saturday' },
-									{ name: 'Sunday', value: 'sunday' },
-									{ name: 'Thursday', value: 'thursday' },
-									{ name: 'Tuesday', value: 'tuesday' },
-									{ name: 'Wednesday', value: 'wednesday' },
-								],
-								description: 'Weekdays to use when Periodicity is Weekly',
-							},
-							{
-								displayName: 'Window End (UTC)',
-								name: 'windowEnd',
-								type: 'string',
-								required: true,
-								default: '13:17',
-								description: 'End of the UTC time window in HH:mm format, for example 13:17',
-							},
-							{
-								displayName: 'Window Start (UTC)',
-								name: 'windowStart',
-								type: 'string',
-								required: true,
-								default: '10:00',
-								description: 'Start of the UTC time window in HH:mm format, for example 10:00',
 							},
 						],
 					},
@@ -261,16 +314,19 @@ const getSchedules = (context: ITriggerFunctions): readonly RandomizerSchedule[]
 			validateSchedule({
 				key: `schedule-${index}`,
 				name: String(schedule.name ?? '').trim(),
-				periodicity: schedule.periodicity ?? 'daily',
-				windowStart: String(schedule.windowStart ?? ''),
-				windowEnd: String(schedule.windowEnd ?? ''),
-				occurrences: Number(schedule.occurrences ?? 0),
-				weekdays: sanitizeWeekdays(schedule.weekdays),
-				monthDays: sanitizeMonthDays(String(schedule.monthDays ?? '')),
-				minimumSpacingMinutes: Number(schedule.minimumSpacingMinutes ?? 0),
+				periodicity: schedule.parameters?.periodicity ?? 'daily',
+				windowStart: toUtcTimeString(schedule.windowStartHour, schedule.windowStartMinute),
+				windowEnd: toUtcTimeString(schedule.windowEndHour, schedule.windowEndMinute),
+				occurrences: Number(schedule.parameters?.occurrences ?? 3),
+				weekdays: sanitizeWeekdays(schedule.parameters?.weekdays),
+				monthDays: sanitizeMonthDays(String(schedule.parameters?.monthDays ?? '')),
+				minimumSpacingMinutes: Number(schedule.parameters?.minimumSpacingMinutes ?? 0),
 			}),
 		);
 	} catch (error) {
 		throw new NodeOperationError(context.getNode(), error as Error);
 	}
 };
+
+const toUtcTimeString = (hour: string | undefined, minute: string | undefined): string =>
+	`${String(hour ?? '').padStart(2, '0')}:${String(minute ?? '').padStart(2, '0')}`;
