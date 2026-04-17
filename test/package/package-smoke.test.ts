@@ -5,6 +5,7 @@ import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.cr
 import { FollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
 import { Gateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
 import { ProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
+import { Randomizer } from '../../dist/nodes/Randomizer/Randomizer.node.js';
 
 describe('package build smoke', () => {
 	it('should expose the built node metadata', () => {
@@ -45,5 +46,14 @@ describe('package build smoke', () => {
 		assert.equal(node.description.name, 'substackGatewayProfileFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Profile Feed');
 		assert.equal(node.description.polling, true);
+	});
+
+	it('should expose the built randomizer trigger metadata', () => {
+		const node = new Randomizer();
+
+		assert.equal(node.description.name, 'randomizer');
+		assert.equal(node.description.displayName, 'Randomizer');
+		assert.equal(node.description.polling, true);
+		assert.equal(node.description.properties[0]?.name, 'schedules');
 	});
 });

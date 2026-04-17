@@ -42,7 +42,8 @@
 		"nodes": [
 			"dist/nodes/SubstackGateway/Gateway.node.js",
 			"dist/nodes/SubstackGateway/FollowingFeed.node.js",
-			"dist/nodes/SubstackGateway/ProfileFeed.node.js"
+			"dist/nodes/SubstackGateway/ProfileFeed.node.js",
+			"dist/nodes/Randomizer/Randomizer.node.js"
 		]
 	},
 	"devDependencies": {

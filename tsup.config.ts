@@ -7,6 +7,7 @@ export default defineConfig({
 		'nodes/SubstackGateway/Gateway.node': 'nodes/SubstackGateway/Gateway.node.ts',
 		'nodes/SubstackGateway/FollowingFeed.node': 'nodes/SubstackGateway/FollowingFeed.node.ts',
 		'nodes/SubstackGateway/ProfileFeed.node': 'nodes/SubstackGateway/ProfileFeed.node.ts',
+		'nodes/Randomizer/Randomizer.node': 'nodes/Randomizer/Randomizer.node.ts',
 	},
 	format: ['cjs'],
 	target: 'es2019',
