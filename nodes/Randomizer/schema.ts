@@ -23,7 +23,35 @@ export const RandomizerScheduleCollectionSchema = Schema.Struct({
 	schedule: Schema.optional(Schema.Array(RandomizerScheduleInputSchema)),
 });
 
+export const PendingOccurrenceSchema = Schema.Struct({
+	occurrenceId: Schema.String,
+	occurrenceIndex: Schema.Number,
+	occurrencesInWindow: Schema.Number,
+	plannedAt: Schema.String,
+	scheduleKey: Schema.String,
+	scheduleName: Schema.String,
+	periodicity: RandomizerPeriodicitySchema,
+	windowStart: Schema.String,
+	windowEnd: Schema.String,
+	windowDate: Schema.String,
+});
+
+export const PersistedScheduleStateSchema = Schema.Struct({
+	fingerprint: Schema.String,
+	lastGeneratedDate: Schema.String,
+	pending: Schema.Array(PendingOccurrenceSchema),
+});
+
+export const RandomizerStateSchema = Schema.Struct({
+	version: Schema.Literal(1),
+	schedules: Schema.Record({
+		key: Schema.String,
+		value: PersistedScheduleStateSchema,
+	}),
+});
+
 export type RandomizerScheduleInput = Schema.Schema.Type<typeof RandomizerScheduleInputSchema>;
 export type RandomizerScheduleCollection = Schema.Schema.Type<
 	typeof RandomizerScheduleCollectionSchema
 >;
+export type RandomizerStateInput = Schema.Schema.Type<typeof RandomizerStateSchema>;

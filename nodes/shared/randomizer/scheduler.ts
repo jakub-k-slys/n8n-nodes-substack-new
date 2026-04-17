@@ -1,4 +1,6 @@
 import { Effect } from 'effect';
+import { RandomizerStateSchema } from '../../Randomizer/schema';
+import * as Schema from 'effect/Schema';
 
 const MINUTES_PER_DAY = 24 * 60;
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -84,13 +86,23 @@ export const createEmptyRandomizerState = (): RandomizerState => ({
 	schedules: {},
 });
 
-export const readRandomizerState = (value: unknown): RandomizerState => {
-	if (isRandomizerState(value)) {
-		return value;
-	}
+export const decodeRandomizerState = (
+	value: unknown,
+): Effect.Effect<RandomizerState, RandomizerError> =>
+	Effect.try({
+		try: () => Schema.decodeUnknownSync(RandomizerStateSchema)(value),
+		catch: (cause) => ({
+			_tag: 'RandomizerError',
+			message:
+				cause instanceof Error ? cause.message : 'Invalid Randomizer persisted state',
+			cause,
+		}),
+	});
 
-	return createEmptyRandomizerState();
-};
+export const readRandomizerState = (
+	value: unknown,
+): Effect.Effect<RandomizerState, never> =>
+	Effect.orElse(decodeRandomizerState(value), () => Effect.succeed(createEmptyRandomizerState()));
 
 export const evaluateRandomizerSchedules = (
 	now: Date,
@@ -379,16 +391,6 @@ const diffDays = (left: string, right: string): number =>
 		(parseUtcDateString(right).getTime() - parseUtcDateString(left).getTime()) /
 			MILLISECONDS_PER_DAY,
 	);
-
-const isRandomizerState = (value: unknown): value is RandomizerState => {
-	if (typeof value !== 'object' || value === null) {
-		return false;
-	}
-
-	const candidate = value as Partial<RandomizerState>;
-
-	return candidate.version === 1 && typeof candidate.schedules === 'object' && candidate.schedules !== null;
-};
 
 export const sanitizeMonthDays = (
 	value: string,

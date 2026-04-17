@@ -256,17 +256,21 @@ export class Randomizer implements INodeType {
 		};
 		const evaluateAndEmit = () => {
 			void Effect.runPromise(
-				Effect.tap(
-					evaluateRandomizerSchedules(
-						new Date(),
-						schedules,
-						readRandomizerState(pollState.randomizer),
-					),
-					(evaluation) =>
-						Effect.sync(() => {
-							pollState.randomizer = evaluation.state as unknown as JsonObject;
-							emitOccurrences(evaluation.emitted);
-						}),
+				Effect.flatMap(
+					readRandomizerState(pollState.randomizer),
+					(currentState) =>
+						Effect.tap(
+							evaluateRandomizerSchedules(
+								new Date(),
+								schedules,
+								currentState,
+							),
+							(evaluation) =>
+								Effect.sync(() => {
+									pollState.randomizer = evaluation.state as unknown as JsonObject;
+									emitOccurrences(evaluation.emitted);
+								}),
+						),
 				),
 			).catch((error: RandomizerError) => {
 				this.emitError(new NodeOperationError(this.getNode(), error.message));
