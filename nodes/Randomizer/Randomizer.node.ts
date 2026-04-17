@@ -248,7 +248,7 @@ export class Randomizer implements INodeType {
 					},
 				],
 				description:
-					'Create one or more UTC schedules. Manual execution previews the next planned random fire times instead of waiting for them.',
+					'Create one or more UTC schedules. Manual execution previews only the next planned random fire time instead of waiting for it.',
 			},
 		],
 	};
@@ -285,15 +285,30 @@ export class Randomizer implements INodeType {
 		}
 
 		const manualTriggerFunction = async () => {
-			const previewItems = previewRandomizerSchedules(new Date(), schedules).map((occurrence) => ({
-				json: {
-					...occurrence,
-					preview: true,
-				},
-			}));
+			const nextPreviewOccurrence = previewRandomizerSchedules(new Date(), schedules).reduce<
+				ReturnType<typeof previewRandomizerSchedules>[number] | undefined
+			>((currentEarliest, occurrence) => {
+				if (
+					currentEarliest === undefined ||
+					occurrence.plannedAt.localeCompare(currentEarliest.plannedAt) < 0
+				) {
+					return occurrence;
+				}
 
-			if (previewItems.length > 0) {
-				this.emit([previewItems]);
+				return currentEarliest;
+			}, undefined);
+
+			if (nextPreviewOccurrence !== undefined) {
+				this.emit([
+					[
+						{
+							json: {
+								...nextPreviewOccurrence,
+								preview: true,
+							},
+						},
+					],
+				]);
 			}
 		};
 
