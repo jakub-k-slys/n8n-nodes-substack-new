@@ -356,11 +356,12 @@ const buildPlannedWindow = (
 	Effect.flatMap(parseTimeToMinuteIndex(schedule.windowStart), (startMinute) =>
 		Effect.flatMap(parseTimeToMinuteIndex(schedule.windowEnd), (endMinute) =>
 			tryRandomizerEffect(() => {
-				if (endMinute <= startMinute) {
-					throw new Error('Window End must be later than Window Start');
+				if (endMinute === startMinute) {
+					throw new Error('Window End must not be the same as Window Start');
 				}
 
 				const [year, month, day] = windowDate.split('-').map(Number);
+				const endDayOffset = endMinute < startMinute ? 1 : 0;
 
 				return {
 					windowDate,
@@ -368,7 +369,13 @@ const buildPlannedWindow = (
 						Date.UTC(year, month - 1, day, Math.floor(startMinute / 60), startMinute % 60),
 					),
 					windowEnd: new Date(
-						Date.UTC(year, month - 1, day, Math.floor(endMinute / 60), endMinute % 60),
+						Date.UTC(
+							year,
+							month - 1,
+							day + endDayOffset,
+							Math.floor(endMinute / 60),
+							endMinute % 60,
+						),
 					),
 				};
 			}),

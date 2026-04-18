@@ -184,6 +184,73 @@ describe('randomizer scheduler', () => {
 		);
 	});
 
+	it('should support windows that end on the next UTC day', () => {
+		const schedule = Effect.runSync(
+			validateSchedule({
+				key: 'schedule-0',
+				name: 'Night Window',
+				periodicity: 'daily',
+				windowStart: '22:47',
+				windowEnd: '02:39',
+				occurrences: 2,
+				weekdays: [],
+				monthDays: [],
+				minimumSpacingMinutes: 0,
+			}),
+		);
+
+		const firstPoll = runWithServices(
+			evaluateRandomizerSchedules([schedule], createEmptyRandomizerState()),
+			new Date('2026-04-17T22:46:00.000Z'),
+			fixedRandom(0),
+		);
+
+		assert.equal(firstPoll.emitted.length, 0);
+		assert.deepEqual(
+			firstPoll.state.schedules['schedule-0']?.pending.map((occurrence) => occurrence.plannedAt),
+			['2026-04-17T22:47:00.000Z', '2026-04-17T22:48:00.000Z'],
+		);
+
+		const secondPoll = runWithServices(
+			evaluateRandomizerSchedules([schedule], firstPoll.state),
+			new Date('2026-04-17T22:48:00.000Z'),
+			fixedRandom(0),
+		);
+
+		assert.equal(secondPoll.emitted.length, 2);
+		assert.equal(
+			secondPoll.emitted[0]?.windowEnd,
+			'2026-04-18T02:39:00.000Z',
+		);
+	});
+
+	it('should preview a cross-midnight window', () => {
+		const schedule = Effect.runSync(
+			validateSchedule({
+				key: 'schedule-0',
+				name: 'Night Preview',
+				periodicity: 'daily',
+				windowStart: '22:47',
+				windowEnd: '02:39',
+				occurrences: 1,
+				weekdays: [],
+				monthDays: [],
+				minimumSpacingMinutes: 0,
+			}),
+		);
+
+		const preview = runWithServices(
+			previewRandomizerSchedules([schedule]),
+			new Date('2026-04-17T21:00:00.000Z'),
+			fixedRandom(0),
+		);
+
+		assert.equal(preview.length, 1);
+		assert.equal(preview[0]?.windowStart, '2026-04-17T22:47:00.000Z');
+		assert.equal(preview[0]?.windowEnd, '2026-04-18T02:39:00.000Z');
+		assert.equal(preview[0]?.plannedAt, '2026-04-17T22:47:00.000Z');
+	});
+
 	it('should decode persisted randomizer state', () => {
 		const decoded = Effect.runSync(
 			decodeRandomizerState({

@@ -129,7 +129,8 @@ export class Randomizer implements INodeType {
 								required: true,
 								default: '13',
 								options: HOUR_OPTIONS,
-								description: 'UTC hour when the random window ends',
+								description:
+									'UTC hour when the random window ends. If earlier than the start hour, the window ends on the next day.',
 							},
 							{
 								displayName: '2. Window End Minute (UTC)',
@@ -138,7 +139,8 @@ export class Randomizer implements INodeType {
 								required: true,
 								default: '17',
 								options: MINUTE_OPTIONS,
-								description: 'UTC minute when the random window ends',
+								description:
+									'UTC minute when the random window ends. If the end time is earlier than the start time, the window ends on the next day.',
 							},
 							{
 								displayName: 'Parameters',
@@ -239,7 +241,7 @@ export class Randomizer implements INodeType {
 					},
 				],
 				description:
-					'Create one or more UTC schedules. Manual execution previews only the next planned random fire time instead of waiting for it.',
+					'Create one or more UTC schedules. Windows may cross midnight. Manual execution previews only the next planned random fire time instead of waiting for it.',
 			},
 		],
 	};
