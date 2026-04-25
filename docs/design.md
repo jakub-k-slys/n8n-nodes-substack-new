@@ -2,11 +2,21 @@
 
 ## High-Level Structure
 
-The package is organized around the `Substack Gateway` n8n node and a resource-oriented runtime.
+The package is organized around 4 n8n nodes:
+
+- `Substack Gateway`
+- `Substack Gateway Following Feed`
+- `Substack Gateway Profile Feed`
+- `Randomizer`
+
+The Substack-specific runtime is still centered on the `Substack Gateway` action node and its shared resource-oriented runtime.
 
 Key paths:
 
 - [`nodes/Gateway/Gateway.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/Gateway/Gateway.node.ts)
+- [`nodes/FollowingFeed/FollowingFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/FollowingFeed/FollowingFeed.node.ts)
+- [`nodes/ProfileFeed/ProfileFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/ProfileFeed/ProfileFeed.node.ts)
+- [`nodes/Randomizer/Randomizer.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/Randomizer/Randomizer.node.ts)
 - [`nodes/SubstackGateway/runtime`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/runtime)
 - [`nodes/SubstackGateway/domain`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/domain)
 - [`nodes/SubstackGateway/schema`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/schema)
@@ -19,6 +29,10 @@ Key paths:
 - validates `Gateway URL`
 - runs the selected operation for each input item
 - converts domain/runtime errors into n8n errors
+
+`FollowingFeed.node.ts` and `ProfileFeed.node.ts` are polling triggers that reuse the gateway transport and shared Atom feed parsing/checkpointing helpers in [`nodes/shared/atom-feed`](/Users/jakubslys/n8n-nodes-substack-new/nodes/shared/atom-feed).
+
+`Randomizer.node.ts` is an independent trigger that uses the shared scheduler logic in [`nodes/shared/randomizer`](/Users/jakubslys/n8n-nodes-substack-new/nodes/shared/randomizer).
 
 ## Runtime Layer
 
@@ -55,3 +69,6 @@ The package compiles to `dist/`, and `package.json` points n8n to:
 
 - `dist/credentials/SubstackGatewayApi.credentials.js`
 - `dist/nodes/Gateway/Gateway.node.js`
+- `dist/nodes/FollowingFeed/FollowingFeed.node.js`
+- `dist/nodes/ProfileFeed/ProfileFeed.node.js`
+- `dist/nodes/Randomizer/Randomizer.node.js`

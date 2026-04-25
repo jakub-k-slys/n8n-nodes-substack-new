@@ -1,19 +1,28 @@
 # API Reference
 
-This package currently documents the `Substack Gateway` n8n node, not a standalone TypeScript client API.
+This package documents the n8n package surface, not a standalone TypeScript client API.
 
-## Node
+## Nodes
 
 - display name: `Substack Gateway`
-- internal name: `substackGateway`
-- credential name: `substackGatewayApi`
+  internal name: `substackGateway`
+- display name: `Substack Gateway Following Feed`
+  internal name: `substackGatewayFollowingFeed`
+- display name: `Substack Gateway Profile Feed`
+  internal name: `substackGatewayProfileFeed`
+- display name: `Randomizer`
+  internal name: `randomizer`
+
+## Credential
+
+Credential name: `substackGatewayApi`
 
 ## Credential Fields
 
 - `Gateway URL`
 - `Gateway Token`
 
-## Resources And Operations
+## Gateway Resources And Operations
 
 ### Own Publication
 
@@ -64,12 +73,22 @@ Shared fields are resource-specific:
 - `limit`
 - `offset`
 
+Trigger-specific fields include:
+
+- `emitOnlyNewItems`
+- `userName`
+- `options.maximumEntityCount`
+- `options.requestTimeoutSeconds`
+- `schedules`
+
 ## Output Shape
 
-The node returns plain JSON items shaped by resource-specific serializers. Common fields include:
+The package returns plain JSON items shaped by node-specific serializers. Common fields include:
 
 - profiles: `id`, `handle`, `name`, `url`, `avatarUrl`, optional `bio`
 - notes: `id`, `body`, `likesCount`, `author`, `publishedAt`
 - posts: `id`, `title`, `slug`, `url`, `publishedAt`, optional rich post fields
 - drafts: `id`/`uuid` for summary and creation flows, or optional `title`/`subtitle`/`body` for fetched draft content
 - comments: `id`, `body`, `isAdmin`
+- feed entries: normalized Atom feed entry fields
+- randomizer items: generated occurrence metadata and schedule context

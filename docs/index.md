@@ -1,6 +1,13 @@
-# Substack Gateway Docs
+# Package Docs
 
 This documentation covers the current `n8n-nodes-substack-new` package.
+
+The package currently ships 4 nodes:
+
+- `Substack Gateway`
+- `Substack Gateway Following Feed`
+- `Substack Gateway Profile Feed`
+- `Randomizer`
 
 Core guides:
 

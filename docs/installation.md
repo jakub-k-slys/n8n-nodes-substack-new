@@ -17,12 +17,21 @@ If you are using n8n's community package UI, install `n8n-nodes-substack-new` th
 
 ## Credential Setup
 
-Create a `Substack Gateway` credential with:
+Create a `Substack Gateway` credential for the Substack nodes with:
 
 - `Gateway URL`
-  - Default: `https://substack-gateway.vercel.app/api/v1`
+  - Store the gateway root URL, not a hardcoded `/api/v1` URL
 - `Gateway Token`
   - Sent as `x-gateway-token`
+
+## Installed Nodes
+
+After installation, n8n should expose 4 nodes from this package:
+
+- `Substack Gateway`
+- `Substack Gateway Following Feed`
+- `Substack Gateway Profile Feed`
+- `Randomizer`
 
 ## Local Development Setup
 

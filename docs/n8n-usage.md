@@ -1,10 +1,28 @@
 # n8n Usage
 
-## Node Identity
+## Package Nodes
 
-- Display name: `Substack Gateway`
-- Internal name: `substackGateway`
-- Credential name: `substackGatewayApi`
+- `Substack Gateway`
+  Internal name: `substackGateway`
+- `Substack Gateway Following Feed`
+  Internal name: `substackGatewayFollowingFeed`
+- `Substack Gateway Profile Feed`
+  Internal name: `substackGatewayProfileFeed`
+- `Randomizer`
+  Internal name: `randomizer`
+
+The three Substack nodes use the `substackGatewayApi` credential.
+
+## Node Roles
+
+- `Substack Gateway`
+  Programmatic action node for Substack reads and writes.
+- `Substack Gateway Following Feed`
+  Polling trigger for the authenticated user's following feed.
+- `Substack Gateway Profile Feed`
+  Polling trigger for a selected Substack profile feed.
+- `Randomizer`
+  Schedule-driven trigger for random fire times inside daily, weekly, or monthly windows.
 
 ## Resources And Operations
 
@@ -42,6 +60,37 @@
 
 ## Parameters
 
+### Following Feed Parameters
+
+- `emitOnlyNewItems`
+  Whether the first successful poll should suppress already-existing feed entries
+- `options.maximumEntityCount`
+  Maximum XML entity count while parsing the feed
+- `options.requestTimeoutSeconds`
+  Request timeout in seconds
+
+### Profile Feed Parameters
+
+- `userName`
+  Required profile user name to poll
+- `emitOnlyNewItems`
+  Whether the first successful poll should suppress already-existing feed entries
+
+### Randomizer Parameters
+
+- `schedules`
+  One or more random schedule windows
+- `windowStartHour`, `windowStartMinute`, `windowEndHour`, `windowEndMinute`
+  Define the active window in the selected timezone
+- `parameters.periodicity`
+  Daily, weekly, or monthly scheduling
+- `parameters.occurrences`
+  Number of random fires to generate per window
+- `parameters.timeZone`
+  IANA timezone used for schedule evaluation
+- `parameters.minimumSpacingMinutes`
+  Minimum spacing between emitted times in one window
+
 ### Note Parameters
 
 - `content`
@@ -78,7 +127,7 @@
 
 ## Output Shapes
 
-The node returns plain JSON items. Output fields vary by resource and operation.
+All 4 nodes return plain JSON items. Output fields vary by node and operation.
 
 Common shapes:
 
@@ -87,10 +136,12 @@ Common shapes:
 - draft summary: `id`, `uuid`, optional `title`, optional `updated`
 - post summary/full post: `id`, `title`, `publishedAt`, plus post-specific optional fields
 - comment: `id`, `body`, `isAdmin`
+- feed entry: `id`, `type`, `publishedAt`, `title`, `url`, plus normalized feed-specific fields
+- randomizer emission: schedule metadata plus the generated due occurrence timestamp
 
 ## Error Handling
 
-Operation handlers return structured failures that the main node converts into n8n errors, unless `Continue On Fail` is enabled.
+The `Substack Gateway` action handlers return structured failures that the main node converts into n8n errors, unless `Continue On Fail` is enabled.
 
 Common failure cases:
 
@@ -99,3 +150,5 @@ Common failure cases:
 - Empty `content` when creating a note
 - Invalid numeric IDs
 - Gateway-side request failures
+- Invalid or empty profile feed user name
+- Invalid randomizer schedule configuration

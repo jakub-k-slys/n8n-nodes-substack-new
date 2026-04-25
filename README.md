@@ -1,8 +1,13 @@
 # n8n-nodes-substack-new
 
-`n8n-nodes-substack-new` provides the `Substack Gateway` n8n community node.
+`n8n-nodes-substack-new` provides a 4-node n8n community package:
 
-It integrates n8n with a gateway-backed Substack API and currently supports own publication data, notes, drafts, posts, and profiles.
+- `Substack Gateway`
+- `Substack Gateway Following Feed`
+- `Substack Gateway Profile Feed`
+- `Randomizer`
+
+It integrates n8n with a gateway-backed Substack API and also includes a schedule-based random trigger utility.
 
 > [!IMPORTANT]
 > This is an unofficial community node. It is not part of n8n and is not compatible with n8n Cloud-hosted instances, where custom community packages cannot be installed.
@@ -19,9 +24,20 @@ npm install n8n-nodes-substack-new
 
 Restart n8n after installation.
 
+## Nodes
+
+- `Substack Gateway`
+  Main action node for gateway-backed Substack reads and writes across own publication, notes, drafts, posts, and profiles.
+- `Substack Gateway Following Feed`
+  Polling trigger for the authenticated user's following feed.
+- `Substack Gateway Profile Feed`
+  Polling trigger for a specific Substack profile feed.
+- `Randomizer`
+  Trigger node that emits events at random times inside configured schedule windows.
+
 ## Credentials
 
-The node uses the `Substack Gateway` credential with:
+The Substack nodes use the `Substack Gateway` credential with:
 
 - `Gateway URL`
 - `Gateway Token`
@@ -56,18 +72,27 @@ Current resources and operations:
 ## Quickstart
 
 1. Install the package and restart n8n.
-2. Create a `Substack Gateway` credential.
-3. Add the `Substack Gateway` node to a workflow.
-4. Try:
+2. Create a `Substack Gateway` credential for the Substack nodes.
+3. Add one of the package nodes to a workflow.
+4. For the main action node, try:
    - `Resource: Own Publication`
    - `Operation: Own Profile`
 
-For a simple write flow, use:
+For a simple write flow, use `Substack Gateway` with:
 
 - `Resource: Note`
 - `Operation: Create`
 - `Content: ...`
 - `Attachment: ...` (optional)
+
+For feed polling, use:
+
+- `Substack Gateway Following Feed` to watch your authenticated following feed
+- `Substack Gateway Profile Feed` to watch a specific profile's Atom feed
+
+For schedule-based triggering, use:
+
+- `Randomizer` with one or more windows and a target timezone
 
 ## Development
 

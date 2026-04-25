@@ -10,25 +10,39 @@ Restart n8n after installation.
 
 ## 2. Create Credentials
 
-Add a `Substack Gateway` credential with:
+Add a `Substack Gateway` credential for the Substack nodes with:
 
-- `Gateway URL`: leave the default unless you run your own gateway
+- `Gateway URL`: the gateway root URL
 - `Gateway Token`: your gateway token
 
-## 3. Add The Node
+## 3. Choose A Node
 
-In n8n, add the `Substack Gateway` node.
+In n8n, add one of the package nodes:
 
-## 4. Try A Read Operation
+- `Substack Gateway`
+- `Substack Gateway Following Feed`
+- `Substack Gateway Profile Feed`
+- `Randomizer`
 
-Use:
+## 4. Try The Main Action Node
+
+Use `Substack Gateway` with:
 
 - `Resource`: `Own Publication`
 - `Operation`: `Own Profile`
 
 This returns your current profile summary.
 
-## 5. Try A Write Operation
+## 5. Try A Trigger Node
+
+Use `Substack Gateway Following Feed` when you want new entries from your authenticated following feed, or `Substack Gateway Profile Feed` when you want entries from a chosen profile.
+
+For `Substack Gateway Profile Feed`, set:
+
+- `User Name`: the target Substack profile user name
+- `Emit Only New Items`: enabled for typical polling flows
+
+## 6. Try A Write Operation
 
 Use:
 
@@ -39,7 +53,17 @@ Use:
 
 This creates a note through the gateway and returns a created note identifier.
 
-## 6. Try A List Operation
+## 7. Try A Random Schedule Trigger
+
+Use `Randomizer` with:
+
+- one schedule window
+- a timezone
+- `Times Per Window` greater than `0`
+
+This emits items at random times inside the configured window.
+
+## 8. Try A List Operation
 
 Use:
 
