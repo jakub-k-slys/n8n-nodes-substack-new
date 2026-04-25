@@ -8,9 +8,9 @@ import { Effect, Either } from 'effect';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
-import { GatewayUrlSchema } from './schema';
-import { decodeInput } from './runtime/decode/shared';
-import { requireGatewayFeature } from './runtime/live/gateway-capabilities';
+import { GatewayUrlSchema } from '../SubstackGateway/schema';
+import { decodeInput } from '../SubstackGateway/runtime/decode/shared';
+import { requireGatewayFeature } from '../SubstackGateway/runtime/live/gateway-capabilities';
 import {
 	fetchAtomFeed,
 	parseAtomFeed,
@@ -37,7 +37,10 @@ export class FollowingFeed implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway Following Feed',
 		name: 'substackGatewayFollowingFeed',
-		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
+		icon: {
+			light: 'file:../SubstackGateway/substackGateway.svg',
+			dark: 'file:../SubstackGateway/substackGateway.dark.svg',
+		},
 		group: ['trigger'],
 		version: 1,
 		description: 'Poll the authenticated user following Atom feed from Substack Gateway',

@@ -21,7 +21,7 @@ Read the repo guidance before changing code:
 ## Repository Areas
 
 - main node: [`nodes/SubstackGateway`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway)
-- triggers: [`nodes/SubstackGateway/FollowingFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/FollowingFeed.node.ts) and [`nodes/SubstackGateway/ProfileFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/SubstackGateway/ProfileFeed.node.ts)
+- triggers: [`nodes/FollowingFeed/FollowingFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/FollowingFeed/FollowingFeed.node.ts) and [`nodes/ProfileFeed/ProfileFeed.node.ts`](/Users/jakubslys/n8n-nodes-substack-new/nodes/ProfileFeed/ProfileFeed.node.ts)
 - shared feed logic: [`nodes/shared/atom-feed`](/Users/jakubslys/n8n-nodes-substack-new/nodes/shared/atom-feed)
 - gateway transport: [`nodes/shared/gateway-transport`](/Users/jakubslys/n8n-nodes-substack-new/nodes/shared/gateway-transport)
 - credentials: [`credentials/SubstackGatewayApi.credentials.ts`](/Users/jakubslys/n8n-nodes-substack-new/credentials/SubstackGatewayApi.credentials.ts)

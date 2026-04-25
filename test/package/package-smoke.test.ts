@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.credentials.js';
-import { FollowingFeed } from '../../dist/nodes/SubstackGateway/FollowingFeed.node.js';
-import { Gateway } from '../../dist/nodes/SubstackGateway/Gateway.node.js';
-import { ProfileFeed } from '../../dist/nodes/SubstackGateway/ProfileFeed.node.js';
+import { FollowingFeed } from '../../dist/nodes/FollowingFeed/FollowingFeed.node.js';
+import { Gateway } from '../../dist/nodes/Gateway/Gateway.node.js';
+import { ProfileFeed } from '../../dist/nodes/ProfileFeed/ProfileFeed.node.js';
 import { Randomizer } from '../../dist/nodes/Randomizer/Randomizer.node.js';
 
 describe('package build smoke', () => {

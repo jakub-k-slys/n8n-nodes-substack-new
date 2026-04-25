@@ -14,7 +14,9 @@ the repository over generic n8n examples.
 ## Current Architecture
 
 ### Main node
-The main node is a programmatic node in `nodes/SubstackGateway/`.
+The main node entrypoint is `nodes/Gateway/Gateway.node.ts`.
+
+Its shared programmatic runtime lives in `nodes/SubstackGateway/`.
 
 Key structure:
 
@@ -35,8 +37,8 @@ falling back to ad hoc imperative parsing.
 ### Triggers
 The polling triggers live in:
 
-- `nodes/SubstackGateway/FollowingFeed.node.ts`
-- `nodes/SubstackGateway/ProfileFeed.node.ts`
+- `nodes/FollowingFeed/FollowingFeed.node.ts`
+- `nodes/ProfileFeed/ProfileFeed.node.ts`
 
 Shared feed parsing and checkpoint logic lives in `nodes/shared/atom-feed/`.
 
@@ -100,6 +102,9 @@ the breaking-change marker when the change is semver-major.
 
 ### Source
 - `credentials/SubstackGatewayApi.credentials.ts`
+- `nodes/Gateway/`
+- `nodes/FollowingFeed/`
+- `nodes/ProfileFeed/`
 - `nodes/SubstackGateway/`
 - `nodes/shared/atom-feed/`
 - `nodes/shared/gateway-transport/`

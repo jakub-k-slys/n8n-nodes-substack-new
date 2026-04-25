@@ -26,9 +26,9 @@ export default [
 	},
 	{
 		files: [
-			'nodes/SubstackGateway/Gateway.node.ts',
-			'nodes/SubstackGateway/FollowingFeed.node.ts',
-			'nodes/SubstackGateway/ProfileFeed.node.ts',
+			'nodes/Gateway/Gateway.node.ts',
+			'nodes/FollowingFeed/FollowingFeed.node.ts',
+			'nodes/ProfileFeed/ProfileFeed.node.ts',
 		],
 		rules: {
 			'n8n-nodes-base/node-dirname-against-convention': 'off',

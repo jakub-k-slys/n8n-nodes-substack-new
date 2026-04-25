@@ -10,7 +10,7 @@ import { Either } from 'effect';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { toGatewayApiBaseUrl } from '../shared/gateway-transport';
-import { substackGatewayProperties } from './description';
+import { substackGatewayProperties } from '../SubstackGateway/description';
 import {
 	getAvailableOperations,
 	getAvailableResources,
@@ -18,17 +18,17 @@ import {
 	getOperationDisplayName,
 	getRequiredFeatureForOperation,
 	hasGatewayResource,
-} from './domain/operation';
+} from '../SubstackGateway/domain/operation';
 import {
 	isUnsupportedOperationError,
 	toGatewayApiCause,
 	toGatewayErrorMessage,
-} from './domain/error';
-import { GatewayUrlSchema } from './schema';
-import { decodeInput } from './runtime/decode/shared';
-import { decodeGatewayOperation } from './runtime/decode-operation';
-import { runGatewayOperation } from './runtime/execute';
-import { fetchGatewayCapabilities } from './runtime/live/gateway-capabilities';
+} from '../SubstackGateway/domain/error';
+import { GatewayUrlSchema } from '../SubstackGateway/schema';
+import { decodeInput } from '../SubstackGateway/runtime/decode/shared';
+import { decodeGatewayOperation } from '../SubstackGateway/runtime/decode-operation';
+import { runGatewayOperation } from '../SubstackGateway/runtime/execute';
+import { fetchGatewayCapabilities } from '../SubstackGateway/runtime/live/gateway-capabilities';
 
 const toNodePropertyOptions = (
 	options: ReadonlyArray<{
@@ -70,7 +70,10 @@ export class Gateway implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Substack Gateway',
 		name: 'substackGateway',
-		icon: { light: 'file:substackGateway.svg', dark: 'file:substackGateway.dark.svg' },
+		icon: {
+			light: 'file:../SubstackGateway/substackGateway.svg',
+			dark: 'file:../SubstackGateway/substackGateway.dark.svg',
+		},
 		group: ['input'],
 		version: [1],
 		description: 'Read and manage Substack profiles, posts, notes, and drafts through Substack Gateway',
