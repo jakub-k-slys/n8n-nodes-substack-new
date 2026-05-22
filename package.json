@@ -52,7 +52,7 @@
 		"@eslint/js": "^9.32.0",
 		"@n8n/node-cli": "*",
 		"eslint": "^9.32.0",
-		"n8n": "^2.14.2",
+		"n8n": "^2.21.7",
 		"prettier": "3.8.3",
 		"release-it": "^20.0.0",
 		"sqlite3": "^6.0.1",
@@ -67,5 +67,10 @@
 		"@effect/platform": "^0.96.0",
 		"effect": "^3.21.0",
 		"fast-xml-parser": "^5.5.11"
+	},
+	"pnpm": {
+		"overrides": {
+			"@langchain/core": "^1.1.45"
+		}
 	}
 }
