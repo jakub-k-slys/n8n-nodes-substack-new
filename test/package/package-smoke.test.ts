@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { SubstackGatewayApi } from '../../dist/credentials/SubstackGatewayApi.credentials.js';
+import { BatchFeed } from '../../dist/nodes/BatchFeed/BatchFeed.node.js';
 import { FollowingFeed } from '../../dist/nodes/FollowingFeed/FollowingFeed.node.js';
 import { Gateway } from '../../dist/nodes/Gateway/Gateway.node.js';
 import { ProfileFeed } from '../../dist/nodes/ProfileFeed/ProfileFeed.node.js';
@@ -46,6 +47,17 @@ describe('package build smoke', () => {
 		assert.equal(node.description.name, 'substackGatewayProfileFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Profile Feed');
 		assert.equal(node.description.polling, true);
+	});
+
+	it('should expose the built batch feed trigger metadata', () => {
+		const node = new BatchFeed();
+
+		assert.equal(node.description.name, 'substackGatewayBatchFeed');
+		assert.equal(node.description.displayName, 'Substack Gateway Batch Feed');
+		assert.equal(node.description.polling, true);
+		assert.equal(node.description.properties[0]?.name, 'subscriptions');
+		assert.equal(node.description.properties[1]?.name, 'emitOnlyNewItems');
+		assert.equal(node.description.properties[2]?.name, 'options');
 	});
 
 	it('should expose the built randomizer trigger metadata', () => {

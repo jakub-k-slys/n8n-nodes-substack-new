@@ -1,5 +1,6 @@
 export * from './common';
 export * from './inputs';
+export * from './responses-batch-feed';
 export * from './responses-capabilities';
 export * from './responses-draft';
 export * from './responses-note';

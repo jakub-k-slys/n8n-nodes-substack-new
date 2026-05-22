@@ -43,6 +43,7 @@
 			"dist/nodes/Gateway/Gateway.node.js",
 			"dist/nodes/FollowingFeed/FollowingFeed.node.js",
 			"dist/nodes/ProfileFeed/ProfileFeed.node.js",
+			"dist/nodes/BatchFeed/BatchFeed.node.js",
 			"dist/nodes/Randomizer/Randomizer.node.js"
 		]
 	},

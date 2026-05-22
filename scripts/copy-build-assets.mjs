@@ -8,6 +8,7 @@ const filesToCopy = [
 	'nodes/Gateway/Gateway.node.json',
 	'nodes/FollowingFeed/FollowingFeed.node.json',
 	'nodes/ProfileFeed/ProfileFeed.node.json',
+	'nodes/BatchFeed/BatchFeed.node.json',
 	'nodes/Randomizer/Randomizer.node.json',
 	'nodes/SubstackGateway/substackGateway.svg',
 	'nodes/SubstackGateway/substackGateway.dark.svg',
