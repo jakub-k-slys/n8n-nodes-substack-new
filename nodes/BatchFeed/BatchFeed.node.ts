@@ -30,7 +30,8 @@ import {
 import { canonicalizeSubscriptions, hashSubscriptions } from './subscriptions';
 
 const BATCH_FEED_REGISTER_PATH = '/feeds';
-const BATCH_FEED_FEATURE = 'api:feeds:batch';
+const BATCH_FEED_UPSERT_FEATURE = 'api:feeds:batch:upsert';
+const BATCH_FEED_ATOM_FEATURE = 'api:feeds:batch:atom';
 const BATCH_FEED_STATE_KEY = 'batchFeedRegistration';
 const DEFAULT_MAXIMUM_ENTITY_COUNT = 10000;
 const DEFAULT_REQUEST_TIMEOUT_SECONDS = 15 * 60;
@@ -38,8 +39,8 @@ const MILLISECONDS_PER_SECOND = 1000;
 
 const getRegisterUrl = (gatewayApiUrl: string): string =>
 	`${gatewayApiUrl}${BATCH_FEED_REGISTER_PATH}`;
-const getAtomUrl = (gatewayApiUrl: string, uuid: string): string =>
-	`${gatewayApiUrl}${BATCH_FEED_REGISTER_PATH}/${encodeURIComponent(uuid)}/atom`;
+const getAtomUrl = (gatewayApiUrl: string, feedId: string): string =>
+	`${gatewayApiUrl}${BATCH_FEED_REGISTER_PATH}/${encodeURIComponent(feedId)}/atom`;
 
 type BatchFeedOptions = {
 	readonly maximumEntityCount?: number;
@@ -56,7 +57,7 @@ type SubscriptionsCollection = {
 
 type BatchFeedState = {
 	readonly hash: string;
-	readonly uuid: string;
+	readonly id: string;
 };
 
 const readBatchFeedState = (staticData: IDataObject): BatchFeedState | undefined => {
@@ -66,18 +67,18 @@ const readBatchFeedState = (staticData: IDataObject): BatchFeedState | undefined
 		typeof stored !== 'object' ||
 		stored === null ||
 		typeof (stored as IDataObject).hash !== 'string' ||
-		typeof (stored as IDataObject).uuid !== 'string'
+		typeof (stored as IDataObject).id !== 'string'
 	) {
 		return undefined;
 	}
 
-	const candidate = stored as { hash: string; uuid: string };
+	const candidate = stored as { hash: string; id: string };
 
-	return { hash: candidate.hash, uuid: candidate.uuid };
+	return { hash: candidate.hash, id: candidate.id };
 };
 
 const writeBatchFeedState = (staticData: IDataObject, state: BatchFeedState): void => {
-	staticData[BATCH_FEED_STATE_KEY] = { hash: state.hash, uuid: state.uuid };
+	staticData[BATCH_FEED_STATE_KEY] = { hash: state.hash, id: state.id };
 };
 
 const clearAtomCheckpoint = (staticData: IDataObject): void => {
@@ -198,7 +199,14 @@ export class BatchFeed implements INodeType {
 			this,
 			this.getNode(),
 			gatewayApiUrl,
-			BATCH_FEED_FEATURE,
+			BATCH_FEED_UPSERT_FEATURE,
+			'Batch Feed',
+		);
+		await requireGatewayFeature(
+			this,
+			this.getNode(),
+			gatewayApiUrl,
+			BATCH_FEED_ATOM_FEATURE,
 			'Batch Feed',
 		);
 
@@ -216,7 +224,7 @@ export class BatchFeed implements INodeType {
 		}
 
 		const decodedSubscriptions = decodeInput(BatchFeedSubscriptionsSchema, {
-			subscriptions: canonicalSubscriptions,
+			slugs: canonicalSubscriptions,
 		});
 
 		if (Either.isLeft(decodedSubscriptions)) {
@@ -233,10 +241,10 @@ export class BatchFeed implements INodeType {
 		const subscriptionsHash = hashSubscriptions(canonicalSubscriptions);
 		const cachedRegistration = readBatchFeedState(pollState);
 
-		let uuid: string;
+		let feedId: string;
 
 		if (cachedRegistration !== undefined && cachedRegistration.hash === subscriptionsHash) {
-			uuid = cachedRegistration.uuid;
+			feedId = cachedRegistration.id;
 		} else {
 			const registrationResponse = await Effect.runPromise(
 				executeAuthenticatedGatewayRequest(this, {
@@ -259,14 +267,14 @@ export class BatchFeed implements INodeType {
 				);
 			}
 
-			uuid = decodedRegistration.right.uuid;
+			feedId = decodedRegistration.right.id;
 			clearAtomCheckpoint(pollState);
-			writeBatchFeedState(pollState, { hash: subscriptionsHash, uuid });
+			writeBatchFeedState(pollState, { hash: subscriptionsHash, id: feedId });
 		}
 
 		const data = await Effect.runPromise(
 			Effect.flatMap(
-				fetchAtomFeed(this, getAtomUrl(gatewayApiUrl, uuid), {
+				fetchAtomFeed(this, getAtomUrl(gatewayApiUrl, feedId), {
 					timeoutMs: requestTimeoutSeconds * MILLISECONDS_PER_SECOND,
 				}),
 				(xml) => parseAtomFeed(xml, { maxEntityCount: maximumEntityCount }),

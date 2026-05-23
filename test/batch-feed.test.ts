@@ -42,7 +42,7 @@ describe('Batch feed subscriptions', () => {
 
 	it('rejects empty subscription requests via the schema', () => {
 		const decoded = Schema.decodeUnknownEither(BatchFeedSubscriptionsSchema)({
-			subscriptions: [],
+			slugs: [],
 		});
 
 		assert.equal(decoded._tag, 'Left');
@@ -50,21 +50,21 @@ describe('Batch feed subscriptions', () => {
 
 	it('accepts non-empty subscription requests via the schema', async () => {
 		const decoded = await Schema.decodeUnknownPromise(BatchFeedSubscriptionsSchema)({
-			subscriptions: ['alice', 'bob'],
+			slugs: ['alice', 'bob'],
 		});
 
-		assert.deepEqual(decoded.subscriptions, ['alice', 'bob']);
+		assert.deepEqual(decoded.slugs, ['alice', 'bob']);
 	});
 
-	it('decodes a registration response carrying a uuid', async () => {
+	it('decodes a registration response carrying an id', async () => {
 		const decoded = await Schema.decodeUnknownPromise(BatchFeedRegistrationSchema)({
-			uuid: '7f9b2d24-1a8c-4f8a-91c1-9a9b1f6c8b35',
+			id: '7f9b2d24-1a8c-4f8a-91c1-9a9b1f6c8b35',
 		});
 
-		assert.equal(decoded.uuid, '7f9b2d24-1a8c-4f8a-91c1-9a9b1f6c8b35');
+		assert.equal(decoded.id, '7f9b2d24-1a8c-4f8a-91c1-9a9b1f6c8b35');
 	});
 
-	it('rejects registration responses without a uuid', () => {
+	it('rejects registration responses without an id', () => {
 		const decoded = Schema.decodeUnknownEither(BatchFeedRegistrationSchema)({});
 
 		assert.equal(decoded._tag, 'Left');

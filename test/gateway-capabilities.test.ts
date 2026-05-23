@@ -31,7 +31,7 @@ describe('gateway capabilities metadata', () => {
 	it('should annotate gated operations in the editor description', () => {
 		assert.equal(
 			getOperationDescription('post', 'likePost'),
-			'Requires gateway feature support and is not available in OSS',
+			'Add a heart like to a Substack post by its ID. Requires gateway feature support and is not available in OSS',
 		);
 	});
 
