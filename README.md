@@ -1,10 +1,11 @@
 # n8n-nodes-substack-new
 
-`n8n-nodes-substack-new` provides a 4-node n8n community package:
+`n8n-nodes-substack-new` provides a 5-node n8n community package:
 
 - `Substack Gateway`
 - `Substack Gateway Following Feed`
 - `Substack Gateway Profile Feed`
+- `Substack Gateway Batch Feed`
 - `Randomizer`
 
 It integrates n8n with a gateway-backed Substack API and also includes a schedule-based random trigger utility.
@@ -32,6 +33,8 @@ Restart n8n after installation.
   Polling trigger for the authenticated user's following feed.
 - `Substack Gateway Profile Feed`
   Polling trigger for a specific Substack profile feed.
+- `Substack Gateway Batch Feed`
+  Polling trigger for an Atom feed aggregated across an explicit list of profile handles. Registers the list on the gateway via an idempotent `PUT` and polls the returned UUID.
 - `Randomizer`
   Trigger node that emits events at random times inside configured schedule windows.
 
@@ -105,6 +108,7 @@ For feed polling, use:
 
 - `Substack Gateway Following Feed` to watch your authenticated following feed
 - `Substack Gateway Profile Feed` to watch a specific profile's Atom feed
+- `Substack Gateway Batch Feed` to watch a combined Atom feed for a curated list of profile handles
 
 For schedule-based triggering, use:
 

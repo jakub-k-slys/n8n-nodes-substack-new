@@ -6,6 +6,7 @@ This repository contains the `n8n-nodes-substack-new` package. It currently ship
 - `Substack Gateway` main action node
 - `Substack Gateway Following Feed` polling trigger
 - `Substack Gateway Profile Feed` polling trigger
+- `Substack Gateway Batch Feed` polling trigger
 - `Substack Gateway API` credentials
 
 This is not a generic starter anymore. Prefer the patterns already present in
@@ -39,6 +40,7 @@ The polling triggers live in:
 
 - `nodes/FollowingFeed/FollowingFeed.node.ts`
 - `nodes/ProfileFeed/ProfileFeed.node.ts`
+- `nodes/BatchFeed/BatchFeed.node.ts`
 
 Shared feed parsing and checkpoint logic lives in `nodes/shared/atom-feed/`.
 
@@ -105,6 +107,7 @@ the breaking-change marker when the change is semver-major.
 - `nodes/Gateway/`
 - `nodes/FollowingFeed/`
 - `nodes/ProfileFeed/`
+- `nodes/BatchFeed/`
 - `nodes/SubstackGateway/`
 - `nodes/shared/atom-feed/`
 - `nodes/shared/gateway-transport/`

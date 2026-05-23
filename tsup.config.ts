@@ -7,6 +7,7 @@ export default defineConfig({
 		'nodes/Gateway/Gateway.node': 'nodes/Gateway/Gateway.node.ts',
 		'nodes/FollowingFeed/FollowingFeed.node': 'nodes/FollowingFeed/FollowingFeed.node.ts',
 		'nodes/ProfileFeed/ProfileFeed.node': 'nodes/ProfileFeed/ProfileFeed.node.ts',
+		'nodes/BatchFeed/BatchFeed.node': 'nodes/BatchFeed/BatchFeed.node.ts',
 		'nodes/Randomizer/Randomizer.node': 'nodes/Randomizer/Randomizer.node.ts',
 	},
 	format: ['cjs'],

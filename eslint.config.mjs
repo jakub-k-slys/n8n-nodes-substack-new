@@ -29,6 +29,7 @@ export default [
 			'nodes/Gateway/Gateway.node.ts',
 			'nodes/FollowingFeed/FollowingFeed.node.ts',
 			'nodes/ProfileFeed/ProfileFeed.node.ts',
+			'nodes/BatchFeed/BatchFeed.node.ts',
 		],
 		rules: {
 			'n8n-nodes-base/node-dirname-against-convention': 'off',
