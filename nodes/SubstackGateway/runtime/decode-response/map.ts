@@ -54,7 +54,7 @@ export const toGatewayNote = (note: NoteResponse): GatewayNote => ({
 	id: note.id,
 	body: note.body,
 	likesCount: note.likes_count,
-	author: toGatewayNoteAuthor(note.author),
+	...(note.author !== undefined ? { author: toGatewayNoteAuthor(note.author) } : {}),
 	publishedAt: note.published_at,
 });
 
