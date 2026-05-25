@@ -21,7 +21,7 @@ const JsonNoteSchema = Schema.Struct({
 	id: Schema.Number,
 	body: Schema.String,
 	likesCount: Schema.Number,
-	author: JsonNoteAuthorSchema,
+	author: Schema.optional(JsonNoteAuthorSchema),
 	publishedAt: Schema.String,
 });
 
@@ -47,7 +47,9 @@ export const toJsonNoteAuthor = (author: GatewayNoteAuthor): IDataObject => ({
 export const toJsonNote = (note: GatewayNote): IDataObject => ({
 	...encodeJson(JsonNoteSchema)({
 		...note,
-		author: encodeJson(JsonNoteAuthorSchema)(note.author),
+		...(note.author !== undefined
+			? { author: encodeJson(JsonNoteAuthorSchema)(note.author) }
+			: {}),
 	}),
 });
 

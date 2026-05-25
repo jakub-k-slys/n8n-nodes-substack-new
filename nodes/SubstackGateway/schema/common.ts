@@ -28,7 +28,7 @@ export const NoteResponseSchema = Schema.Struct({
 	id: Schema.Number,
 	body: Schema.String,
 	likes_count: Schema.Number,
-	author: NoteAuthorSchema,
+	author: Schema.optional(NoteAuthorSchema),
 	published_at: Schema.String,
 });
 export type NoteResponse = Schema.Schema.Type<typeof NoteResponseSchema>;

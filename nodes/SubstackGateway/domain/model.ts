@@ -23,7 +23,7 @@ export type GatewayNote = {
 	readonly id: number;
 	readonly body: string;
 	readonly likesCount: number;
-	readonly author: GatewayNoteAuthor;
+	readonly author?: GatewayNoteAuthor;
 	readonly publishedAt: string;
 };
 
