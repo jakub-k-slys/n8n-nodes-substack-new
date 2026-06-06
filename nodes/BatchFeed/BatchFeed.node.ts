@@ -27,7 +27,7 @@ import {
 	toNodeExecutionData,
 	writeAtomFeedCheckpoint,
 } from '../shared/atom-feed';
-import { canonicalizeSubscriptions, hashSubscriptions } from './subscriptions';
+import { canonicalizeSubscriptions } from './subscriptions';
 
 const BATCH_FEED_REGISTER_PATH = '/feeds';
 const BATCH_FEED_UPSERT_FEATURE = 'api:feeds:batch:upsert';
@@ -56,7 +56,6 @@ type SubscriptionsCollection = {
 };
 
 type BatchFeedState = {
-	readonly hash: string;
 	readonly id: string;
 };
 
@@ -66,19 +65,16 @@ const readBatchFeedState = (staticData: IDataObject): BatchFeedState | undefined
 	if (
 		typeof stored !== 'object' ||
 		stored === null ||
-		typeof (stored as IDataObject).hash !== 'string' ||
 		typeof (stored as IDataObject).id !== 'string'
 	) {
 		return undefined;
 	}
 
-	const candidate = stored as { hash: string; id: string };
-
-	return { hash: candidate.hash, id: candidate.id };
+	return { id: (stored as { id: string }).id };
 };
 
 const writeBatchFeedState = (staticData: IDataObject, state: BatchFeedState): void => {
-	staticData[BATCH_FEED_STATE_KEY] = { hash: state.hash, id: state.id };
+	staticData[BATCH_FEED_STATE_KEY] = { id: state.id };
 };
 
 const clearAtomCheckpoint = (staticData: IDataObject): void => {
@@ -238,38 +234,34 @@ export class BatchFeed implements INodeType {
 			options.requestTimeoutSeconds ?? DEFAULT_REQUEST_TIMEOUT_SECONDS;
 
 		const pollState = this.getWorkflowStaticData('node');
-		const subscriptionsHash = hashSubscriptions(canonicalSubscriptions);
-		const cachedRegistration = readBatchFeedState(pollState);
+		const previousRegistration = readBatchFeedState(pollState);
 
-		let feedId: string;
+		const registrationResponse = await Effect.runPromise(
+			executeAuthenticatedGatewayRequest(this, {
+				method: 'PUT',
+				url: getRegisterUrl(gatewayApiUrl),
+				json: true,
+				body: decodedSubscriptions.right,
+			}),
+		);
 
-		if (cachedRegistration !== undefined && cachedRegistration.hash === subscriptionsHash) {
-			feedId = cachedRegistration.id;
-		} else {
-			const registrationResponse = await Effect.runPromise(
-				executeAuthenticatedGatewayRequest(this, {
-					method: 'PUT',
-					url: getRegisterUrl(gatewayApiUrl),
-					json: true,
-					body: decodedSubscriptions.right,
-				}),
+		const decodedRegistration = decodeInput(
+			BatchFeedRegistrationSchema,
+			registrationResponse,
+		);
+
+		if (Either.isLeft(decodedRegistration)) {
+			throw new NodeOperationError(
+				this.getNode(),
+				'Invalid batch feed registration response',
 			);
+		}
 
-			const decodedRegistration = decodeInput(
-				BatchFeedRegistrationSchema,
-				registrationResponse,
-			);
+		const feedId = decodedRegistration.right.id;
 
-			if (Either.isLeft(decodedRegistration)) {
-				throw new NodeOperationError(
-					this.getNode(),
-					'Invalid batch feed registration response',
-				);
-			}
-
-			feedId = decodedRegistration.right.id;
+		if (previousRegistration === undefined || previousRegistration.id !== feedId) {
 			clearAtomCheckpoint(pollState);
-			writeBatchFeedState(pollState, { hash: subscriptionsHash, id: feedId });
+			writeBatchFeedState(pollState, { id: feedId });
 		}
 
 		const data = await Effect.runPromise(
