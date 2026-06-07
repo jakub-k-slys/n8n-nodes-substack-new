@@ -135,11 +135,11 @@ Notes:
 
 ## Documentation
 
-- [Docs Index](/Users/jakubslys/n8n-nodes-substack-new/docs/index.md)
-- [Quickstart](/Users/jakubslys/n8n-nodes-substack-new/docs/quickstart.md)
-- [n8n Usage](/Users/jakubslys/n8n-nodes-substack-new/docs/n8n-usage.md)
-- [Architecture](/Users/jakubslys/n8n-nodes-substack-new/docs/design.md)
-- [Testing](/Users/jakubslys/n8n-nodes-substack-new/docs/testing.md)
+- [Docs Index](docs/index.md)
+- [Quickstart](docs/quickstart.md)
+- [n8n Usage](docs/n8n-usage.md)
+- [Architecture](docs/design.md)
+- [Testing](docs/testing.md)
 
 ## Compatibility
 
