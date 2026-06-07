@@ -147,7 +147,7 @@ This package targets modern n8n releases with community nodes enabled. Verify ag
 
 ## Author
 
-Built by [Jakub Słyś](https://iam.slys.dev) — Backend Engineer and n8n
+Built by [Jakub Slys](https://iam.slys.dev) — Backend Engineer and n8n
 self-hoster who uses this node package as part of his own content automation
 pipeline running on a self-hosted Kubernetes cluster.
 
