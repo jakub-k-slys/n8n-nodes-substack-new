@@ -10,7 +10,7 @@ export const postFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['post'],
-				operation: ['getPost', 'getPostComments', 'likePost', 'unlikePost'],
+				operation: ['getPost', 'getPostComments', 'likePost', 'restackPost', 'unlikePost'],
 			},
 		},
 		description: 'The numeric ID of the post',

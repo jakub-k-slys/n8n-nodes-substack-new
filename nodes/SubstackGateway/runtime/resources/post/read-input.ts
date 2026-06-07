@@ -30,6 +30,10 @@ export const readPostInput = (
 					_tag: 'unlikePost' as const,
 					postId: context.getNodeParameter('postId', itemIndex),
 				})),
+				Match.when('restackPost', () => ({
+					_tag: 'restackPost' as const,
+					postId: context.getNodeParameter('postId', itemIndex),
+				})),
 				Match.exhaustive,
 			),
 		catch: unexpectedError,

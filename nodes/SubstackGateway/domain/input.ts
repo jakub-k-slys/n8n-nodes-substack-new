@@ -35,7 +35,8 @@ export type PostInput =
 	| { readonly _tag: 'getPost'; readonly postId: unknown }
 	| { readonly _tag: 'getPostComments'; readonly postId: unknown }
 	| { readonly _tag: 'likePost'; readonly postId: unknown }
-	| { readonly _tag: 'unlikePost'; readonly postId: unknown };
+	| { readonly _tag: 'unlikePost'; readonly postId: unknown }
+	| { readonly _tag: 'restackPost'; readonly postId: unknown };
 
 export type ProfileInput =
 	| { readonly _tag: 'getProfile'; readonly profileSlug: unknown }

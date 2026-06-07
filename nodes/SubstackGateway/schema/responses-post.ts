@@ -13,3 +13,9 @@ export const PostLikeResponseSchema = Schema.Struct({
 	postId: Schema.Number,
 	liked: Schema.Boolean,
 });
+
+export const PostRestackResponseSchema = Schema.Struct({
+	success: Schema.Boolean,
+	postId: Schema.Number,
+	restacked: Schema.Boolean,
+});

@@ -43,7 +43,8 @@ export type PostCommand =
 	| { readonly _tag: 'Get'; readonly postId: PostId }
 	| { readonly _tag: 'GetComments'; readonly postId: PostId }
 	| { readonly _tag: 'Like'; readonly postId: PostId }
-	| { readonly _tag: 'Unlike'; readonly postId: PostId };
+	| { readonly _tag: 'Unlike'; readonly postId: PostId }
+	| { readonly _tag: 'Restack'; readonly postId: PostId };
 
 export type ProfileCommand =
 	| { readonly _tag: 'Get'; readonly profileSlug: ProfileSlug }

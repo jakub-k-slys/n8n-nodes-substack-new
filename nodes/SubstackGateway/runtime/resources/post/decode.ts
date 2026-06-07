@@ -42,5 +42,13 @@ export const decodePostCommand = (
 				(input) => ({ _tag: 'Unlike', ...input }) as const,
 			),
 		),
+		Match.when({ _tag: 'restackPost' }, ({ postId }) =>
+			Either.map(
+				decodeInput(PostIdInputSchema, {
+					postId,
+				}),
+				(input) => ({ _tag: 'Restack', ...input }) as const,
+			),
+		),
 		Match.exhaustive,
 	);

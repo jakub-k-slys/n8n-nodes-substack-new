@@ -33,6 +33,7 @@ export type GatewayApiFeature =
 	| 'api:posts:comments:list'
 	| 'api:posts:get'
 	| 'api:posts:like'
+	| 'api:posts:restack'
 	| 'api:posts:unlike'
 	| 'api:profiles:get'
 	| 'api:profiles:notes:list'
@@ -194,6 +195,13 @@ export const gatewayResourceCatalog = [
 				action: 'Like a post',
 				description: 'Add a heart like to a Substack post by its ID',
 				requiredFeature: 'api:posts:like',
+			},
+			{
+				name: 'Restack',
+				value: 'restackPost',
+				action: 'Restack a post',
+				description: 'Restack a Substack post by its ID',
+				requiredFeature: 'api:posts:restack',
 			},
 			{
 				name: 'Unlike',

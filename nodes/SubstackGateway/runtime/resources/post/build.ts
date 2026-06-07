@@ -31,5 +31,11 @@ export const buildPostRequest = (
 			responseMode: 'empty',
 			emptyResponseBody: { success: true, postId: command.postId, liked: false },
 		}) satisfies GatewayHttpRequest),
+		Match.when({ _tag: 'Restack' }, (command) => ({
+			method: 'POST',
+			url: `${gatewayUrl}/posts/${command.postId}/restack`,
+			responseMode: 'empty',
+			emptyResponseBody: { success: true, postId: command.postId, restacked: true },
+		}) satisfies GatewayHttpRequest),
 		Match.exhaustive,
 	);

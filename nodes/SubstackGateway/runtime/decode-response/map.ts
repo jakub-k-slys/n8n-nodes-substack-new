@@ -27,6 +27,7 @@ import type {
 	GatewayProfile,
 	LikedNote,
 	LikedPost,
+	RestackedPost,
 } from '../../domain/model';
 
 export const toGatewayProfile = (profile: ProfileResponse): GatewayProfile => ({
@@ -117,3 +118,5 @@ export const toLikedNote = (note: LikedNote): LikedNote => note;
 export const toDeletedDraft = (draft: DeletedDraft): DeletedDraft => draft;
 
 export const toLikedPost = (post: LikedPost): LikedPost => post;
+
+export const toRestackedPost = (post: RestackedPost): RestackedPost => post;

@@ -96,6 +96,12 @@ export type LikedPost = {
 	readonly liked: boolean;
 };
 
+export type RestackedPost = {
+	readonly success: boolean;
+	readonly postId: number;
+	readonly restacked: boolean;
+};
+
 export type DeletedDraft = {
 	readonly success: boolean;
 	readonly draftId: number;

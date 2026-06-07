@@ -2,7 +2,7 @@ import { Match } from 'effect';
 import type { IDataObject } from 'n8n-workflow';
 
 import type { GatewayResult } from '../../../domain/result';
-import { toJsonComment, toJsonLikedPost, toJsonPost } from './dto';
+import { toJsonComment, toJsonLikedPost, toJsonPost, toJsonRestackedPost } from './dto';
 
 export const postResultToJson = (
 	result: GatewayResult & { readonly _tag: 'Post' },
@@ -12,5 +12,6 @@ export const postResultToJson = (
 		Match.when({ _tag: 'Comments' }, ({ items }) => items.map(toJsonComment)),
 		Match.when({ _tag: 'Liked' }, ({ item }) => [toJsonLikedPost(item)]),
 		Match.when({ _tag: 'Unliked' }, ({ item }) => [toJsonLikedPost(item)]),
+		Match.when({ _tag: 'Restacked' }, ({ item }) => [toJsonRestackedPost(item)]),
 		Match.exhaustive,
 	);

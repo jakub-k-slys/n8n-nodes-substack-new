@@ -13,6 +13,7 @@ import type {
 	GatewayProfile,
 	LikedNote,
 	LikedPost,
+	RestackedPost,
 } from './model';
 
 export type OwnPublicationResult =
@@ -39,7 +40,8 @@ export type PostResult =
 	| { readonly _tag: 'Fetched'; readonly item: GatewayPost }
 	| { readonly _tag: 'Comments'; readonly items: ReadonlyArray<GatewayComment> }
 	| { readonly _tag: 'Liked'; readonly item: LikedPost }
-	| { readonly _tag: 'Unliked'; readonly item: LikedPost };
+	| { readonly _tag: 'Unliked'; readonly item: LikedPost }
+	| { readonly _tag: 'Restacked'; readonly item: RestackedPost };
 
 export type ProfileResult =
 	| { readonly _tag: 'Fetched'; readonly item: GatewayProfile }

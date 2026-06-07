@@ -21,7 +21,7 @@ export const executePostOperation = (
 		operation,
 		logLabel: 'post',
 		decodeOperation: (operation) =>
-			decodeTaggedOperation<'getPost' | 'getPostComments' | 'likePost' | 'unlikePost'>(
+			decodeTaggedOperation<'getPost' | 'getPostComments' | 'likePost' | 'unlikePost' | 'restackPost'>(
 				'post',
 				'Post',
 				operation,
