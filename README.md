@@ -1,19 +1,17 @@
 # n8n-nodes-substack-new
 
-`n8n-nodes-substack-new` provides a 5-node n8n community package:
+[![npm version](https://badge.fury.io/js/n8n-nodes-substack-new.svg)](https://badge.fury.io/js/n8n-nodes-substack-new)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- `Substack Gateway`
-- `Substack Gateway Following Feed`
-- `Substack Gateway Profile Feed`
-- `Substack Gateway Batch Feed`
-- `Randomizer`
-
-It integrates n8n with a gateway-backed Substack API and also includes a schedule-based random trigger utility.
+n8n community package that integrates [Substack Gateway OSS](https://github.com/jakub-k-slys/substack-gateway-oss)
+with n8n workflows. Provides full read and write access to Substack — notes,
+drafts, posts, profiles, and feed triggers — through a self-hosted gateway
+backend.
 
 > [!IMPORTANT]
-> This is an unofficial community node. It is not part of n8n and is not compatible with n8n Cloud-hosted instances, where custom community packages cannot be installed.
->
-> To use this package, you need an n8n environment you control, such as a self-hosted deployment, Docker setup, VPS, Railway, or a similar hosting provider.
+> This is an unofficial community node. It is not part of n8n and is not
+> compatible with n8n Cloud. To use this package you need a self-hosted n8n
+> instance and a running [Substack Gateway](https://github.com/jakub-k-slys/substack-gateway-oss).
 
 ## Installation
 
@@ -146,3 +144,18 @@ Notes:
 ## Compatibility
 
 This package targets modern n8n releases with community nodes enabled. Verify against the current build and test workflow in this repository.
+
+## Author
+
+Built by [Jakub Słyś](https://iam.slys.dev) — Backend Engineer and n8n
+self-hoster who uses this node package as part of his own content automation
+pipeline running on a self-hosted Kubernetes cluster.
+
+These nodes connect to [Substack Gateway OSS](https://github.com/jakub-k-slys/substack-gateway-oss),
+a Python REST + MCP backend I built to automate my Substack newsletter at
+[iam.slys.dev](https://iam.slys.dev).
+
+I write about building exactly this kind of stack — n8n workflows, self-hosted
+AI tooling, and the engineering decisions behind them.
+
+→ [iam.slys.dev](https://iam.slys.dev)
