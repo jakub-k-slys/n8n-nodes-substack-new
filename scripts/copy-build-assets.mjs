@@ -10,6 +10,7 @@ const filesToCopy = [
 	'nodes/ProfileFeed/ProfileFeed.node.json',
 	'nodes/BatchFeed/BatchFeed.node.json',
 	'nodes/Randomizer/Randomizer.node.json',
+	'nodes/RandomGate/RandomGate.node.json',
 	'nodes/SubstackGateway/substackGateway.svg',
 	'nodes/SubstackGateway/substackGateway.dark.svg',
 ];

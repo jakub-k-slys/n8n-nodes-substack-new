@@ -9,6 +9,7 @@ export default defineConfig({
 		'nodes/ProfileFeed/ProfileFeed.node': 'nodes/ProfileFeed/ProfileFeed.node.ts',
 		'nodes/BatchFeed/BatchFeed.node': 'nodes/BatchFeed/BatchFeed.node.ts',
 		'nodes/Randomizer/Randomizer.node': 'nodes/Randomizer/Randomizer.node.ts',
+		'nodes/RandomGate/RandomGate.node': 'nodes/RandomGate/RandomGate.node.ts',
 	},
 	format: ['cjs'],
 	target: 'es2019',
