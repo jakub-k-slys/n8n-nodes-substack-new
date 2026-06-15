@@ -37,12 +37,12 @@ export class RandomGate implements INodeType {
 			{
 				displayName: 'Pass-Through Percent',
 				name: 'passThroughPercent',
-				type: 'number',
-				typeOptions: {
-					minValue: 0,
-					maxValue: 100,
-				},
+				type: 'options',
 				default: 100,
+				options: Array.from({ length: 101 }, (_, value) => ({
+					name: String(value),
+					value,
+				})),
 				description:
 					'Probability (0-100) that an input item is forwarded. 0 drops every item and ends the branch, 100 always forwards.',
 			},
