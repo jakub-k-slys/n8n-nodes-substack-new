@@ -5,7 +5,12 @@ import {
 	executeAuthenticatedGatewayRequest,
 	toGatewayRootUrl,
 } from '../../../shared/gateway-transport';
-import { GatewayCapabilitiesSchema, type GatewayCapabilities } from '../../schema';
+import {
+	GatewayCapabilitiesSchema,
+	describeGatewayModules,
+	getGatewayFeatures,
+	type GatewayCapabilities,
+} from '../../schema';
 
 export const fetchGatewayCapabilities = async (
 	context: IAllExecuteFunctions,
@@ -37,10 +42,10 @@ export const requireGatewayFeature = async (
 ): Promise<void> => {
 	const capabilities = await fetchGatewayCapabilities(context, gatewayUrl);
 
-	if (!capabilities.features.includes(requiredFeature)) {
+	if (!getGatewayFeatures(capabilities).includes(requiredFeature)) {
 		throw new NodeOperationError(
 			node,
-			`This Substack Gateway does not support "${displayName}". Required feature: ${requiredFeature}. Current tier: ${capabilities.tier}.`,
+			`This Substack Gateway does not support "${displayName}". Required feature: ${requiredFeature}. Available modules: ${describeGatewayModules(capabilities)}.`,
 		);
 	}
 };

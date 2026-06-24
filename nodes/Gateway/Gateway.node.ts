@@ -24,7 +24,11 @@ import {
 	toGatewayApiCause,
 	toGatewayErrorMessage,
 } from '../SubstackGateway/domain/error';
-import { GatewayUrlSchema } from '../SubstackGateway/schema';
+import {
+	GatewayUrlSchema,
+	describeGatewayModules,
+	getGatewayFeatures,
+} from '../SubstackGateway/schema';
 import { decodeInput } from '../SubstackGateway/runtime/decode/shared';
 import { decodeGatewayOperation } from '../SubstackGateway/runtime/decode-operation';
 import { runGatewayOperation } from '../SubstackGateway/runtime/execute';
@@ -60,7 +64,7 @@ const loadAvailableGatewayFeatures = async (
 		}
 
 		const capabilities = await fetchGatewayCapabilities(context, decodedGatewayUrl.right);
-		return capabilities.features;
+		return getGatewayFeatures(capabilities);
 	} catch {
 		return undefined;
 	}
@@ -161,10 +165,10 @@ export class Gateway implements INodeType {
 					capabilitiesPromise ??= fetchGatewayCapabilities(this, gatewayUrl);
 					const capabilities = await capabilitiesPromise;
 
-					if (!capabilities.features.includes(requiredFeature)) {
+					if (!getGatewayFeatures(capabilities).includes(requiredFeature)) {
 						throw new NodeOperationError(
 							this.getNode(),
-							`This Substack Gateway does not support "${getOperationDisplayName(decodedOperation.right)}". Required feature: ${requiredFeature}. Current tier: ${capabilities.tier}.`,
+							`This Substack Gateway does not support "${getOperationDisplayName(decodedOperation.right)}". Required feature: ${requiredFeature}. Available modules: ${describeGatewayModules(capabilities)}.`,
 							{ itemIndex },
 						);
 					}
