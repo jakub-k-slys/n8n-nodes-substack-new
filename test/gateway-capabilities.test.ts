@@ -10,7 +10,11 @@ import {
 	getStaticDiscoveryOperations,
 	getStaticDiscoveryResources,
 } from '../nodes/SubstackGateway/domain/operation.ts';
-import { GatewayCapabilitiesSchema } from '../nodes/SubstackGateway/schema/index.ts';
+import {
+	GatewayCapabilitiesSchema,
+	describeGatewayModules,
+	getGatewayFeatures,
+} from '../nodes/SubstackGateway/schema/index.ts';
 import { Schema } from 'effect';
 
 describe('gateway capabilities metadata', () => {
@@ -78,14 +82,29 @@ describe('gateway capabilities metadata', () => {
 		);
 	});
 
-	it('should decode capability responses that include trigger feed features', async () => {
+	it('should decode module-based capability responses and flatten their features', async () => {
 		const decoded = await Schema.decodeUnknownPromise(GatewayCapabilitiesSchema)({
 			application: 'substack-gateway',
-			tier: 'pro',
-			version: '0.6.0',
-			features: ['api:me:following:feed', 'api:profiles:feed'],
+			modules: [
+				{
+					name: 'gateway-oss',
+					version: '3.0.0',
+					features: ['api:notes:create', 'api:profiles:get'],
+				},
+				{
+					name: 'gateway-pro',
+					version: '2.0.1',
+					features: ['api:me:following:feed', 'api:profiles:feed'],
+				},
+			],
 		});
 
-		assert.deepEqual(decoded.features, ['api:me:following:feed', 'api:profiles:feed']);
+		assert.deepEqual(getGatewayFeatures(decoded), [
+			'api:notes:create',
+			'api:profiles:get',
+			'api:me:following:feed',
+			'api:profiles:feed',
+		]);
+		assert.equal(describeGatewayModules(decoded), 'gateway-oss@3.0.0, gateway-pro@2.0.1');
 	});
 });
