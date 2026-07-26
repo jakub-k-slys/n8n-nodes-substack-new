@@ -268,16 +268,10 @@ export class Randomizer implements INodeType {
 		const schedules = await runRandomizerEffect(this, getSchedules(this));
 		const pollState = this.getWorkflowStaticData('node') as JsonObject;
 		const emitOccurrences = (occurrences: readonly EmittedOccurrence[]) => {
-			if (occurrences.length === 0) {
-				return;
+			for (const occurrence of occurrences) {
+				this.emit([[{ json: occurrence }]]);
 			}
-
-			this.emit([
-				occurrences.map((occurrence) => ({
-					json: occurrence,
-				})),
-			]);
-			};
+		};
 			const evaluateAndEmit = () => {
 				const now = new Date();
 				void Effect.runPromise(
