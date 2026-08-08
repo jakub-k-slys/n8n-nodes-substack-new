@@ -22,17 +22,17 @@ importers:
         version: 5.10.1
       n8n-workflow:
         specifier: '*'
-        version: 2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+        version: 2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
     devDependencies:
       '@cucumber/cucumber':
         specifier: ^13.0.0
-        version: 13.2.0
+        version: 13.2.1
       '@eslint/js':
         specifier: ^9.32.0
         version: 9.39.5
       '@n8n/node-cli':
         specifier: '*'
-        version: 0.27.0(0b7bdc1019a5e01d1ba7bfdce9442b99)
+        version: 0.27.0(d0b4a2efee1990350279f756ca253609)
       eslint:
         specifier: ^9.32.0
         version: 9.39.4(jiti@2.7.0)
@@ -274,6 +274,9 @@ packages:
   '@aws-sdk/core@3.977.4':
     resolution: {integrity: sha512-CEkcQlMOQJCvul60U7wdAOACjtdgFWDsfJI+6wUOGdhGNV2lGbuJpi/R50QLpFG3Tp+sQxa/RmzC3X7KHbhuTA==}
     engines: {node: '>=20.0.0'}
+    deprecated: |-
+      Deprecated due to Document number parsing bug in JSON, see
+        https://github.com/aws/aws-sdk-js-v3/issues/8246. Newer version available.
 
   '@aws-sdk/credential-provider-cognito-identity@3.808.0':
     resolution: {integrity: sha512-AbsD/qHyQmyZ+CqJNOaGlnwZaXu8HfndfEiLsIJU/dIf9Wbt7ZtsHSAI/x78awxGohDneMZ6c5vuaRGYL7Z04g==}
@@ -840,8 +843,8 @@ packages:
   '@cucumber/cucumber-expressions@20.0.0':
     resolution: {integrity: sha512-t2FBLKuU0U1nP5FM8pHiVonYcXVm07fvXr/H9osdvrjcLXSWc5OCbOOqV/k5S56w/YndPv1Sv2/m/x1KBYvIlA==}
 
-  '@cucumber/cucumber@13.2.0':
-    resolution: {integrity: sha512-QjhTG6FWVdG66qkj1BGONecAIqEIDx4g+ZnTdaQVmhECDfGPYyfEcBX3k71p/h1YKvWEUWmhol77Y7FZ36pARA==}
+  '@cucumber/cucumber@13.2.1':
+    resolution: {integrity: sha512-Km3mLbZKOE/TlR9ExGWcG7PwOG1ArMt/R6BexrMhGA8pLGaLCWYISTHStpftLuuhVKvVd3RO5M/pfARKyvcyWg==}
     engines: {node: 22 || 24 || >=26}
     hasBin: true
 
@@ -860,8 +863,11 @@ packages:
   '@cucumber/gherkin@41.0.0':
     resolution: {integrity: sha512-pKGx1EzNjtWbpw74kEevKDMj71dF3ZSaFJpLYuWVvRZKe+Cwoq5iEkuMaELIg1jxIu8jH/A2HPMpMR8UBvdG0w==}
 
-  '@cucumber/html-formatter@24.0.0':
-    resolution: {integrity: sha512-F+3Y2yXZBjj8kYhUg++8LjHhfne0ddm8KS9bYf29nF5f9D3g3elZjWnxa9eMKfkIQGlW5EcmzMYyu6iEF+dV5g==}
+  '@cucumber/gherkin@42.0.0':
+    resolution: {integrity: sha512-kBcv+NV4FGQYX6NIsSCjsjaX8MsRdEH559BQ9xEFPgkLQX/Z//JZrY94fpjxW6quo4V5kxlzFiiVC5xouF9Akg==}
+
+  '@cucumber/html-formatter@24.1.0':
+    resolution: {integrity: sha512-5TBLnBT+tIvtamw/jtblBVgzQ2/ckd+md8I0rwkEk29vFMCF68jNwhyONGq6leUYMq4kVF+KdFhE8xGrSc3kJw==}
     peerDependencies:
       '@cucumber/messages': '>=18'
 
@@ -878,8 +884,8 @@ packages:
   '@cucumber/messages@33.0.4':
     resolution: {integrity: sha512-i6P1a0bnmhecOHfvIW0rhMxv/gMKfBKwDMxmD9/Uo1HSqpQ17ocHms1JwWW6uTMLAopqqWlcz7l6Pax+qUOTzg==}
 
-  '@cucumber/messages@34.0.1':
-    resolution: {integrity: sha512-Mvh8CkZD4TGykvXqM9qpnYVGy9cqMxYkImtghl2cF1hEuBtuDGU716zQk7KviLh0ssidM/phh9kdbJL/73dHpg==}
+  '@cucumber/messages@34.2.0':
+    resolution: {integrity: sha512-6X6T1TApmbQNqxC0Oh3GcnLU+gfE5fp+cEXE/ml6+Ldx76Q6BDmkgM5vagSSDXP+vetPV2Fb0kWVeP7QIR6+Aw==}
 
   '@cucumber/pretty-formatter@4.0.0':
     resolution: {integrity: sha512-vWKHUfjMphtbeHHlQBZ1gQzPL3/HE/O2dNnpBqEOIDwvhp7tKvqSe8kscp2H7pArbxN6euEpR5JbstJdzo3iyg==}
@@ -891,13 +897,13 @@ packages:
     peerDependencies:
       '@cucumber/messages': '*'
 
-  '@cucumber/query@16.1.0':
-    resolution: {integrity: sha512-68oRiUIUkrTZJpxh1o3x1JG3YIZ9S+w+AJPk9EdHzgTOFxsmqs8DoAKSU9nMpnBE4u5gNKeRhzA0GKrUR6zcmw==}
+  '@cucumber/query@16.1.1':
+    resolution: {integrity: sha512-SBaP4Lc7xv55jY78Q8raoxvbBIPGhQKrui/Tq+l6jYBl1alV0TG1sW8TRtk9W7RQl27nVJo9DyyvASp374L9Tg==}
     peerDependencies:
       '@cucumber/messages': '*'
 
-  '@cucumber/tag-expressions@10.0.0':
-    resolution: {integrity: sha512-uap3XSQFxj5HYAHQIShGeS2zotMEnUmnEVjyuhp39j7tDUvaU64ArHzRkLPSWRavEI8ycdeNdwef1pcM/n6pSQ==}
+  '@cucumber/tag-expressions@11.0.0':
+    resolution: {integrity: sha512-7Uo6dYST8xZbHwwemXCt7Kv80Yh/SE85DyOed1/FTwxRXs3NYVOCm6e/h8DxlhTGIpD6rYXfpY3nHnIXAFMBlw==}
 
   '@dabh/diagnostics@2.0.8':
     resolution: {integrity: sha512-R4MSXTVnuMzGD7bzHdW2ZhhdPC/igELENcq5IjEverBvq5hn1SXCWcsi6eSsdWP0/Ur+SItRRjAktmdoX/8R/Q==}
@@ -5612,6 +5618,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   csrf@3.1.0:
     resolution: {integrity: sha512-uTqEnCvWRk042asU6JtapDTcJeeailFy4ydOQS28bj1hcLnYRiqi8SsD2jS412AY1I/4qdOwWZun774iqywf9w==}
@@ -9604,9 +9611,9 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  supports-color@10.2.2:
-    resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
-    engines: {node: '>=18'}
+  supports-color@11.0.0:
+    resolution: {integrity: sha512-/zyImLdxhdygBIaVX0xTlQhKaCDLCrm665aqHk8xqK/Pa6k61fL6gwQGQq1k31yNyz6x55PppQgF2DMyPQa5xw==}
+    engines: {node: '>=22'}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -10295,8 +10302,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.21.1:
-    resolution: {integrity: sha512-+0NTnW77fFN/DjQi6k/Sq/Yvk4Sgajw7urW8V+asjXnRgDs9gyGkdb7EzgfhA4goXsRIZKE28fzIXBHEzhuiWw==}
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -12217,7 +12224,7 @@ snapshots:
       deepmerge: 4.3.1
       dotenv: 17.4.2
       openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.76)(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(ws@8.20.1)(zod@3.25.67)
-      ws: 8.21.1
+      ws: 8.21.3
       zod: 3.25.67
       zod-to-json-schema: 3.25.2(zod@3.25.67)
     transitivePeerDependencies:
@@ -12355,23 +12362,23 @@ snapshots:
     dependencies:
       regexp-match-indices: 1.0.2
 
-  '@cucumber/cucumber@13.2.0':
+  '@cucumber/cucumber@13.2.1':
     dependencies:
       '@cucumber/ci-environment': 14.0.0
       '@cucumber/cucumber-expressions': 20.0.0
-      '@cucumber/gherkin': 41.0.0
-      '@cucumber/gherkin-streams': 7.0.1(@cucumber/gherkin@41.0.0)(@cucumber/message-streams@5.0.1(@cucumber/messages@34.0.1))(@cucumber/messages@34.0.1)
+      '@cucumber/gherkin': 42.0.0
+      '@cucumber/gherkin-streams': 7.0.1(@cucumber/gherkin@42.0.0)(@cucumber/message-streams@5.0.1(@cucumber/messages@34.2.0))(@cucumber/messages@34.2.0)
       '@cucumber/gherkin-utils': 12.0.1
-      '@cucumber/html-formatter': 24.0.0(@cucumber/messages@34.0.1)
-      '@cucumber/junit-xml-formatter': 0.14.0(@cucumber/messages@34.0.1)
-      '@cucumber/message-streams': 5.0.1(@cucumber/messages@34.0.1)
-      '@cucumber/messages': 34.0.1
-      '@cucumber/pretty-formatter': 4.0.0(@cucumber/messages@34.0.1)
-      '@cucumber/tag-expressions': 10.0.0
+      '@cucumber/html-formatter': 24.1.0(@cucumber/messages@34.2.0)
+      '@cucumber/junit-xml-formatter': 0.14.0(@cucumber/messages@34.2.0)
+      '@cucumber/message-streams': 5.0.1(@cucumber/messages@34.2.0)
+      '@cucumber/messages': 34.2.0
+      '@cucumber/pretty-formatter': 4.0.0(@cucumber/messages@34.2.0)
+      '@cucumber/tag-expressions': 11.0.0
       assertion-error-formatter: 3.0.0
       cli-table3: 0.6.5
       commander: 15.0.0
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3(supports-color@11.0.0)
       error-stack-parser: 2.1.4
       figures: 6.1.0
       has-ansi: 6.0.2
@@ -12384,17 +12391,17 @@ snapshots:
       read-package-up: 12.0.0
       semver: 7.8.5
       string-argv: 0.3.2
-      supports-color: 10.2.2
+      supports-color: 11.0.0
       type-fest: 5.8.0
       util-arity: 1.1.0
       yaml: 2.9.0
       yup: 1.7.1
 
-  '@cucumber/gherkin-streams@7.0.1(@cucumber/gherkin@41.0.0)(@cucumber/message-streams@5.0.1(@cucumber/messages@34.0.1))(@cucumber/messages@34.0.1)':
+  '@cucumber/gherkin-streams@7.0.1(@cucumber/gherkin@42.0.0)(@cucumber/message-streams@5.0.1(@cucumber/messages@34.2.0))(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/gherkin': 41.0.0
-      '@cucumber/message-streams': 5.0.1(@cucumber/messages@34.0.1)
-      '@cucumber/messages': 34.0.1
+      '@cucumber/gherkin': 42.0.0
+      '@cucumber/message-streams': 5.0.1(@cucumber/messages@34.2.0)
+      '@cucumber/messages': 34.2.0
       commander: 15.0.0
       source-map-support: 0.5.21
 
@@ -12410,46 +12417,50 @@ snapshots:
     dependencies:
       '@cucumber/messages': 33.0.4
 
-  '@cucumber/html-formatter@24.0.0(@cucumber/messages@34.0.1)':
+  '@cucumber/gherkin@42.0.0':
     dependencies:
-      '@cucumber/messages': 34.0.1
+      '@cucumber/messages': 34.2.0
 
-  '@cucumber/junit-xml-formatter@0.14.0(@cucumber/messages@34.0.1)':
+  '@cucumber/html-formatter@24.1.0(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/messages': 34.0.1
-      '@cucumber/query': 16.1.0(@cucumber/messages@34.0.1)
+      '@cucumber/messages': 34.2.0
+
+  '@cucumber/junit-xml-formatter@0.14.0(@cucumber/messages@34.2.0)':
+    dependencies:
+      '@cucumber/messages': 34.2.0
+      '@cucumber/query': 16.1.1(@cucumber/messages@34.2.0)
       '@teppeis/multimaps': 3.0.0
       luxon: 3.7.2
       xmlbuilder: 15.1.1
 
-  '@cucumber/message-streams@5.0.1(@cucumber/messages@34.0.1)':
+  '@cucumber/message-streams@5.0.1(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/messages': 34.0.1
+      '@cucumber/messages': 34.2.0
       mime: 4.1.0
 
   '@cucumber/messages@33.0.4': {}
 
-  '@cucumber/messages@34.0.1': {}
+  '@cucumber/messages@34.2.0': {}
 
-  '@cucumber/pretty-formatter@4.0.0(@cucumber/messages@34.0.1)':
+  '@cucumber/pretty-formatter@4.0.0(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/messages': 34.0.1
-      '@cucumber/query': 16.0.0(@cucumber/messages@34.0.1)
+      '@cucumber/messages': 34.2.0
+      '@cucumber/query': 16.0.0(@cucumber/messages@34.2.0)
       luxon: 3.7.2
 
-  '@cucumber/query@16.0.0(@cucumber/messages@34.0.1)':
+  '@cucumber/query@16.0.0(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/messages': 34.0.1
+      '@cucumber/messages': 34.2.0
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
-  '@cucumber/query@16.1.0(@cucumber/messages@34.0.1)':
+  '@cucumber/query@16.1.1(@cucumber/messages@34.2.0)':
     dependencies:
-      '@cucumber/messages': 34.0.1
+      '@cucumber/messages': 34.2.0
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
-  '@cucumber/tag-expressions@10.0.0': {}
+  '@cucumber/tag-expressions@11.0.0': {}
 
   '@dabh/diagnostics@2.0.8':
     dependencies:
@@ -12764,7 +12775,7 @@ snapshots:
   '@getzep/zep-js@0.9.0':
     dependencies:
       '@supercharge/promise-pool': 3.3.0
-      semver: 7.8.5
+      semver: 7.7.3
       typescript: 5.9.3
 
   '@google-cloud/paginator@5.0.2':
@@ -13674,7 +13685,7 @@ snapshots:
   '@libsql/isomorphic-ws@0.1.5':
     dependencies:
       '@types/ws': 8.18.1
-      ws: 8.21.1
+      ws: 8.21.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -14221,9 +14232,9 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/ai-node-sdk@0.8.0(4b84f1eef7982478f96424c56ee03200)':
+  '@n8n/ai-node-sdk@0.8.0(bc890a6522840d9a4c31d7dc99a0c2c2)':
     dependencies:
-      '@n8n/ai-utilities': 0.11.0(4b84f1eef7982478f96424c56ee03200)
+      '@n8n/ai-utilities': 0.11.0(bc890a6522840d9a4c31d7dc99a0c2c2)
     transitivePeerDependencies:
       - '@arcjet/redact'
       - '@aws-crypto/sha256-js'
@@ -14359,7 +14370,7 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/ai-utilities@0.11.0(4b84f1eef7982478f96424c56ee03200)':
+  '@n8n/ai-utilities@0.11.0(bc890a6522840d9a4c31d7dc99a0c2c2)':
     dependencies:
       '@langchain/classic': 1.0.5(@aws-sdk/credential-provider-node@3.972.76)(@langchain/core@1.2.4(@opentelemetry/api@1.9.1)(@opentelemetry/exporter-trace-otlp-proto@0.217.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))(openai@6.46.0(@aws-sdk/credential-provider-node@3.972.76)(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(ws@8.20.1)(zod@3.25.67))(ws@8.20.1))(@opentelemetry/api@1.9.1)(@opentelemetry/exporter-trace-otlp-proto@0.217.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(cheerio@1.1.0)(openai@6.49.0(@aws-sdk/credential-provider-node@3.972.76)(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(ws@8.20.1)(zod@3.25.67))(ws@8.20.1)
       '@langchain/community': 1.1.14(7390681e3f6348132775f65489d8ee8b)
@@ -14371,7 +14382,7 @@ snapshots:
       https-proxy-agent: 7.0.6
       js-tiktoken: 1.0.21
       langchain: 1.2.30(@langchain/core@1.2.4(@opentelemetry/api@1.9.1)(@opentelemetry/exporter-trace-otlp-proto@0.217.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))(openai@6.46.0(@aws-sdk/credential-provider-node@3.972.76)(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(ws@8.20.1)(zod@3.25.67))(ws@8.20.1))(@opentelemetry/api@1.9.1)(@opentelemetry/exporter-trace-otlp-proto@0.217.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))(openai@6.49.0(@aws-sdk/credential-provider-node@3.972.76)(@smithy/hash-node@4.4.16)(@smithy/signature-v4@5.6.12)(ws@8.20.1)(zod@3.25.67))(vue@3.5.40(typescript@6.0.3))(ws@8.20.1)
-      n8n-workflow: 2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      n8n-workflow: 2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
       proxy-from-env: 1.1.0
       tmp-promise: 3.0.3
       undici: 6.28.0
@@ -15177,12 +15188,12 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  '@n8n/eslint-plugin-community-nodes@0.12.0(eslint@9.39.4(jiti@2.7.0))(n8n-workflow@2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67))(typescript@6.0.3)':
+  '@n8n/eslint-plugin-community-nodes@0.12.0(eslint@9.39.4(jiti@2.7.0))(n8n-workflow@2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67))(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.59.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       eslint: 9.39.4(jiti@2.7.0)
       fastest-levenshtein: 1.0.16
-      n8n-workflow: 2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
+      n8n-workflow: 2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -15651,11 +15662,11 @@ snapshots:
       - ws
       - youtubei.js
 
-  '@n8n/node-cli@0.27.0(0b7bdc1019a5e01d1ba7bfdce9442b99)':
+  '@n8n/node-cli@0.27.0(d0b4a2efee1990350279f756ca253609)':
     dependencies:
       '@clack/prompts': 0.11.0
-      '@n8n/ai-node-sdk': 0.8.0(4b84f1eef7982478f96424c56ee03200)
-      '@n8n/eslint-plugin-community-nodes': 0.12.0(eslint@9.39.4(jiti@2.7.0))(n8n-workflow@2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67))(typescript@6.0.3)
+      '@n8n/ai-node-sdk': 0.8.0(bc890a6522840d9a4c31d7dc99a0c2c2)
+      '@n8n/eslint-plugin-community-nodes': 0.12.0(eslint@9.39.4(jiti@2.7.0))(n8n-workflow@2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67))(typescript@6.0.3)
       '@oclif/core': 4.10.6
       change-case: 5.4.4
       eslint: 9.39.4(jiti@2.7.0)
@@ -16040,7 +16051,7 @@ snapshots:
   '@npmcli/fs@1.1.1':
     dependencies:
       '@gar/promisify': 1.1.3
-      semver: 7.8.5
+      semver: 7.7.3
     optional: true
 
   '@npmcli/fs@5.0.0':
@@ -16976,19 +16987,6 @@ snapshots:
     dependencies:
       '@sentry/conventions': 0.16.0
 
-  '@sentry/node-core@10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))':
-    dependencies:
-      '@sentry/conventions': 0.16.0
-      '@sentry/core': 10.69.0
-      '@sentry/opentelemetry': 10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))
-      import-in-the-middle: 3.3.3
-    optionalDependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/exporter-trace-otlp-http': 0.221.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
-
   '@sentry/node-core@10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@sentry/conventions': 0.16.0
@@ -17022,22 +17020,6 @@ snapshots:
       - '@opentelemetry/exporter-trace-otlp-http'
       - supports-color
 
-  '@sentry/node@10.69.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
-      '@sentry/conventions': 0.16.0
-      '@sentry/core': 10.69.0
-      '@sentry/node-core': 10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))
-      '@sentry/opentelemetry': 10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))
-      '@sentry/server-utils': 10.69.0
-      import-in-the-middle: 3.3.3
-    transitivePeerDependencies:
-      - '@opentelemetry/core'
-      - '@opentelemetry/exporter-trace-otlp-http'
-      - supports-color
-
   '@sentry/node@10.69.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -17053,14 +17035,6 @@ snapshots:
       - '@opentelemetry/core'
       - '@opentelemetry/exporter-trace-otlp-http'
       - supports-color
-
-  '@sentry/opentelemetry@10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.1)
-      '@sentry/conventions': 0.16.0
-      '@sentry/core': 10.69.0
 
   '@sentry/opentelemetry@10.69.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1))':
     dependencies:
@@ -18464,7 +18438,7 @@ snapshots:
       ioredis: 5.3.2
       lodash: 4.18.1
       msgpackr: 1.12.1
-      semver: 7.8.5
+      semver: 7.7.3
       uuid: 8.3.2
     transitivePeerDependencies:
       - supports-color
@@ -18476,7 +18450,7 @@ snapshots:
       ioredis: 5.3.2
       lodash: 4.18.1
       msgpackr: 1.12.1
-      semver: 7.8.5
+      semver: 7.7.3
       uuid: 8.3.2
     transitivePeerDependencies:
       - supports-color
@@ -18671,7 +18645,7 @@ snapshots:
 
   chromadb@3.5.0:
     dependencies:
-      semver: 7.8.5
+      semver: 7.7.3
     optionalDependencies:
       chromadb-js-bindings-darwin-arm64: 1.3.4
       chromadb-js-bindings-darwin-x64: 1.3.4
@@ -19030,11 +19004,11 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.3(supports-color@10.2.2):
+  debug@4.4.3(supports-color@11.0.0):
     dependencies:
       ms: 2.1.3
     optionalDependencies:
-      supports-color: 10.2.2
+      supports-color: 11.0.0
 
   debug@4.4.3(supports-color@8.1.1):
     dependencies:
@@ -20974,7 +20948,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.5
+      semver: 7.7.3
 
   jssha@3.3.1: {}
 
@@ -21084,7 +21058,7 @@ snapshots:
       chalk: 4.1.2
       console-table-printer: 2.16.1
       p-queue: 6.6.2
-      semver: 7.8.5
+      semver: 7.7.3
       uuid: 10.0.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -22167,41 +22141,6 @@ snapshots:
       - utf-8-validate
       - ws
 
-  n8n-workflow@2.33.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67):
-    dependencies:
-      '@codemirror/autocomplete': 6.20.0
-      '@n8n/errors': 0.13.0
-      '@n8n/expression-runtime': 0.24.0
-      '@n8n/tournament': 1.9.0
-      '@n8n/utils': 1.41.0
-      '@sentry/core': 10.69.0
-      '@sentry/node': 10.69.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))
-      ast-types: 0.16.1
-      axios: 1.18.0
-      callsites: 3.1.0
-      esprima-next: 5.8.4
-      form-data: 4.0.6
-      jmespath: 0.16.0
-      js-base64: 3.7.8
-      json-schema: 0.4.0
-      jsonrepair: 3.13.2
-      jssha: 3.3.1
-      lodash: 4.18.1
-      luxon: 3.7.2
-      md5: 2.3.0
-      recast: 0.22.0
-      ssh2: 1.15.0
-      title-case: 3.0.3
-      transliteration: 2.3.5
-      uuid: 11.1.1
-      xml2js: 0.6.2
-      zod: 3.25.67
-    transitivePeerDependencies:
-      - '@opentelemetry/core'
-      - '@opentelemetry/exporter-trace-otlp-http'
-      - debug
-      - supports-color
-
   n8n-workflow@2.33.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1))(zod@3.25.67):
     dependencies:
       '@codemirror/autocomplete': 6.20.0
@@ -22601,7 +22540,7 @@ snapshots:
 
   node-abi@3.94.0:
     dependencies:
-      semver: 7.8.5
+      semver: 7.7.3
 
   node-abort-controller@3.1.1: {}
 
@@ -22655,7 +22594,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 6.0.2
       rimraf: 3.0.2
-      semver: 7.8.5
+      semver: 7.7.3
       tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
@@ -24255,7 +24194,7 @@ snapshots:
       tinyglobby: 0.2.17
       ts-interface-checker: 0.1.13
 
-  supports-color@10.2.2: {}
+  supports-color@11.0.0: {}
 
   supports-color@7.2.0:
     dependencies:
@@ -25048,7 +24987,7 @@ snapshots:
 
   ws@8.20.1: {}
 
-  ws@8.21.1: {}
+  ws@8.21.3: {}
 
   wsl-utils@0.1.0:
     dependencies:
@@ -25171,7 +25110,7 @@ snapshots:
 
   zod-from-json-schema@0.0.5:
     dependencies:
-      zod: 3.25.75
+      zod: 3.25.67
 
   zod-to-json-schema@3.23.3(zod@3.25.67):
     dependencies:
