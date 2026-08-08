@@ -65,7 +65,7 @@
 		"n8n-workflow": "*"
 	},
 	"dependencies": {
-		"@effect/platform": "^0.96.0",
+		"@effect/platform": "^0.97.1",
 		"effect": "^3.21.0",
 		"fast-xml-parser": "^5.5.11"
 	},
