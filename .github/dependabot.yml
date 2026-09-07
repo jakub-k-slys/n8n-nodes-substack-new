@@ -16,3 +16,12 @@ updates:
           - dependency-name: 'marked'
             # Keep marked at v4.x.x for CommonJS compatibility with n8n
             # v16+ uses ES modules which cause deployment issues
+          - dependency-name: 'eslint'
+            # `n8n-node lint` runs the eslint binary from node_modules/.bin,
+            # so eslint must stay a direct devDependency, pinned to the
+            # version @n8n/eslint-plugin-community-nodes declares as an exact
+            # peer. Bump it only together with @n8n/node-cli.
+            update-types:
+                - 'version-update:semver-major'
+                - 'version-update:semver-minor'
+                - 'version-update:semver-patch'
