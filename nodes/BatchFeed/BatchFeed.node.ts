@@ -101,8 +101,8 @@ export class BatchFeed implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Subscriptions',
-				name: 'subscriptions',
+				displayName: 'Handles',
+				name: 'handles',
 				type: 'string',
 				required: true,
 				default: '',
@@ -180,13 +180,13 @@ export class BatchFeed implements INodeType {
 			'Batch Feed',
 		);
 
-		const subscriptionsParam = this.getNodeParameter('subscriptions') as string;
-		const canonicalSubscriptions = parseSubscriptionsInput(String(subscriptionsParam ?? ''));
+		const handlesParam = this.getNodeParameter('handles') as string;
+		const canonicalSubscriptions = parseSubscriptionsInput(String(handlesParam ?? ''));
 
 		if (canonicalSubscriptions.length === 0) {
 			throw new NodeOperationError(
 				this.getNode(),
-				'At least one subscription handle is required',
+				'At least one handle is required',
 			);
 		}
 
@@ -195,7 +195,7 @@ export class BatchFeed implements INodeType {
 		});
 
 		if (Either.isLeft(decodedSubscriptions)) {
-			throw new NodeOperationError(this.getNode(), 'Invalid subscription handles');
+			throw new NodeOperationError(this.getNode(), 'Invalid handles');
 		}
 
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;
