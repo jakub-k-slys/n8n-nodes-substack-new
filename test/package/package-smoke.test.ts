@@ -27,6 +27,10 @@ describe('package build smoke', () => {
 
 		assert.equal(credential.name, 'substackGatewayApi');
 		assert.equal(credential.displayName, 'Substack Gateway API');
+		assert.equal(
+			credential.documentationUrl,
+			'https://github.com/jakub-k-slys/n8n-nodes-substack-new?tab=readme-ov-file#credentials',
+		);
 		assert.equal(credential.properties[0]?.name, 'gatewayUrl');
 		assert.equal(credential.properties[1]?.name, 'gatewayToken');
 	});

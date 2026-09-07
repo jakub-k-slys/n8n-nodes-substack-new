@@ -15,7 +15,7 @@ export class SubstackGatewayApi implements ICredentialType {
 		dark: 'file:../nodes/SubstackGateway/substackGateway.dark.svg',
 	} as const;
 
-	documentationUrl = 'https://github.com/org/repo?tab=readme-ov-file#credentials';
+	documentationUrl = 'https://github.com/jakub-k-slys/n8n-nodes-substack-new?tab=readme-ov-file#credentials';
 
 	properties: INodeProperties[] = [
 		{
