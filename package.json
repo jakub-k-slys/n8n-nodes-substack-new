@@ -3,7 +3,7 @@
 	"version": "2.0.0",
 	"description": "n8n community node for the Substack Gateway API",
 	"license": "MIT",
-	"homepage": "",
+	"homepage": "https://github.com/jakub-k-slys/n8n-nodes-substack-new",
 	"keywords": [
 		"n8n-community-node-package"
 	],
@@ -50,9 +50,8 @@
 	},
 	"devDependencies": {
 		"@cucumber/cucumber": "^13.0.0",
-		"@eslint/js": "^9.32.0",
-		"@n8n/node-cli": "*",
-		"eslint": "^9.32.0",
+		"@n8n/node-cli": "^0.47.1",
+		"eslint": "9.29.0",
 		"n8n": "^2.21.7",
 		"prettier": "3.9.6",
 		"release-it": "^21.0.0",
