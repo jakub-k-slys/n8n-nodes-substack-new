@@ -32,7 +32,7 @@ Restart n8n after installation.
 - `Substack Gateway Profile Feed`
   Polling trigger for a specific Substack profile feed.
 - `Substack Gateway Batch Feed`
-  Polling trigger for an Atom feed aggregated across an explicit list of profile handles. Registers the list on the gateway via an idempotent `PUT` and polls the returned UUID.
+  Polling trigger for an Atom feed aggregated across an explicit comma-separated list of profile handles. Registers the list on the gateway via an idempotent `PUT` and polls the returned UUID.
 - `Randomizer`
   Trigger node that emits events at random times inside configured schedule windows.
 
@@ -106,7 +106,7 @@ For feed polling, use:
 
 - `Substack Gateway Following Feed` to watch your authenticated following feed
 - `Substack Gateway Profile Feed` to watch a specific profile's Atom feed
-- `Substack Gateway Batch Feed` to watch a combined Atom feed for a curated list of profile handles
+- `Substack Gateway Batch Feed` to watch a combined Atom feed for a curated, comma-separated list of profile handles
 
 For schedule-based triggering, use:
 

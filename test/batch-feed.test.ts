@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { Schema } from 'effect';
 
-import { canonicalizeSubscriptions } from '../nodes/BatchFeed/subscriptions.ts';
+import {
+	canonicalizeSubscriptions,
+	parseSubscriptionsInput,
+} from '../nodes/BatchFeed/subscriptions.ts';
 import {
 	BatchFeedRegistrationSchema,
 	BatchFeedSubscriptionsSchema,
@@ -27,6 +30,23 @@ describe('Batch feed subscriptions', () => {
 		const second = canonicalizeSubscriptions(['carol', 'alice', 'alice', '  bob ']);
 
 		assert.deepEqual(first, second);
+	});
+
+	it('parses a comma-separated handle list', () => {
+		const result = parseSubscriptionsInput('alice,bob,carol');
+
+		assert.deepEqual(result, ['alice', 'bob', 'carol']);
+	});
+
+	it('trims, deduplicates and sorts handles from a comma-separated list', () => {
+		const result = parseSubscriptionsInput('  bob  , alice,bob, ,carol,alice');
+
+		assert.deepEqual(result, ['alice', 'bob', 'carol']);
+	});
+
+	it('returns no handles for a blank comma-separated list', () => {
+		assert.deepEqual(parseSubscriptionsInput(''), []);
+		assert.deepEqual(parseSubscriptionsInput('  ,  , '), []);
 	});
 
 	it('rejects empty subscription requests via the schema', () => {

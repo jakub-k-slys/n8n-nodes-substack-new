@@ -27,7 +27,7 @@ import {
 	toNodeExecutionData,
 	writeAtomFeedCheckpoint,
 } from '../shared/atom-feed';
-import { canonicalizeSubscriptions } from './subscriptions';
+import { parseSubscriptionsInput } from './subscriptions';
 
 const BATCH_FEED_REGISTER_PATH = '/feeds';
 const BATCH_FEED_UPSERT_FEATURE = 'api:feeds:batch:upsert';
@@ -45,14 +45,6 @@ const getAtomUrl = (gatewayApiUrl: string, feedId: string): string =>
 type BatchFeedOptions = {
 	readonly maximumEntityCount?: number;
 	readonly requestTimeoutSeconds?: number;
-};
-
-type SubscriptionEntry = {
-	readonly handle?: string;
-};
-
-type SubscriptionsCollection = {
-	readonly subscription?: SubscriptionEntry[];
 };
 
 type BatchFeedState = {
@@ -109,32 +101,14 @@ export class BatchFeed implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Subscriptions',
-				name: 'subscriptions',
-				placeholder: 'Add Subscription',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: true,
-					sortable: true,
-				},
-				default: {},
-				description: 'Substack profile handles to include in the batch feed',
-				options: [
-					{
-						name: 'subscription',
-						displayName: 'Subscription',
-						values: [
-							{
-								displayName: 'Handle',
-								name: 'handle',
-								type: 'string',
-								required: true,
-								default: '',
-								description: 'Substack profile handle to follow in this batch feed',
-							},
-						],
-					},
-				],
+				displayName: 'Handles',
+				name: 'handles',
+				type: 'string',
+				required: true,
+				default: '',
+				placeholder: 'alice, bob, carol',
+				description:
+					'Comma-separated Substack profile handles to include in the batch feed',
 			},
 			{
 				displayName: 'Emit Only New Items',
@@ -206,16 +180,13 @@ export class BatchFeed implements INodeType {
 			'Batch Feed',
 		);
 
-		const subscriptionsParam = this.getNodeParameter('subscriptions') as SubscriptionsCollection;
-		const rawHandles = (subscriptionsParam.subscription ?? []).map((entry) =>
-			String(entry.handle ?? ''),
-		);
-		const canonicalSubscriptions = canonicalizeSubscriptions(rawHandles);
+		const handlesParam = this.getNodeParameter('handles') as string;
+		const canonicalSubscriptions = parseSubscriptionsInput(String(handlesParam ?? ''));
 
 		if (canonicalSubscriptions.length === 0) {
 			throw new NodeOperationError(
 				this.getNode(),
-				'At least one subscription handle is required',
+				'At least one handle is required',
 			);
 		}
 
@@ -224,7 +195,7 @@ export class BatchFeed implements INodeType {
 		});
 
 		if (Either.isLeft(decodedSubscriptions)) {
-			throw new NodeOperationError(this.getNode(), 'Invalid subscription handles');
+			throw new NodeOperationError(this.getNode(), 'Invalid handles');
 		}
 
 		const emitOnlyNewItems = this.getNodeParameter('emitOnlyNewItems') as boolean;
