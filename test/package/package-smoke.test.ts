@@ -55,7 +55,7 @@ describe('package build smoke', () => {
 		assert.equal(node.description.name, 'substackGatewayBatchFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Batch Feed');
 		assert.equal(node.description.polling, true);
-		assert.equal(node.description.properties[0]?.name, 'subscriptions');
+		assert.equal(node.description.properties[0]?.name, 'handles');
 		assert.equal(node.description.properties[1]?.name, 'emitOnlyNewItems');
 		assert.equal(node.description.properties[2]?.name, 'options');
 	});
