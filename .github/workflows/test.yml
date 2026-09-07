@@ -65,5 +65,9 @@ jobs:
                   cache: 'pnpm'
             - name: Install
               run: pnpm install
-            - name: Running tests
+            - name: Running unit tests
+              run: pnpm run test:unit
+            - name: Running runtime tests
               run: pnpm test
+            - name: Running package smoke tests
+              run: pnpm run test:package
