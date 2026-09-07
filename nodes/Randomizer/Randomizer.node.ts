@@ -84,7 +84,6 @@ export class Randomizer implements INodeType {
 		eventTriggerDescription: 'Runs when one or more generated random times become due',
 		activationMessage:
 			'Your randomizer trigger will now create random fire times based on the schedules you defined.',
-		usableAsTool: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		properties: [

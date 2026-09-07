@@ -34,11 +34,11 @@ export class ProfileFeed implements INodeType {
 		},
 		group: ['trigger'],
 		version: 1,
+		subtitle: '={{$parameter["userName"]}}',
 		description: 'Poll a profile Atom feed from Substack Gateway',
 		defaults: {
 			name: 'Substack Gateway Profile Feed',
 		},
-		usableAsTool: true,
 		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],

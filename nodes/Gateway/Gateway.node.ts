@@ -80,6 +80,7 @@ export class Gateway implements INodeType {
 		},
 		group: ['input'],
 		version: [1],
+		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Read and manage Substack profiles, posts, notes, and drafts through Substack Gateway',
 		defaults: {
 			name: 'Substack Gateway',
@@ -187,6 +188,9 @@ export class Gateway implements INodeType {
 				}
 
 				if (error instanceof NodeOperationError) {
+					// Already a node error: re-wrapping it would discard the
+					// original message and item index.
+					// eslint-disable-next-line @n8n/community-nodes/require-node-api-error
 					throw error;
 				}
 

@@ -84,12 +84,12 @@ export class BatchFeed implements INodeType {
 		},
 		group: ['trigger'],
 		version: 1,
+		subtitle: '={{$parameter["handles"]}}',
 		description:
 			'Poll a Substack Gateway batch Atom feed registered for an explicit list of profiles',
 		defaults: {
 			name: 'Substack Gateway Batch Feed',
 		},
-		usableAsTool: true,
 		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],

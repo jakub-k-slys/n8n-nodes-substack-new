@@ -55,9 +55,16 @@ describe('package build smoke', () => {
 		assert.equal(node.description.name, 'substackGatewayBatchFeed');
 		assert.equal(node.description.displayName, 'Substack Gateway Batch Feed');
 		assert.equal(node.description.polling, true);
-		assert.equal(node.description.properties[0]?.name, 'subscriptions');
+		assert.equal(node.description.properties[0]?.name, 'handles');
 		assert.equal(node.description.properties[1]?.name, 'emitOnlyNewItems');
 		assert.equal(node.description.properties[2]?.name, 'options');
+	});
+
+	it('should not expose trigger nodes as AI tools', () => {
+		assert.equal(new FollowingFeed().description.usableAsTool, undefined);
+		assert.equal(new ProfileFeed().description.usableAsTool, undefined);
+		assert.equal(new BatchFeed().description.usableAsTool, undefined);
+		assert.equal(new Randomizer().description.usableAsTool, undefined);
 	});
 
 	it('should expose the built randomizer trigger metadata', () => {

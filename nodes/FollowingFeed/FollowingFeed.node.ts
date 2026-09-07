@@ -43,11 +43,11 @@ export class FollowingFeed implements INodeType {
 		},
 		group: ['trigger'],
 		version: 1,
+		subtitle: '=Following feed',
 		description: 'Poll the authenticated user following Atom feed from Substack Gateway',
 		defaults: {
 			name: 'Substack Gateway Following Feed',
 		},
-		usableAsTool: true,
 		polling: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],

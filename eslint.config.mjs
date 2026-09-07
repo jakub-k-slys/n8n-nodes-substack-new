@@ -19,6 +19,14 @@ export default [
 		ignores: ['.old/**'],
 	},
 	{
+		files: ['package.json'],
+		rules: {
+			// The Effect runtime and fast-xml-parser are deliberate runtime
+			// dependencies of this package, not incidental ones.
+			'@n8n/community-nodes/no-runtime-dependencies': 'off',
+		},
+	},
+	{
 		files: ['test/package/*.test.ts'],
 		rules: {
 			'import-x/no-unresolved': 'off',
