@@ -15,3 +15,6 @@ export const canonicalizeSubscriptions = (handles: readonly string[]): string[] 
 
 	return result.sort((left, right) => left.localeCompare(right));
 };
+
+export const parseSubscriptionsInput = (raw: string): string[] =>
+	canonicalizeSubscriptions(raw.split(','));
